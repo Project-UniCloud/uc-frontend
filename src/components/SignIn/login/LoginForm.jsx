@@ -1,0 +1,109 @@
+"use client";
+
+import InputForm from "./InputForm";
+import { useState, useEffect } from "react";
+import { z } from "zod";
+import { useDispatch } from "react-redux";
+import { loginUser } from "@/api/authApi";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { loginSuccess } from "@/store/authSlice";
+
+const loginSchema = z.object({
+  username: z.string().min(6, { message: "Niepoprawny indeks!" }),
+  password: z.string().min(1, { message: "Hasło jest wymagane!" }),
+});
+
+export default function LoginForm() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const [formErrors, setFormErrors] = useState({});
+
+  const mutation = useMutation({
+    mutationFn: (credentials) => loginUser(credentials),
+    onSuccess: (userData) => {
+      console.log("Zalogowano pomyślnie:", userData);
+      dispatch(loginSuccess(userData));
+      router.push("/dashboard");
+    },
+    onError: (error) => {
+      console.error("Błąd logowania:", error);
+      setFormErrors({ error: error.message || "Błąd logowania" });
+    },
+  });
+
+  useEffect(() => {
+    console.log("mutation:", mutation);
+    console.log("mutation.isLoading:", mutation.isLoading);
+  }, [mutation.isLoading, mutation]);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    const result = loginSchema.safeParse({
+      username: formData.get("login"),
+      password: formData.get("password"),
+    });
+
+    if (!result.success) {
+      setFormErrors(result.error.flatten().fieldErrors);
+      return;
+    }
+
+    console.log("Wysyłam dane:", result.data);
+    setFormErrors({});
+    mutation.mutate(result.data);
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="w-full">
+        <InputForm
+          name="login"
+          placeholder="Wprowadź login"
+          label="Login"
+          type="text"
+          error={formErrors.username?.[0]}
+          required
+        />
+        <InputForm
+          name="password"
+          placeholder="Wprowadź hasło"
+          label="Hasło"
+          type="password"
+          error={formErrors.password?.[0]}
+          required
+        />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="remember"
+          name="remember"
+          className="cursor-pointer"
+        />
+        <label htmlFor="remember" className="text-sm text-black">
+          Pamiętaj mnie
+        </label>
+      </div>
+
+      {formErrors.error && (
+        <p className="text-red-400 text-xs">{formErrors.error}</p>
+      )}
+
+      <button
+        type="submit"
+        className={`w-full bg-[#614DE2] text-white p-2 rounded ${
+          mutation.isPending
+            ? "bg-[#b6acf9] cursor-not-allowed"
+            : "hover:bg-indigo-700 cursor-pointer"
+        }`}
+        disabled={mutation.isPending}
+      >
+        {mutation.isPending ? "Logowanie..." : "Zaloguj"}
+      </button>
+    </form>
+  );
+}
