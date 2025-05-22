@@ -1,9 +1,11 @@
-export const loginUser = async ({ username, password }) => {
+export async function loginUser({ login, password }) {
+  console.log("Logowanie użytkownika:", login, password);
   try {
-    const response = await fetch("http://localhost:8080/users/auth", {
+    const response = await fetch("http://localhost:8080/auth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ login, password }),
+      credentials: "include",
     });
 
     const data = await response.json();
@@ -16,4 +18,4 @@ export const loginUser = async ({ username, password }) => {
   } catch (error) {
     throw new Error(error.message || "Błąd połączenia z serwerem");
   }
-};
+}
