@@ -4,10 +4,15 @@ import { useMutation } from "@tanstack/react-query";
 import { addGroup } from "@/lib/groupsApi";
 import InputForm from "../InputForm";
 import { Button } from "../Buttons";
+import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 
 export default function AddGroupModal({ isOpen, setIsOpen }) {
   const dialogRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
+  const [teacherQuery, setTeacherQuery] = useState("");
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const { results: lecturerOptions, loading: isSearching } =
+    useLecturerSearch(teacherQuery);
 
   const mutation = useMutation({
     mutationFn: (groupData) => addGroup(groupData),
@@ -26,6 +31,12 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
 
   function handleSubmit(e) {
     e.preventDefault();
+    console.log(selectedTeacher);
+    if (!selectedTeacher?.userId) {
+      setFormErrors({ error: "Wybierz prowadzącego z listy." });
+      return;
+    }
+
     const formData = new FormData(e.target);
     const name = formData.get("groupName");
     const teacher = formData.get("teacher");
@@ -84,15 +95,52 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
             required
           />
         </div>
-        <div>
-          <InputForm
-            name="teacher"
-            placeholder="Prowadzący"
-            label="Prowadzący*"
+        <div className="relative">
+          <label htmlFor="teacher" className="block text-sm font-medium mb-1">
+            Prowadzący*
+          </label>
+          <input
             type="text"
-            required
+            id="teacher"
+            name="teacherDisplay"
+            autoComplete="off"
+            placeholder="Wpisz nazwisko prowadzącego"
+            value={selectedTeacher?.label || teacherQuery}
+            onChange={(e) => {
+              setTeacherQuery(e.target.value);
+              setSelectedTeacher(null);
+            }}
+            className="w-full border border-gray-400 rounded-lg px-3 py-2"
           />
+          {teacherQuery && lecturerOptions.length > 0 && !selectedTeacher && (
+            <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full max-h-40 overflow-auto shadow-lg">
+              {lecturerOptions.map((lecturer) => (
+                <li
+                  key={lecturer.userId}
+                  onClick={() => {
+                    const selected = {
+                      userId: lecturer.userId,
+                      label: `${lecturer.firstName} ${lecturer.lastName}`,
+                    };
+                    setSelectedTeacher(selected);
+                    setTeacherQuery("");
+                    setFormErrors({});
+                    console.log(selectedTeacher);
+                    console.log(lecturer);
+                  }}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  {lecturer.firstName} {lecturer.lastName}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
+        <input
+          type="hidden"
+          name="teacher"
+          value={selectedTeacher?.userId || ""}
+        />
         <div className="flex gap-4">
           <div className="flex-1">
             <InputForm

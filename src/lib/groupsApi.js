@@ -1,7 +1,7 @@
 export async function getGroups(activeTab) {
   try {
     const response = await fetch(
-      `http://localhost:8080/groups/${activeTab}?page=0&pageSize=10`,
+      `http://localhost:8080/groups/filter?status=${activeTab}`,
       {
         credentials: "include",
       }
