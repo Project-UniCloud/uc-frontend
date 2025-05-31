@@ -1,7 +1,6 @@
 export async function getUser(userId) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   try {
-    const response = await fetch(`${apiUrl}/users/${userId}`, {
+    const response = await fetch(`api/users/${userId}`, {
       credentials: "include",
     });
 
@@ -20,12 +19,9 @@ export async function getUser(userId) {
 }
 
 export async function searchLecturers(query) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   try {
     const response = await fetch(
-      `${apiUrl}/users/lecturers/search?containsQuery=${encodeURIComponent(
-        query
-      )}`,
+      `api/users/lecturers/search?containsQuery=${encodeURIComponent(query)}`,
       {
         credentials: "include",
       }
