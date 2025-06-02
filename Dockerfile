@@ -1,21 +1,15 @@
-FROM base AS runner
+FROM node:18-alpine
+
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+COPY package*.json ./
 
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/server.js ./server.js
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+RUN npm install
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY . .
 
-USER nextjs
+RUN npm run build
 
 EXPOSE 3000
 
-ENV PORT=3000
-
-ENTRYPOINT ["node", "server.js"]
+CMD ["npm", "start"]
