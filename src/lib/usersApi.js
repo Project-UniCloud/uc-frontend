@@ -1,6 +1,8 @@
-export async function getUser(userId, apiUrl) {
+import baseApiUrl from "./utils/baseUrl";
+
+export async function getUser(userId) {
   try {
-    const response = await fetch(`${apiUrl}/users/${userId}`, {
+    const response = await fetch(`${baseApiUrl}/users/${userId}`, {
       credentials: "include",
     });
 
@@ -18,10 +20,10 @@ export async function getUser(userId, apiUrl) {
   }
 }
 
-export async function searchLecturers(query, apiUrl) {
+export async function searchLecturers(query) {
   try {
     const response = await fetch(
-      `${apiUrl}/users/lecturers/search?containsQuery=${encodeURIComponent(
+      `${baseApiUrl}/users/lecturers/search?containsQuery=${encodeURIComponent(
         query
       )}`,
       {
