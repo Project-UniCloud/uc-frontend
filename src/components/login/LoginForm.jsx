@@ -18,7 +18,6 @@ export default function LoginForm() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [formErrors, setFormErrors] = useState({});
-  const config = useConfig();
 
   const mutation = useMutation({
     mutationFn: (credentials) => loginUser(credentials),
