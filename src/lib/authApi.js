@@ -1,7 +1,11 @@
 export async function loginUser({ login, password }) {
   console.log("Logowanie użytkownika:", login, password);
   try {
-    const response = await fetch(`api/auth`, {
+    const isLocalhost = window.location.hostname === "localhost";
+    const baseUrl = isLocalhost ? "http://localhost:8080" : "";
+    const apiUrl = `${baseUrl}/api/auth`;
+    
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ login, password }),
