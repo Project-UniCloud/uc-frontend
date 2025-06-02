@@ -1,10 +1,9 @@
 export async function loginUser({ login, password }) {
   console.log("Logowanie użytkownika:", login, password);
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
-    const apiUrl = `${baseUrl}/auth`;
-    
+    const config = useConfig();
+    const apiUrl = `${config.NEXT_PUBLIC_API_BASE_URL}/auth`;
+
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

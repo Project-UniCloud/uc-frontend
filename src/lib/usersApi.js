@@ -1,10 +1,12 @@
 export async function getUser(userId) {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
-    const response = await fetch(`${baseUrl}/users/${userId}`, {
-      credentials: "include",
-    });
+    const config = useConfig();
+    const response = await fetch(
+      `${config.NEXT_PUBLIC_API_BASE_URL}/users/${userId}`,
+      {
+        credentials: "include",
+      }
+    );
 
     const data = await response.json();
     if (!response.ok) {
@@ -22,12 +24,11 @@ export async function getUser(userId) {
 
 export async function searchLecturers(query) {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
+    const config = useConfig();
     const response = await fetch(
-      `${baseUrl}/users/lecturers/search?containsQuery=${encodeURIComponent(
-        query
-      )}`,
+      `${
+        config.NEXT_PUBLIC_API_BASE_URL
+      }/users/lecturers/search?containsQuery=${encodeURIComponent(query)}`,
       {
         credentials: "include",
       }
