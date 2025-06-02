@@ -18,9 +18,11 @@ export default function LoginForm() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [formErrors, setFormErrors] = useState({});
+  const config = useConfig();
 
   const mutation = useMutation({
-    mutationFn: (credentials) => loginUser(credentials),
+    mutationFn: (credentials) =>
+      loginUser(credentials, config.NEXT_PUBLIC_API_BASE_URL),
     onSuccess: (userData) => {
       dispatch(loginSuccess(userData.role));
       router.push("/dashboard");

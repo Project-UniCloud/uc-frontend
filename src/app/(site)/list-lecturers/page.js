@@ -5,10 +5,14 @@ import { getUser } from "@/lib/usersApi";
 export default function ListLecturerPage() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const config = useConfig();
 
   useEffect(() => {
     // Podstaw dowolne userId do testu
-    getUser("dd978dc3-661d-4a72-a210-51bfcecb33e3")
+    getUser(
+      "dd978dc3-661d-4a72-a210-51bfcecb33e3",
+      config.NEXT_PUBLIC_API_BASE_URL
+    )
       .then((data) => setUser(data))
       .catch((err) => setError(err.message));
   }, []);

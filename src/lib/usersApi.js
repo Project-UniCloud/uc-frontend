@@ -1,12 +1,8 @@
-export async function getUser(userId) {
+export async function getUser(userId, apiUrl) {
   try {
-    const config = useConfig();
-    const response = await fetch(
-      `${config.NEXT_PUBLIC_API_BASE_URL}/users/${userId}`,
-      {
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${apiUrl}/users/${userId}`, {
+      credentials: "include",
+    });
 
     const data = await response.json();
     if (!response.ok) {
@@ -22,13 +18,12 @@ export async function getUser(userId) {
   }
 }
 
-export async function searchLecturers(query) {
+export async function searchLecturers(query, apiUrl) {
   try {
-    const config = useConfig();
     const response = await fetch(
-      `${
-        config.NEXT_PUBLIC_API_BASE_URL
-      }/users/lecturers/search?containsQuery=${encodeURIComponent(query)}`,
+      `${apiUrl}/users/lecturers/search?containsQuery=${encodeURIComponent(
+        query
+      )}`,
       {
         credentials: "include",
       }
