@@ -1,17 +1,3 @@
-FROM node:20-slim AS base
-
-FROM base AS builder
-
-WORKDIR /app
-
-COPY package.json package-lock.json* ./
-RUN npm ci
-COPY . .
-
-ENV NEXT_TELEMETRY_DISABLED=1
-
-RUN npm run build
-
 FROM base AS runner
 WORKDIR /app
 
@@ -19,7 +5,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
-
+COPY --from=builder /app/server.js ./server.js
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
@@ -32,4 +18,4 @@ EXPOSE 3000
 
 ENV PORT=3000
 
-ENTRYPOINT ["node server.js"]
+ENTRYPOINT ["node", "server.js"]
