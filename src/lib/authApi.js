@@ -1,7 +1,15 @@
 export async function loginUser({ login, password }) {
   console.log("Logowanie użytkownika:", login, password);
   try {
+<<<<<<< HEAD
     const response = await fetch(`api/auth`, {
+=======
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
+    const apiUrl = `${baseUrl}/auth`;
+
+    const response = await fetch(apiUrl, {
+>>>>>>> 2d6b754 (handle different api urls)
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ login, password }),
