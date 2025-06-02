@@ -13,11 +13,9 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const { results: lecturerOptions, loading: isSearching } =
     useLecturerSearch(teacherQuery);
-  const config = useConfig();
 
   const mutation = useMutation({
-    mutationFn: (groupData) =>
-      addGroup(groupData, config.NEXT_PUBLIC_API_BASE_URL),
+    mutationFn: (groupData) => addGroup(groupData),
     onSuccess: () => setIsOpen(false),
     onError: (error) =>
       setFormErrors({ error: error.message || "Błąd dodawania grupy" }),

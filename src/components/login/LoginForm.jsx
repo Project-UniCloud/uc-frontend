@@ -21,8 +21,7 @@ export default function LoginForm() {
   const config = useConfig();
 
   const mutation = useMutation({
-    mutationFn: (credentials) =>
-      loginUser(credentials, config.NEXT_PUBLIC_API_BASE_URL),
+    mutationFn: (credentials) => loginUser(credentials),
     onSuccess: (userData) => {
       dispatch(loginSuccess(userData.role));
       router.push("/dashboard");

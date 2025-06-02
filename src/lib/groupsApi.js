@@ -1,7 +1,9 @@
-export async function getGroups(activeTab, apiUrl) {
+import baseApiUrl from "./utils/baseUrl";
+
+export async function getGroups(activeTab) {
   try {
     const response = await fetch(
-      `${apiUrl}/groups/filter?status=${activeTab}`,
+      `${baseApiUrl}/groups/filter?status=${activeTab}`,
       {
         credentials: "include",
       }
@@ -21,9 +23,9 @@ export async function getGroups(activeTab, apiUrl) {
   }
 }
 
-export async function addGroup(groupData, apiUrl) {
+export async function addGroup(groupData) {
   try {
-    const response = await fetch(`${apiUrl}/groups`, {
+    const response = await fetch(`${baseApiUrl}/groups`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,7 +1,9 @@
-export async function loginUser({ login, password }, apiUrl) {
+import baseApiUrl from "./utils/baseUrl";
+
+export async function loginUser({ login, password }) {
   console.log("Logowanie użytkownika:", login, password);
   try {
-    const response = await fetch(`${apiUrl}/auth`, {
+    const response = await fetch(`${baseApiUrl}/auth`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ login, password }),
