@@ -1,9 +1,8 @@
 export async function getGroups(activeTab) {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
+    const config = useConfig();
     const response = await fetch(
-      `${baseUrl}/groups/filter?status=${activeTab}`,
+      `${config.NEXT_PUBLIC_API_BASE_URL}/groups/filter?status=${activeTab}`,
       {
         credentials: "include",
       }
@@ -25,9 +24,8 @@ export async function getGroups(activeTab) {
 
 export async function addGroup(groupData) {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
-    const response = await fetch(`${baseUrl}/groups`, {
+    const config = useConfig();
+    const response = await fetch(`${config.NEXT_PUBLIC_API_BASE_URL}/groups`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

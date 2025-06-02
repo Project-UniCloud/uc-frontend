@@ -4,9 +4,6 @@ FROM base AS builder
 
 WORKDIR /app
 
-ARG NEXT_PUBLIC_API_BASE_URL
-ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
-
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .
@@ -39,4 +36,4 @@ EXPOSE 3000
 
 ENV PORT=3000
 
-CMD node server.js
+ENTRYPOINT ["/bin/sh", "-c", "echo '{\"NEXT_PUBLIC_API_BASE_URL\": \"${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8080/api}\"}' > /app/public/config.json && exec node server.js"]
