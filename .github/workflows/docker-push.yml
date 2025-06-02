@@ -13,6 +13,9 @@ jobs:
       contents: read
       packages: write
 
+    env:
+      NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,7 +34,7 @@ jobs:
         run: |
           OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           IMAGE_NAME=ghcr.io/${OWNER_LOWER}/uc-frontend:latest
-          docker build -t $IMAGE_NAME .
+          docker build --build-arg NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL -t $IMAGE_NAME .
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
       - name: Push Docker image
