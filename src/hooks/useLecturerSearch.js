@@ -5,6 +5,7 @@ import { searchLecturers } from "@/lib/usersApi";
 export function useLecturerSearch(query) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const config = useConfig();
 
   useEffect(() => {
     if (!query) {
@@ -15,7 +16,7 @@ export function useLecturerSearch(query) {
     const timeoutId = setTimeout(() => {
       setLoading(true);
 
-      searchLecturers(query)
+      searchLecturers(query, config.NEXT_PUBLIC_API_BASE_URL)
         .then(setResults)
         .catch((err) => {
           console.error(err);

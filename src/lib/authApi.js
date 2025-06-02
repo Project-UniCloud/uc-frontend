@@ -1,10 +1,7 @@
-export async function loginUser({ login, password }) {
+export async function loginUser({ login, password }, apiUrl) {
   console.log("Logowanie użytkownika:", login, password);
   try {
-    const config = useConfig();
-    const apiUrl = `${config.NEXT_PUBLIC_API_BASE_URL}/auth`;
-
-    const response = await fetch(apiUrl, {
+    const response = await fetch(`${apiUrl}/auth`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ login, password }),

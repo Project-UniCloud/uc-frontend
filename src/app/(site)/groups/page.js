@@ -27,11 +27,12 @@ export default function GroupsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const config = useConfig();
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getGroups(activeTab)
+    getGroups(activeTab, config.NEXT_PUBLIC_API_BASE_URL)
       .then((data) => {
         setGroups(data.content);
         setLoading(false);
