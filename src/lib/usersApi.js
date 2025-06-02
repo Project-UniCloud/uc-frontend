@@ -1,6 +1,8 @@
 export async function getUser(userId) {
   try {
-    const response = await fetch(`api/users/${userId}`, {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
+    const response = await fetch(`${baseUrl}/users/${userId}`, {
       credentials: "include",
     });
 
@@ -20,8 +22,12 @@ export async function getUser(userId) {
 
 export async function searchLecturers(query) {
   try {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
     const response = await fetch(
-      `api/users/lecturers/search?containsQuery=${encodeURIComponent(query)}`,
+      `${baseUrl}/users/lecturers/search?containsQuery=${encodeURIComponent(
+        query
+      )}`,
       {
         credentials: "include",
       }

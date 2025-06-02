@@ -1,9 +1,9 @@
 export async function loginUser({ login, password }) {
   console.log("Logowanie użytkownika:", login, password);
   try {
-    const isLocalhost = window.location.hostname === "localhost";
-    const baseUrl = isLocalhost ? "http://localhost:8080" : "";
-    const apiUrl = `${baseUrl}/api/auth`;
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
+    const apiUrl = `${baseUrl}/auth`;
     
     const response = await fetch(apiUrl, {
       method: "POST",

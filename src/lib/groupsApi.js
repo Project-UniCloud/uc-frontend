@@ -1,8 +1,13 @@
 export async function getGroups(activeTab) {
   try {
-    const response = await fetch(`api/groups/filter?status=${activeTab}`, {
-      credentials: "include",
-    });
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
+    const response = await fetch(
+      `${baseUrl}/groups/filter?status=${activeTab}`,
+      {
+        credentials: "include",
+      }
+    );
 
     const data = await response.json();
     if (!response.ok) {
@@ -20,7 +25,9 @@ export async function getGroups(activeTab) {
 
 export async function addGroup(groupData) {
   try {
-    const response = await fetch(`api/groups`, {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api";
+    const response = await fetch(`${baseUrl}/groups`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
