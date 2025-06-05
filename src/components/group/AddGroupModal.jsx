@@ -4,6 +4,8 @@ import { useMutation } from "@tanstack/react-query";
 import { addGroup } from "@/lib/groupsApi";
 import InputForm from "../InputForm";
 import { Button } from "../Buttons";
+import TeacherSearchInput from "@/components/TeacherSearchInput";
+import { formatDateToDDMMYYYY } from "@/lib/utils/formatDate";
 
 export default function AddGroupModal({ isOpen, setIsOpen }) {
   const dialogRef = useRef(null);
@@ -47,12 +49,6 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
     mutation.mutate(groupData);
   }
 
-  function formatDateToDDMMYYYY(dateStr) {
-    if (!dateStr) return "";
-    const [year, month, day] = dateStr.split("-");
-    return `${day}-${month}-${year}`;
-  }
-
   function handleClose() {
     setIsOpen(false);
   }
@@ -84,15 +80,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
             required
           />
         </div>
-        <div>
-          <InputForm
-            name="teacher"
-            placeholder="Prowadzący"
-            label="Prowadzący*"
-            type="text"
-            required
-          />
-        </div>
+
         <div className="flex gap-4">
           <div className="flex-1">
             <InputForm
@@ -141,6 +129,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
             />
           </div>
         </div>
+        <TeacherSearchInput />
         <div>
           <label
             htmlFor="description"

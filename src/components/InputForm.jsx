@@ -4,6 +4,8 @@ export default function InputForm({
   type = "text",
   name,
   error,
+  colors = "border-gray-400 text-gray-500",
+  center,
   ...props
 }) {
   return (
@@ -14,7 +16,9 @@ export default function InputForm({
           name={name}
           type={type}
           placeholder={placeholder}
-          className="w-full border border-gray-400 rounded-lg px-3 py-2 font-semibold text-gray-500"
+          className={`w-full border rounded-lg px-3 py-2 font-semibold ${colors} ${
+            center && "text-center"
+          }`}
           {...props}
         />
       </div>

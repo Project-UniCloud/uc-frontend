@@ -1,21 +1,10 @@
+import { postApi } from "./utils/apiClient";
+
 export async function loginUser({ login, password }) {
-  console.log("Logowanie użytkownika:", login, password);
-  try {
-    const response = await fetch("http://localhost:8080/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ login, password }),
-      credentials: "include",
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Nieprawidłowe dane logowania");
-    }
-
-    return data;
-  } catch (error) {
-    throw new Error(error.message || "Błąd połączenia z serwerem");
-  }
+  return await postApi(
+    "/auth",
+    { login, password },
+    "Nieprawidłowe dane logowania",
+    true
+  );
 }

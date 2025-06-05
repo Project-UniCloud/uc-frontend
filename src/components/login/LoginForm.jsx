@@ -44,7 +44,6 @@ export default function LoginForm() {
       return;
     }
 
-    console.log("Wysyłam dane:", result.data);
     setFormErrors({});
     mutation.mutate(result.data);
   }
@@ -57,7 +56,7 @@ export default function LoginForm() {
           placeholder="Wprowadź login"
           label="Login"
           type="text"
-          error={formErrors.username?.[0]}
+          error={formErrors.login?.[0]}
           required
         />
         <InputForm
