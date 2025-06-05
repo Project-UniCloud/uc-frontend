@@ -1,5 +1,5 @@
 import { getApi, postApi } from "./utils/apiClient";
-import { getBaseApiUrl } from "../utils/baseUrl";
+import { getBaseApiUrl } from "./utils/baseUrl";
 
 export async function getStudentsFromGroup(groupId) {
   const path = `${getBaseApiUrl()}/groups/${groupId}/students`;

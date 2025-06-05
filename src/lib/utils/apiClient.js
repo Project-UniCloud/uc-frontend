@@ -1,4 +1,4 @@
-import { getBaseApiUrl } from "../utils/baseUrl";
+import { getBaseApiUrl } from "./baseUrl";
 
 export async function getApi(path, errorText) {
   try {
