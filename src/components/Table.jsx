@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 
-export default function Table({ columns, data }) {
+export default function Table({ columns, data, whereNavigate }) {
   const router = useRouter();
 
   return (
@@ -18,8 +18,16 @@ export default function Table({ columns, data }) {
         {data.map((row, idx) => (
           <tr
             key={row.id || idx}
-            className="odd:bg-gray-50 cursor-pointer hover:bg-purple-50 transition"
-            onClick={() => router.push(`/groups/${row.groupId}`)}
+            className={`odd:bg-gray-50 ${
+              whereNavigate
+                ? "cursor-pointer hover:bg-purple-50 transition"
+                : ""
+            }`}
+            onClick={
+              whereNavigate
+                ? () => router.push(`${whereNavigate}/${row.groupId}`)
+                : undefined
+            }
           >
             {columns.map((col) => (
               <td key={col.key} className="p-2 text-center align-middle">

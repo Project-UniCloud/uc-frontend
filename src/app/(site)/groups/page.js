@@ -74,7 +74,9 @@ export default function GroupsPage() {
         <div>Ładowanie...</div>
       ) : (
         !error &&
-        tableData.length > 0 && <Table columns={columns} data={tableData} />
+        tableData.length > 0 && (
+          <Table columns={columns} data={tableData} whereNavigate="groups" />
+        )
       )}
     </div>
   );
