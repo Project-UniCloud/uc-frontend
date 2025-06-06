@@ -8,12 +8,17 @@ import React from "react";
 
 export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
   const dialogRef = useRef(null);
+  const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
 
   const mutation = useMutation({
     mutationFn: ({ groupId, studentData }) =>
       addStudentToGroup(groupId, studentData),
-    onSuccess: () => setIsOpen(false),
+    onSuccess: () => {
+      formRef.current?.reset();
+      setFormErrors({});
+      setIsOpen(false);
+    },
     onError: (error) =>
       setFormErrors({
         error: error.message || "Błąd dodawania studenta do grupy",
@@ -59,7 +64,12 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
       className="rounded-2xl shadow-xl w-full max-w-lg p-0 m-auto"
       onClose={handleClose}
     >
-      <form method="dialog" className="relative p-6" onSubmit={handleSubmit}>
+      <form
+        method="dialog"
+        className="relative p-6"
+        onSubmit={handleSubmit}
+        ref={formRef}
+      >
         <div className="flex flex-col items-end">
           <button
             type="button"
@@ -95,9 +105,8 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
           <div>
             <InputForm
               name="login"
-              placeholder="123456"
+              placeholder="s123456"
               label="Indeks*"
-              type="number"
               required
             />
           </div>

@@ -12,7 +12,10 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
 
   const mutation = useMutation({
     mutationFn: ({ groupId, file }) => addStudentsToGroup(groupId, file),
-    onSuccess: () => setIsOpen(false),
+    onSuccess: () => {
+      setFile(null);
+      setIsOpen(false);
+    },
     onError: (error) =>
       setErrors({
         error: error.message || "Błąd dodawania studenta do grupy",
@@ -89,7 +92,7 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
             mutation.mutate({ groupId, file });
           }}
         >
-          {mutation.isLoading ? "Wysyłanie..." : "Dodaj studenta"}
+          {mutation.isLoading ? "Wysyłanie..." : "Dodaj studentów"}
         </Button>
       </div>
     </dialog>

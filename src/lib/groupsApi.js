@@ -1,4 +1,4 @@
-import { getApi, postApi } from "./utils/apiClient";
+import { getApi, postApi, patchApi } from "./utils/apiClient";
 
 export async function getGroups(activeTab) {
   const path = `/groups/filter?status=${activeTab}`;
@@ -12,4 +12,9 @@ export async function addGroup(groupData) {
 export async function getGroupById(groupId) {
   const path = `/groups/${groupId}`;
   return await getApi(path, "Nieudane pobieranie grupy");
+}
+
+export async function updateGroup(groupId, groupData) {
+  const path = `/groups/${groupId}`;
+  return await patchApi(path, groupData, "Nieudane aktualizowanie grupy");
 }

@@ -30,7 +30,12 @@ export default function Table({ columns, data, whereNavigate }) {
             }
           >
             {columns.map((col) => (
-              <td key={col.key} className="p-2 text-center align-middle">
+              <td
+                key={col.key}
+                className={`p-2 text-center align-middle ${
+                  col.key === "status" && "text-green-500 font-semibold"
+                }`}
+              >
                 {col.render ? col.render(row, idx) : row[col.key] || "-"}
               </td>
             ))}
