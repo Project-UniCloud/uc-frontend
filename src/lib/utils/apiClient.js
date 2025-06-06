@@ -53,7 +53,7 @@ export async function postApi(path, body, errorText, data = false) {
 
 export async function patchApi(path, body, errorText, data = false) {
   try {
-    const response = await fetch(`${baseApiUrl}${path}`, {
+    const response = await fetch(`${getBaseApiUrl()}${path}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
