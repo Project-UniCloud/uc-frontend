@@ -4,6 +4,7 @@ import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 export default function TeacherSearchInput({
   value = "",
   label = "Prowadzący*",
+  disabled = false,
 }) {
   const [teacherQuery, setTeacherQuery] = useState(value);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
@@ -38,6 +39,7 @@ export default function TeacherSearchInput({
             setTeacherQuery(e.target.value);
             setSelectedTeacher(null);
           }}
+          disabled={disabled}
           className="w-full border border-gray-400 rounded-lg px-3 py-2"
         />
         {teacherQuery && lecturerOptions.length > 0 && !selectedTeacher && (

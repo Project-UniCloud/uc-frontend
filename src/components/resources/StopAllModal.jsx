@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../Buttons";
+import { CiPause1 } from "react-icons/ci";
 
 export function StopAllModal({ isOpen, setIsOpen }) {
   const dialogRef = useRef(null);
@@ -9,11 +10,11 @@ export function StopAllModal({ isOpen, setIsOpen }) {
   const [file, setFile] = useState(null);
 
   //   const mutation = useMutation({
-  //     mutationFn: ({ groupId, file }) => addStudentsToGroup(groupId, file),
+  //     mutationFn: ({ groupId }) => stopResourcesGroup(groupId),
   //     onSuccess: () => setIsOpen(false),
   //     onError: (error) =>
   //       setErrors({
-  //         error: error.message || "Błąd dodawania studenta do grupy",
+  //         error: error.message || "Błąd wstrzymywania usług grupy",
   //       }),
   //   });
 
@@ -44,13 +45,13 @@ export function StopAllModal({ isOpen, setIsOpen }) {
           <X />
         </button>
       </div>
-      <h2 className="text-xl font-semibold mb-4 text-center">
+      <h2 className="text-xl font-semibold mb-10 text-center">
         Wstrzymanie wszystkich usług
       </h2>
-      <p className="text-gray-600 mb-6 text-center">
+      <p className="text-gray-600 mb-6 text-center text-xl ">
         Czy jesteś pewny, że chcesz wstrzymać wszystkie usługi?
       </p>
-
+      {errors.error && <div className="text-red-600">{errors.error}</div>}
       <div className="flex justify-end items-center gap-4 pt-10">
         <Button
           type="button"
@@ -62,13 +63,15 @@ export function StopAllModal({ isOpen, setIsOpen }) {
           Anuluj
         </Button>
         <Button
+          color="bg-[#CD6200]"
           type="submit"
-          disabled={!file || mutation.isLoading}
+          // disabled={mutation.isLoading}
           //   onClick={() => {
-          //     mutation.mutate({ groupId, file });
+          //     mutation.mutate({groupId});
           //   }}
         >
           {/* {mutation.isLoading ? "Wstrzymywanie..." : "Wstrzymaj"} */}
+          <CiPause1 />
           Wstrzymaj
         </Button>
       </div>
