@@ -1,8 +1,8 @@
-import baseApiUrl from "../utils/baseUrl";
+import { getBaseApiUrl } from "./baseUrl";
 
 export async function getApi(path, errorText) {
   try {
-    const response = await fetch(`${baseApiUrl}${path}`, {
+    const response = await fetch(`${getBaseApiUrl()}${path}`, {
       credentials: "include",
     });
 
@@ -24,7 +24,7 @@ export async function getApi(path, errorText) {
 
 export async function postApi(path, body, errorText, data = false) {
   try {
-    const response = await fetch(`${baseApiUrl}${path}`, {
+    const response = await fetch(`${getBaseApiUrl()}${path}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
