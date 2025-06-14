@@ -1,29 +1,82 @@
 "use client";
-import { useEffect, useState } from "react";
-import { getUser } from "@/lib/usersApi";
+import { useState, useEffect } from "react";
+import { getLecturers } from "@/lib/lecturersApi";
+import Tabs from "@/components/Tabs";
+import Table from "@/components/Table";
+import { FaPlus } from "react-icons/fa";
+import AddLecturerModal from "@/components/lecturer/AddLecturerModal";
 
-export default function ListLecturerPage() {
-  const [user, setUser] = useState(null);
+const TABS = [
+  { key: "ACTIVE", label: "Aktywni" },
+  { key: "ARCHIVED", label: "Zarchiwizowani" },
+  { key: "INACTIVE", label: "Nieaktywni" },
+];
+
+const columns = [
+  { key: "id", header: "ID" },
+  { key: "login", header: "Login" },
+  { key: "firstName", header: "Imię" },
+  { key: "lastName", header: "Nazwisko" },
+  { key: "email", header: "Mail" },
+  { key: "status", header: "Status" },
+];
+
+export default function LecturersPage() {
+  const [activeTab, setActiveTab] = useState("ACTIVE");
+  const [lecturers, setLecturers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Podstaw dowolne userId do testu
-    getUser("dd978dc3-661d-4a72-a210-51bfcecb33e3")
-      .then((data) => setUser(data))
-      .catch((err) => setError(err.message));
-  }, []);
+    setLoading(true);
+    setError(null);
+    getLecturers(activeTab)
+      .then((data) => {
+        setLecturers(data.content || []);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
+  }, [activeTab]);
+
+  const tableData = lecturers.map((lecturer, idx) => ({
+    ...lecturer,
+    id: idx + 1,
+  }));
 
   return (
-    <div>
-      <h1>List of Lecturers</h1>
-      <p>Welcome to the list of lecturers</p>
-      {error && <div className="text-red-600">Błąd: {error}</div>}
-      {user ? (
-        <pre className="bg-gray-100 p-2 rounded">
-          {JSON.stringify(user, null, 2)}
-        </pre>
+    <div className="min-w-120">
+      <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+
+      <div className="flex items-center justify-between mb-5">
+        {activeTab === "ACTIVE" && (
+          <button
+            className="bg-purple hover:opacity-70 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1 cursor-pointer"
+            onClick={() => setIsOpen(true)}
+          >
+            <FaPlus />
+            Dodaj Prowadzącego
+          </button>
+        )}
+      </div>
+
+      <AddLecturerModal isOpen={isOpen} setIsOpen={setIsOpen} />
+
+      {error && <div className="text-red-600 mb-4">{error}</div>}
+      {tableData.length === 0 && !loading && (
+        <div className="text-gray-500">Brak prowadzących do wyświetlenia</div>
+      )}
+
+      {loading ? (
+        <div>Ładowanie...</div>
       ) : (
-        !error && <div>Ładowanie danych użytkownika...</div>
+        !error &&
+        tableData.length > 0 && (
+          <Table columns={columns} data={tableData} whereNavigate="list-lecturers" />
+        )
       )}
     </div>
   );
