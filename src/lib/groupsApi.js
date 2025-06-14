@@ -1,7 +1,7 @@
 import { getApi, postApi, patchApi } from "./utils/apiClient";
 
 export async function getGroups(activeTab) {
-  const path = `/groups/filter?status=${activeTab}`;
+  const path = `/groups?status=${activeTab}`;
   return await getApi(path, "Nieudane pobieranie grup");
 }
 
