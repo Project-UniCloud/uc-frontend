@@ -31,6 +31,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
     const formData = new FormData(e.target);
     const name = formData.get("groupName");
     const teacher = formData.get("teacher");
+    console.log("teacher", teacher);
     const semesterYear = formData.get("semesterYear");
     const semesterType = formData.get("semesterType");
     const startDate = formData.get("startDate");

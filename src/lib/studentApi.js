@@ -1,5 +1,5 @@
 import { getApi, postApi } from "./utils/apiClient";
-import baseApiUrl from "@/lib/utils/baseUrl";
+import { getBaseApiUrl } from "@/lib/utils/baseUrl";
 
 export async function getStudentsFromGroup({
   groupId,
@@ -11,7 +11,7 @@ export async function getStudentsFromGroup({
 }
 
 export async function addStudentToGroup(groupId, studentData) {
-  const path = `/groups/${groupId}/attenders`;
+  const path = `/groups/${groupId}/students`;
   return await postApi(
     path,
     studentData,
@@ -20,30 +20,29 @@ export async function addStudentToGroup(groupId, studentData) {
   );
 }
 
-// export async function addStudentsToGroup(groupId, file) {
-//   const path = `/groups/${groupId}/attenders/import`;
-//   return await postApi(path, file, "Nieudane dodanie studentów z pliku");
-// }
-
 export async function addStudentsToGroup(groupId, file) {
-  const url = `${baseApiUrl}/groups/${groupId}/attenders/import`;
+  let errorText = "Nieudane dodanie studentów z pliku";
   const form = new FormData();
   form.append("file", file);
+  try {
+    const response = await fetch(
+      `${getBaseApiUrl()}/groups/${groupId}/students/import`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: form,
+      }
+    );
 
-  console.log("Adding students to group", groupId, file);
+    if (!response.ok) {
+      try {
+        const errorData = await response.json();
 
-  const res = await fetch(url, {
-    method: "POST",
-    credentials: "include",
-    body: form,
-  });
-
-  if (!res.ok) {
-    let msg = "Nieudane dodanie studentów z pliku";
-    try {
-      const err = await res.json();
-      msg = err.detail || msg;
-    } catch {}
-    throw new Error(msg);
+        errorText = errorData.detail || errorText;
+      } catch {}
+      throw new Error(errorText);
+    }
+  } catch (error) {
+    throw new Error(error.message);
   }
 }

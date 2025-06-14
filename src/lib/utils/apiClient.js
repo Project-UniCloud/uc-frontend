@@ -1,8 +1,8 @@
-import baseApiUrl from "../utils/baseUrl";
+import { getBaseApiUrl } from "./baseUrl";
 
 export async function getApi(path, errorText) {
   try {
-    const response = await fetch(`${baseApiUrl}${path}`, {
+    const response = await fetch(`${getBaseApiUrl()}${path}`, {
       credentials: "include",
     });
 
@@ -24,7 +24,7 @@ export async function getApi(path, errorText) {
 
 export async function postApi(path, body, errorText, data = false) {
   try {
-    const response = await fetch(`${baseApiUrl}${path}`, {
+    const response = await fetch(`${getBaseApiUrl()}${path}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,6 +37,34 @@ export async function postApi(path, body, errorText, data = false) {
       try {
         const errorData = await response.json();
 
+        errorText = errorData.detail || errorText;
+      } catch {}
+      throw new Error(errorText);
+    }
+
+    if (data) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function patchApi(path, body, errorText, data = false) {
+  try {
+    const response = await fetch(`${getBaseApiUrl()}${path}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      try {
+        const errorData = await response.json();
         errorText = errorData.detail || errorText;
       } catch {}
       throw new Error(errorText);
