@@ -18,7 +18,7 @@ import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <div className="hidden md:w-52 lg:w-60 h-screen bg-purple md:flex flex-col justify-between p-4 text-white">
+    <div className="hidden md:w-52 lg:w-60  bg-purple md:flex flex-col justify-between p-4 text-white">
       <div>
         <Link href="/dashboard">
           <Image

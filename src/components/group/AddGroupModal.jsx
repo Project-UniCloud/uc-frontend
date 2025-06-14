@@ -2,9 +2,9 @@ import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { addGroup } from "@/lib/groupsApi";
-import InputForm from "../InputForm";
-import { Button } from "../Buttons";
-import TeacherSearchInput from "@/components/TeacherSearchInput";
+import InputForm from "../utils/InputForm";
+import { Button } from "../utils/Buttons";
+import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { formatDateToDDMMYYYY } from "@/lib/utils/formatDate";
 
 export default function AddGroupModal({ isOpen, setIsOpen }) {

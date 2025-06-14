@@ -1,8 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import InputForm from "../InputForm";
-import { Button } from "../Buttons";
+import InputForm from "../utils/InputForm";
+import { Button } from "../utils/Buttons";
 import { addStudentToGroup } from "@/lib/studentApi";
 import React from "react";
 

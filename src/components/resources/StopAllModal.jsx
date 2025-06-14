@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "../Buttons";
+import { Button } from "../utils/Buttons";
+import { CiPause1 } from "react-icons/ci";
 
 export function StopAllModal({ isOpen, setIsOpen }) {
   const dialogRef = useRef(null);

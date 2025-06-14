@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Tabs from "@/components/Tabs";
-import Table from "@/components/Table";
-import InputForm from "@/components/InputForm";
-import TeacherSearchInput from "@/components/TeacherSearchInput";
-import { Button } from "@/components/Buttons";
+import React, { useState, useEffect, act } from "react";
+import Tabs from "@/components/utils/Tabs";
+import Table from "@/components/table/Table";
+import InputForm from "@/components/utils/InputForm";
+import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
+import { Button } from "@/components/utils/Buttons";
 import { FiArchive } from "react-icons/fi";
 import { getGroupById } from "@/lib/groupsApi";
 import { getStudentsFromGroup } from "@/lib/studentApi";
@@ -13,6 +13,8 @@ import { AddStudentModal } from "@/components/students/AddStudentModal";
 import { ImportStudentsModal } from "@/components/students/ImportStudentsModal";
 import { formatDateToYYYYMMDD } from "@/lib/utils/formatDate";
 import { StopAllModal } from "@/components/resources/StopAllModal";
+import { AddResourceModal } from "@/components/resources/AddResourceModal";
+import Pagination from "@/components/pagination/Pagination";
 
 const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
 
@@ -26,6 +28,12 @@ export default function GroupPage({ params }) {
   const [error, setError] = useState(null);
   const [isOpenStudent, setIsOpenStudent] = useState(false);
   const [isOpenImport, setIsOpenImport] = useState(false);
+  const [isOpenResource, setIsOpenResource] = useState(false);
+  const [isOpenStopAll, setIsOpenStopAll] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -34,19 +42,42 @@ export default function GroupPage({ params }) {
     if (activeTab === "Ogólne") {
       getGroupById(groupId)
         .then((data) => {
-          setGroupData(data);
+          console.log(data);
+          setGroupData({
+            name: data.name,
+            lecturers: data.lecturers || [],
+            lecturerFullNames: data.lecturerFullNames || "",
+            startDate: formatDateToYYYYMMDD(data.startDate),
+            endDate: formatDateToYYYYMMDD(data.endDate),
+            status: data.status,
+          });
         })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
     }
 
     if (activeTab === "Studenci") {
-      getStudentsFromGroup(groupId)
-        .then((data) => setStudentsData(data.content || []))
+      getStudentsFromGroup({ groupId, page, pageSize })
+        .then((data) => {
+          setStudentsData(data.content || []);
+          setTotalPages(data.totalPages || 0);
+        })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
     }
-  }, [activeTab, groupId]);
+    if (activeTab === "Usługi") {
+      getResourcesGroup(groupId)
+        .then((data) => setResourcesData(data || []))
+        .catch((error) => setError(error.message))
+        .finally(() => setLoading(false));
+    }
+  }, [activeTab, groupId, page, pageSize]);
+
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    setPage(0);
+    setPageSize(10);
+  };
 
   const handleChange = (fieldName) => (event) => {
     const newValue = event.target.value;
@@ -68,8 +99,17 @@ export default function GroupPage({ params }) {
 
   return (
     <div className="min-w-120">
-      <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
-
+      <div className="flex justify-between items-center">
+        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
+        {activeTab === "Ogólne" && (
+          <Button
+            color={editing ? "bg-green-500" : "bg-purple"}
+            onClick={handleEditClick}
+          >
+            {editing ? "Zapisz" : "Edytuj"}
+          </Button>
+        )}
+      </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
 
       {/* Ogólne */}
@@ -169,15 +209,24 @@ export default function GroupPage({ params }) {
             />
 
             {studentsData.length > 0 ? (
-              <Table
-                columns={[
-                  { key: "login", header: "ID" },
-                  { key: "firstName", header: "Imię" },
-                  { key: "lastName", header: "Nazwisko" },
-                  { key: "email", header: "Mail" },
-                ]}
-                data={studentsData}
-              />
+              <>
+                <Table
+                  columns={[
+                    { key: "login", header: "ID" },
+                    { key: "firstName", header: "Imię" },
+                    { key: "lastName", header: "Nazwisko" },
+                    { key: "email", header: "Mail" },
+                  ]}
+                  data={studentsData}
+                />
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
+                />{" "}
+              </>
             ) : (
               <div>Brak studentów w tej grupie.</div>
             )}

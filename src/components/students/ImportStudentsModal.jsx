@@ -1,9 +1,9 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "../Buttons";
+import { Button } from "../utils/Buttons";
 import { addStudentsToGroup } from "@/lib/studentApi";
-import Basic from "../DragDrop";
+import Basic from "../utils/DragDrop";
 
 export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
   const dialogRef = useRef(null);

@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getGroups } from "@/lib/groupsApi";
-import Tabs from "@/components/Tabs";
-import Table from "@/components/Table";
+import Tabs from "@/components/utils/Tabs";
+import Table from "@/components/table/Table";
 import { FaPlus } from "react-icons/fa";
 import AddGroupModal from "@/components/group/AddGroupModal";
+import Pagination from "@/components/pagination/Pagination";
 
 const TABS = [
   { key: "ACTIVE", label: "Aktywne" },
@@ -28,28 +29,39 @@ export default function GroupsPage() {
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getGroups(activeTab)
+    getGroups({ status: activeTab, page, pageSize })
       .then((data) => {
         setGroups(data.content);
+        setTotalPages(data.totalPages);
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
         setError(error.message);
       });
-  }, [activeTab]);
+  }, [activeTab, page, pageSize]);
 
   const tableData = groups.map((group, idx) => ({
     ...group,
     id: idx + 1,
   }));
 
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    setPage(0);
+    setPageSize(10);
+  };
+
   return (
     <div className="min-w-120">
-      <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+      <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 
       <div className="flex items-center justify-between mb-5">
         {activeTab === "ACTIVE" && (
@@ -66,7 +78,7 @@ export default function GroupsPage() {
       <AddGroupModal isOpen={isOpen} setIsOpen={setIsOpen} />
 
       {error && <div className="text-red-600 mb-4">{error}</div>}
-      {tableData.length === 0 && !loading && (
+      {!loading && groups.length === 0 && (
         <div className="text-gray-500">Brak grup do wyświetlenia</div>
       )}
 
@@ -74,8 +86,18 @@ export default function GroupsPage() {
         <div>Ładowanie...</div>
       ) : (
         !error &&
-        tableData.length > 0 && (
-          <Table columns={columns} data={tableData} whereNavigate="groups" />
+        groups.length > 0 && (
+          <>
+            <Table columns={columns} data={tableData} whereNavigate="groups" />
+
+            <Pagination
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+            />
+          </>
         )
       )}
     </div>
