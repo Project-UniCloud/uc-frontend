@@ -6,6 +6,7 @@ import Table from "@/components/table/Table";
 import { FaPlus } from "react-icons/fa";
 import AddGroupModal from "@/components/group/AddGroupModal";
 import Pagination from "@/components/pagination/Pagination";
+import { IoIosSearch } from "react-icons/io";
 
 const TABS = [
   { key: "ACTIVE", label: "Aktywne" },
@@ -32,11 +33,12 @@ export default function GroupsPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getGroups({ status: activeTab, page, pageSize })
+    getGroups({ status: activeTab, page, pageSize, groupName: search })
       .then((data) => {
         setGroups(data.content);
         setTotalPages(data.totalPages);
@@ -46,7 +48,7 @@ export default function GroupsPage() {
         setLoading(false);
         setError(error.message);
       });
-  }, [activeTab, page, pageSize]);
+  }, [activeTab, page, pageSize, search]);
 
   const tableData = groups.map((group, idx) => ({
     ...group,
@@ -57,13 +59,19 @@ export default function GroupsPage() {
     setActiveTab(tabKey);
     setPage(0);
     setPageSize(10);
+    setSearch("");
+  };
+
+  const onSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(0);
   };
 
   return (
     <div className="min-w-120">
       <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center gap-5 mb-5">
         {activeTab === "ACTIVE" && (
           <button
             className="bg-purple hover:opacity-70 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1 cursor-pointer"
@@ -73,6 +81,14 @@ export default function GroupsPage() {
             Dodaj Grupę
           </button>
         )}
+
+        <input
+          type="text"
+          placeholder="Szukaj grupy"
+          value={search}
+          onChange={onSearchChange}
+          className="border border-gray-300 rounded-lg px-3 py-1.5 text-md"
+        />
       </div>
 
       <AddGroupModal isOpen={isOpen} setIsOpen={setIsOpen} />

@@ -6,7 +6,7 @@ export default function Table({ columns, data, whereNavigate }) {
   return (
     <table className="w-full text-sm">
       <thead>
-        <tr className="bg-gray-100">
+        <tr className="bg-white">
           {columns.map((col) => (
             <th key={col.key} className="p-2 text-center align-middle">
               {col.header}
@@ -18,10 +18,8 @@ export default function Table({ columns, data, whereNavigate }) {
         {data.map((row, idx) => (
           <tr
             key={row.id || idx}
-            className={`odd:bg-gray-50 ${
-              whereNavigate
-                ? "cursor-pointer hover:bg-purple-50 transition"
-                : ""
+            className={`odd:bg-gray-100 ${
+              whereNavigate ? "cursor-pointer hover:bg-gray-200 transition" : ""
             }`}
             onClick={
               whereNavigate

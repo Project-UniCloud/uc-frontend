@@ -30,9 +30,9 @@ export default function GroupPage({ params }) {
   const [groupData, setGroupData] = useState({
     name: "",
     lecturers: [],
-    lecturerFullNames: [],
     startDate: "",
     endDate: "",
+    description: "",
     status: "",
   });
   const [studentsData, setStudentsData] = useState([]);
@@ -55,17 +55,18 @@ export default function GroupPage({ params }) {
     if (activeTab === "Ogólne") {
       getGroupById(groupId)
         .then((data) => {
-          const ids = data.lecturerFullNames.map((l) => l.userId);
-          const names = data.lecturerFullNames.map(
-            (l) => `${l.firstName} ${l.lastName}`
-          );
+          console.log("Group data:", data);
+          const teachers = data.lecturerFullNames.map((l) => ({
+            id: l.userId,
+            fullName: `${l.firstName} ${l.lastName}`,
+          }));
 
           setGroupData({
             name: data.name,
-            lecturers: ids || [],
-            lecturerFullNames: names || "",
+            lecturers: teachers,
             startDate: formatDateToYYYYMMDD(data.startDate),
             endDate: formatDateToYYYYMMDD(data.endDate),
+            description: data.description || "",
             status: data.status,
           });
         })
@@ -76,6 +77,7 @@ export default function GroupPage({ params }) {
     if (activeTab === "Studenci") {
       getStudentsFromGroup({ groupId, page, pageSize })
         .then((data) => {
+          console.log("Students data:", data);
           setStudentsData(data.content || []);
           setTotalPages(data.totalPages || 0);
         })
@@ -101,53 +103,54 @@ export default function GroupPage({ params }) {
     setGroupData((prev) => ({ ...prev, [fieldName]: newValue }));
   };
 
-  const handleLecturerChange = (teacher) => {
-    setGroupData((prev) => ({
-      ...prev,
-      lecturers: [teacher.userId],
-      lecturerFullNames: teacher.label,
-    }));
-  };
-
   const handleEditClick = async () => {
     if (editing) {
       setError(null);
+      console.log(
+        "Updating group with data:",
+        groupData.name,
+        groupData.lecturers,
+        formatDateToDDMMYYYY(groupData.startDate),
+        formatDateToDDMMYYYY(groupData.endDate),
+        groupData.description || ""
+      );
       try {
         const updated = await updateGroup(groupId, {
           name: groupData.name,
-          lecturers: groupData.lecturers,
+          lecturers: groupData.lecturers.map((t) => t.id),
           startDate: formatDateToDDMMYYYY(groupData.startDate),
           endDate: formatDateToDDMMYYYY(groupData.endDate),
+          description: groupData.description || "",
         });
         setGroupData((prev) => ({ ...prev, ...updated }));
+        console.log("groupData after update:", groupData);
       } catch (error) {
         setError(error.message);
       } finally {
-        setEditing(false);
+        if (!error) {
+          setEditing(false);
+        }
       }
     } else {
       setEditing(true);
     }
   };
 
-  const handleLecturerAdd = (teacher) => {
-    setGroupData((g) => {
-      if (g.lecturers.includes(teacher.id)) return g;
-      return {
-        ...g,
-        lecturers: [...g.lecturers, teacher.id],
-        lecturerFullNames: [...g.lecturerFullNames, teacher.fullName],
-      };
-    });
-  };
-  const handleLecturerRemove = (idToRemove) => {
-    setGroupData((g) => ({
-      ...g,
-      lecturers: g.lecturers.filter((id) => id !== idToRemove),
-      lecturerFullNames: g.lecturerFullNames.filter(
-        (_, i) => g.lecturers[i] !== idToRemove
-      ),
+  const handleLecturerAdd = (t) => {
+    setGroupData((prev) => ({
+      ...prev,
+      lecturers: prev.lecturers.some((x) => x.id === t.id)
+        ? prev.lecturers
+        : [...prev.lecturers, t],
     }));
+  };
+  const handleLecturerRemove = (id) => {
+    setGroupData((prev) => ({
+      ...prev,
+      lecturers: prev.lecturers.filter((t) => t.id !== id),
+    }));
+    console.log("Removed lecturer with ID:", id);
+    console.log("Updated lecturers:", groupData.lecturers);
   };
 
   return (
@@ -169,87 +172,106 @@ export default function GroupPage({ params }) {
         (loading ? (
           <div>Ładowanie...</div>
         ) : (
-          <div
-            className="grid lg:max-w-3xl md:max-w-xl max-w-xs m-auto gap-10
+          <>
+            <div
+              className="grid lg:max-w-3xl md:max-w-xl max-w-xs m-auto gap-x-15 gap-y-5
                           grid-cols-1 md:grid-cols-2 md:grid-rows-3"
-          >
-            <InputForm
-              label="Nazwa"
-              name="name"
-              value={groupData.name}
-              onChange={handleChange("name")}
-              disabled={!editing}
-            />
-            <TeacherSearchInput
-              value={groupData.lecturerFullNames}
-              label="Prowadzący"
-              disabled={!editing}
-              onSelect={handleLecturerAdd}
-              onRemove={handleLecturerRemove}
-            />
-            <InputForm
-              label="Data rozpoczęcia"
-              name="startDate"
-              type="date"
-              value={groupData.startDate}
-              onChange={handleChange("startDate")}
-              disabled={!editing}
-            />
-            <InputForm
-              label="Data zakończenia"
-              name="endDate"
-              type="date"
-              value={groupData.endDate}
-              onChange={handleChange("endDate")}
-              disabled={!editing}
-            />
-            <InputForm
-              label="Status"
-              name="status"
-              colors={
-                groupData.status === "Aktywna"
-                  ? "text-green-400"
-                  : groupData.status === "Nieaktywna"
-                  ? "text-gray-400"
-                  : "text-orange-400"
-              }
-              center
-              value={groupData.status}
-              disabled
-            />
-            <Button
-              label={
-                groupData.status === "Aktywna"
+            >
+              <InputForm
+                label="Nazwa"
+                name="name"
+                value={groupData.name}
+                onChange={handleChange("name")}
+                disabled={!editing}
+              />
+              <TeacherSearchInput
+                value={groupData.lecturers}
+                label="Prowadzący"
+                disabled={!editing}
+                onSelect={handleLecturerAdd}
+                onRemove={handleLecturerRemove}
+              />
+              <InputForm
+                label="Data rozpoczęcia"
+                name="startDate"
+                type="date"
+                value={groupData.startDate}
+                onChange={handleChange("startDate")}
+                disabled={!editing}
+              />
+              <InputForm
+                label="Data zakończenia"
+                name="endDate"
+                type="date"
+                value={groupData.endDate}
+                onChange={handleChange("endDate")}
+                disabled={!editing}
+              />
+              <InputForm
+                label="Status"
+                name="status"
+                colors={
+                  groupData.status === "Aktywna"
+                    ? "text-green-400"
+                    : groupData.status === "Nieaktywna"
+                    ? "text-gray-400"
+                    : "text-orange-400"
+                }
+                center
+                value={groupData.status}
+                disabled
+              />
+              <Button
+                label={
+                  groupData.status === "Aktywna"
+                    ? "Archiwizuj"
+                    : groupData.status === "Nieaktywna"
+                    ? "Aktywuj"
+                    : "Usuń"
+                }
+                color={
+                  groupData.status === "Aktywna"
+                    ? "bg-orange-400"
+                    : groupData.status === "Nieaktywna"
+                    ? "bg-green-400"
+                    : "bg-red-400"
+                }
+                center
+              >
+                {groupData.status === "Aktywna" && (
+                  <FiArchive className="text-lg" />
+                )}
+                {groupData.status === "Zarchiwizowana" && (
+                  <CiPause1 className="text-lg" />
+                )}
+                {groupData.status === "Nieaktywna" && (
+                  <IoPlayCircleOutline className="text-lg" />
+                )}
+                {groupData.status === "Aktywna"
                   ? "Archiwizuj"
                   : groupData.status === "Nieaktywna"
                   ? "Aktywuj"
-                  : "Usuń"
-              }
-              color={
-                groupData.status === "Aktywna"
-                  ? "bg-orange-400"
-                  : groupData.status === "Nieaktywna"
-                  ? "bg-green-400"
-                  : "bg-red-400"
-              }
-              center
-            >
-              {groupData.status === "Aktywna" && (
-                <FiArchive className="text-lg" />
-              )}
-              {groupData.status === "Zarchiwizowana" && (
-                <CiPause1 className="text-lg" />
-              )}
-              {groupData.status === "Nieaktywna" && (
-                <IoPlayCircleOutline className="text-lg" />
-              )}
-              {groupData.status === "Aktywna"
-                ? "Archiwizuj"
-                : groupData.status === "Nieaktywna"
-                ? "Aktywuj"
-                : "Usuń"}
-            </Button>
-          </div>
+                  : "Usuń"}
+              </Button>
+            </div>
+            <div className=" flex flex-col items-center justify-center mt-5">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium mb-1"
+              >
+                Uwagi
+              </label>
+              <textarea
+                name="description"
+                id="description"
+                placeholder="Opis"
+                className="w-200 m-auto border border-gray-400 rounded-lg px-3 py-2 min-h-[80px]"
+                rows={5}
+                defaultValue={groupData.description || ""}
+                onChange={handleChange("description")}
+              />
+            </div>
+          </>
         ))}
       {/* Studenci */}
       {activeTab === "Studenci" &&
