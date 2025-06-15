@@ -1,82 +1,70 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getLecturers } from "@/lib/lecturersApi";
-import Tabs from "@/components/Tabs";
 import Table from "@/components/Table";
-import { FaPlus } from "react-icons/fa";
 import AddLecturerModal from "@/components/lecturer/AddLecturerModal";
-
-const TABS = [
-  { key: "ACTIVE", label: "Aktywni" },
-  { key: "ARCHIVED", label: "Zarchiwizowani" },
-  { key: "INACTIVE", label: "Nieaktywni" },
-];
+import { Button } from "@/components/Buttons";
+import { FaPlus } from "react-icons/fa";
 
 const columns = [
-  { key: "id", header: "ID" },
-  { key: "login", header: "Login" },
+  { key: "userIndexNumber", header: "ID" },
   { key: "firstName", header: "Imię" },
   { key: "lastName", header: "Nazwisko" },
   { key: "email", header: "Mail" },
-  { key: "status", header: "Status" },
 ];
 
-export default function LecturersPage() {
-  const [activeTab, setActiveTab] = useState("ACTIVE");
+export default function ListLecturersPage() {
   const [lecturers, setLecturers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // <- DOMYŚLNIE FALSE
+  const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
+  const fetchLecturers = () => {
     setLoading(true);
     setError(null);
-    getLecturers(activeTab)
+    getLecturers(searchQuery)
       .then((data) => {
         setLecturers(data.content || []);
         setLoading(false);
       })
       .catch((error) => {
-        setLoading(false);
         setError(error.message);
+        setLoading(false);
       });
-  }, [activeTab]);
+  };
 
-  const tableData = lecturers.map((lecturer, idx) => ({
-    ...lecturer,
-    id: idx + 1,
-  }));
+  useEffect(() => {
+    fetchLecturers();
+    // eslint-disable-next-line
+  }, [searchQuery]);
 
   return (
-    <div className="min-w-120">
-      <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
-
-      <div className="flex items-center justify-between mb-5">
-        {activeTab === "ACTIVE" && (
-          <button
-            className="bg-purple hover:opacity-70 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1 cursor-pointer"
-            onClick={() => setIsOpen(true)}
-          >
-            <FaPlus />
-            Dodaj Prowadzącego
-          </button>
-        )}
+    <div className="p-8 min-w-120">
+      <h1 className="text-2xl font-bold mb-6">Lista prowadzących</h1>
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="primary" onClick={() => setIsOpen(true)}>
+          <FaPlus className="mr-2" />
+          Dodaj
+        </Button>
+        <input
+          type="text"
+          placeholder="Szukaj"
+          className="w-72 px-4 py-2 border border-gray-300 rounded-lg"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
       </div>
-
-      <AddLecturerModal isOpen={isOpen} setIsOpen={setIsOpen} />
-
+      <AddLecturerModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        onLecturerAdded={fetchLecturers}
+      />
       {error && <div className="text-red-600 mb-4">{error}</div>}
-      {tableData.length === 0 && !loading && (
-        <div className="text-gray-500">Brak prowadzących do wyświetlenia</div>
-      )}
-
       {loading ? (
         <div>Ładowanie...</div>
       ) : (
-        !error &&
-        tableData.length > 0 && (
-          <Table columns={columns} data={tableData} whereNavigate="list-lecturers" />
-        )
+        <Table columns={columns} data={lecturers} />
       )}
     </div>
   );

@@ -4,128 +4,132 @@ import { useMutation } from "@tanstack/react-query";
 import { addLecturer } from "@/lib/lecturersApi";
 import InputForm from "../InputForm";
 import { Button } from "../Buttons";
+import { FaCheck } from "react-icons/fa";
 
-export default function AddLecturerModal({ isOpen, setIsOpen }) {
+export default function AddLecturerModal({ isOpen, setIsOpen, onLecturerAdded }) {
+  // JEŚLI MODAL NIE POWINIEN BYĆ WIDOCZNY, NIE RENDERUJEMY NIC
+  if (!isOpen) return null;
+
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
+  const [formValues, setFormValues] = useState({
+    firstName: "",
+    lastName: "",
+    userIndexNumber: "",
+  });
+
+  // Autogenerowany mail na podstawie indexu
+  const generatedEmail = formValues.userIndexNumber
+    ? `${formValues.userIndexNumber}@st.amu.edu.pl`
+    : "";
+
+  // Obsługa inputów
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+  };
 
   const mutation = useMutation({
     mutationFn: (lecturerData) => addLecturer(lecturerData),
     onSuccess: () => {
       formRef.current?.reset();
       setFormErrors({});
+      setFormValues({
+        firstName: "",
+        lastName: "",
+        userIndexNumber: "",
+      });
       setIsOpen(false);
+      if (onLecturerAdded) onLecturerAdded();
     },
     onError: (error) =>
       setFormErrors({ error: error.message || "Błąd dodawania prowadzącego" }),
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      dialogRef.current?.showModal();
-    } else {
-      dialogRef.current?.close();
-    }
-  }, [isOpen]);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const firstName = formData.get("firstName");
-    const lastName = formData.get("lastName");
-    const email = formData.get("email");
-    const login = formData.get("login");
-
-    const lecturerData = {
-      firstName,
-      lastName,
-      email,
-      login,
-    };
-
-    mutation.mutate(lecturerData);
-  }
-
+  // Zamykanie modala na X
   function handleClose() {
     setIsOpen(false);
   }
 
+  // Wyślij tylko wymagane dane
+  function handleSubmit(e) {
+    e.preventDefault();
+    const { firstName, lastName, userIndexNumber } = formValues;
+    mutation.mutate({ firstName, lastName, userIndexNumber });
+  }
+
+  // NIE używamy <dialog>, tylko klasyczny div-modal (jest czytelniej i bez bugów)
   return (
-    <dialog
-      ref={dialogRef}
-      className="rounded-2xl shadow-xl w-full max-w-lg p-0 m-auto"
-      onClose={handleClose}
-    >
-      <form method="dialog" className="relative p-6" onSubmit={handleSubmit} ref={formRef}>
-        <div className="flex items-start justify-between">
-          <h2 className="text-xl font-semibold mb-6">Dodaj prowadzącego</h2>
-          <button
-            type="button"
-            className="text-gray-500 hover:text-black cursor-pointer"
-            onClick={handleClose}
-          >
-            <X />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+      <div className="relative bg-white rounded-2xl shadow-2xl p-10 w-[500px] max-w-[95vw] mx-auto flex flex-col items-center">
+        <button
+          onClick={handleClose}
+          className="absolute top-5 right-5 text-gray-400 hover:text-gray-700"
+          tabIndex={0}
+        >
+          <X size={26} />
+        </button>
+        <h2 className="text-2xl font-extrabold mb-8 w-full text-center">
+          Wprowadź dane prowadzącego
+        </h2>
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="w-full flex flex-col gap-8"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             <InputForm
+              label="Imię"
               name="firstName"
-              placeholder="Jan"
-              label="Imię*"
               type="text"
               required
+              value={formValues.firstName}
+              onChange={handleInputChange}
+              error={formErrors.firstName}
             />
-          </div>
-          <div>
             <InputForm
+              label="Nazwisko"
               name="lastName"
-              placeholder="Kowalski"
-              label="Nazwisko*"
               type="text"
               required
+              value={formValues.lastName}
+              onChange={handleInputChange}
+              error={formErrors.lastName}
             />
-          </div>
-          <div>
             <InputForm
-              name="login"
-              placeholder="jkowalski"
-              label="Login*"
+              label="ID"
+              name="userIndexNumber"
+              type="text"
               required
+              value={formValues.userIndexNumber}
+              onChange={handleInputChange}
+              error={formErrors.userIndexNumber}
             />
-          </div>
-          <div>
             <InputForm
+              label="Mail"
               name="email"
-              placeholder="jan.kowalski@example.com"
-              label="Mail*"
               type="email"
-              required
+              disabled
+              value={generatedEmail}
             />
           </div>
-        </div>
 
-        {formErrors.error && (
-          <div className="text-red-600">{formErrors.error}</div>
-        )}
+          {formErrors.error && (
+            <div className="text-red-500 text-sm text-center">{formErrors.error}</div>
+          )}
 
-        <div className="flex justify-end gap-4 pt-4">
           <Button
-            type="button"
-            onClick={handleClose}
-            color="bg-white"
-            textColor="text-black"
-            className="border border-black"
+            type="submit"
+            variant="primary"
+            disabled={mutation.isPending}
+            className="mt-6 w-full py-3 text-lg font-semibold flex items-center justify-center"
           >
-            Anuluj
+            <FaCheck className="mr-2" />
+            {mutation.isPending ? "Dodawanie..." : "DODAJ"}
           </Button>
-          <Button type="submit" disabled={mutation.isLoading}>
-            {mutation.isLoading ? "Wysyłanie..." : "Zatwierdź"}
-          </Button>
-        </div>
-      </form>
-    </dialog>
+        </form>
+      </div>
+    </div>
   );
-} 
+}

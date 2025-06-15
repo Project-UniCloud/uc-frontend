@@ -1,27 +1,29 @@
-import { getApi, postApi, patchApi, deleteApi } from "./utils/apiClient";
+import { getApi, postApi } from "./utils/apiClient";
 
-export async function getLecturers(status = "ACTIVE") {
-  const path = `/users/lecturers?status=${status}`;
+export async function getLecturers(searchQuery) {
+  const path = `/users/lecturers${
+    searchQuery ? `?lecturerFirstOrLastName=${searchQuery}` : ""
+  }`;
   return await getApi(path, "Nieudane pobieranie prowadzących");
-}
-
-export async function getLecturerById(lecturerId) {
-  const path = `/users/lecturers/${lecturerId}`;
-  return await getApi(path, "Nieudane pobieranie prowadzącego");
 }
 
 export async function addLecturer(lecturerData) {
   return await postApi("/users/lecturers", lecturerData, "Nieudane dodanie prowadzącego");
 }
 
+export async function getLecturerById(lecturerId) {
+  return await getApi(`/users/${lecturerId}`, "Nieudane pobieranie prowadzącego");
+}
+
+// TODO: Implement these endpoints when backend is ready
 export async function updateLecturer(lecturerId, lecturerData) {
-  const path = `/users/lecturers/${lecturerId}`;
-  return await patchApi(path, lecturerData, "Nieudane aktualizowanie prowadzącego");
+  console.log("Update lecturer not implemented yet:", lecturerId, lecturerData);
+  return Promise.reject(new Error("Update lecturer not implemented yet"));
 }
 
 export async function deleteLecturer(lecturerId) {
-  const path = `/users/lecturers/${lecturerId}`;
-  return await deleteApi(path, "Nieudane usunięcie prowadzącego");
+  console.log("Delete lecturer not implemented yet:", lecturerId);
+  return Promise.reject(new Error("Delete lecturer not implemented yet"));
 }
 
 export async function archiveLecturer(lecturerId) {
@@ -30,6 +32,9 @@ export async function archiveLecturer(lecturerId) {
 }
 
 export async function activateLecturer(lecturerId) {
-  const path = `/users/lecturers/${lecturerId}/activate`;
-  return await postApi(path, {}, "Nieudane aktywowanie prowadzącego");
+  return await postApi(
+    `/users/lecturers/${lecturerId}/activate`,
+    {},
+    "Nieudane aktywowanie prowadzącego"
+  );
 } 
