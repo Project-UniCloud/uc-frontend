@@ -26,6 +26,7 @@ export default function InputForm({
           type={showPassword ? "text" : type}
           placeholder={placeholder}
           className="w-full mt-1 p-2 rounded bg-gray-100 pr-10 placeholder:text-[#808080] text-black placeholder:text-sm"
+          data-cy={`input-${name}`}
           {...props}
         />
         {type == "password" && (
