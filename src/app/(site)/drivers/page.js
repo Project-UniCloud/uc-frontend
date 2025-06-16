@@ -4,11 +4,12 @@ import { getDrivers } from "@/lib/driversApi";
 import Table from "@/components/table/Table";
 import Pagination from "@/components/pagination/Pagination";
 import { useRef } from "react";
+import { getCloudAccesses } from "@/lib/cloudApi";
 
 const columns = [
-  { key: "name", header: "Nazwa" },
+  { key: "cloudAccessClientName", header: "Nazwa" },
   { key: "costLimit", header: "Limit Kosztu" },
-  { key: "clean", header: "Wyczyść" },
+  { key: "defaultCronExpression", header: "Wyczyść" },
 ];
 
 export default function GroupsPage() {
@@ -19,14 +20,12 @@ export default function GroupsPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
-  const [search, setSearch] = useState("");
-
-  const inputRef = useRef(null);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getDrivers({ page, pageSize, driverName: search })
+
+    getCloudAccesses({ page, pageSize })
       .then((data) => {
         setDrivers(data.content);
         setTotalPages(data.totalPages);
@@ -36,35 +35,15 @@ export default function GroupsPage() {
         setLoading(false);
         setError(error.message);
       });
-  }, [page, pageSize, search]);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [search]);
+  }, [page, pageSize]);
 
   const tableData = drivers.map((driver, idx) => ({
     ...driver,
     id: idx + 1,
   }));
 
-  const onSearchChange = (event) => {
-    setSearch(event.target.value);
-    setPage(0);
-  };
-
   return (
-    <div className="min-w-120">
-      <div className="flex items-center gap-5 mb-5">
-        <input
-          type="text"
-          ref={inputRef}
-          placeholder="Szukaj sterownika"
-          value={search}
-          onChange={onSearchChange}
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-md"
-        />
-      </div>
-
+    <div className="min-w-120 mt-15">
       {error && <div className="text-red-600 mb-4">{error}</div>}
       {!loading && drivers.length === 0 && (
         <div className="text-gray-500">Brak sterowników do wyświetlenia</div>
@@ -76,7 +55,12 @@ export default function GroupsPage() {
         !error &&
         drivers.length > 0 && (
           <>
-            <Table columns={columns} data={tableData} />
+            <Table
+              columns={columns}
+              data={tableData}
+              whereNavigate="drivers"
+              idKey={"cloudAccessClientId"}
+            />
 
             <Pagination
               page={page}

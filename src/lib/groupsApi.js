@@ -1,12 +1,15 @@
 import { getApi, postApi, patchApi } from "./utils/apiClient";
 
 export async function getGroups({
-  status,
+  status = "",
   page = 0,
   pageSize = 10,
   groupName = "",
+  cloudClientId = "",
 }) {
-  const path = `/groups?page=${page}&pageSize=${pageSize}&status=${status}&groupName=${groupName}`;
+  const path = `/groups?page=${page}&pageSize=${pageSize}&status=${status}&groupName=${groupName}&${
+    cloudClientId && `cloudClientId=${cloudClientId}`
+  }`;
   return await getApi(path, "Nieudane pobieranie grup");
 }
 

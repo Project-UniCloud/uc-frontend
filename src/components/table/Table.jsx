@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 
-export default function Table({ columns, data, whereNavigate }) {
+export default function Table({ columns, data, whereNavigate, idKey }) {
   const router = useRouter();
 
   return (
@@ -23,7 +23,7 @@ export default function Table({ columns, data, whereNavigate }) {
             }`}
             onClick={
               whereNavigate
-                ? () => router.push(`${whereNavigate}/${row.groupId}`)
+                ? () => router.push(`${whereNavigate}/${row[idKey]}`)
                 : undefined
             }
           >

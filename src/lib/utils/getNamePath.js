@@ -50,6 +50,9 @@ export function useNamePath() {
       if (isDetailsPath(parts, "groups")) {
         namePath = "Informacje o grupie";
       }
+      if (parts[parts.length - 2] === "drivers") {
+        return "Informacje o sterowniku";
+      }
       break;
   }
   return namePath;

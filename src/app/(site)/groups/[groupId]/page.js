@@ -10,6 +10,7 @@ import { getStudentsFromGroup } from "@/lib/studentApi";
 import { FaPlus } from "react-icons/fa";
 import { AddStudentModal } from "@/components/students/AddStudentModal";
 import { ImportStudentsModal } from "@/components/students/ImportStudentsModal";
+import { CiPause1 } from "react-icons/ci";
 import {
   formatDateToYYYYMMDD,
   formatDateToDDMMYYYY,
@@ -20,7 +21,6 @@ import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import Pagination from "@/components/pagination/Pagination";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
-import { set } from "zod";
 
 const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
 
@@ -296,8 +296,8 @@ export default function GroupPage({ params }) {
       {activeTab === "Usługi" && (
         <>
           <div className="flex items-center gap-5 mb-5">
-            <Button onClick={() => setIsOpenStopAll(true)}>
-              <FaPlus /> Zawieś wszystko
+            <Button onClick={() => setIsOpenStopAll(true)} color="bg-orange">
+              <CiPause1 /> Zawieś wszystko
             </Button>
             <Button onClick={() => setIsOpenResource(true)}>
               <FaPlus /> Dodaj usługę

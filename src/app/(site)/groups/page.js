@@ -124,7 +124,12 @@ export default function GroupsPage() {
         !error &&
         groups.length > 0 && (
           <>
-            <Table columns={columns} data={tableData} whereNavigate="groups" />
+            <Table
+              columns={columns}
+              data={tableData}
+              whereNavigate="groups"
+              idKey={"groupId"}
+            />
 
             <Pagination
               page={page}

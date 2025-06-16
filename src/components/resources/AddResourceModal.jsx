@@ -49,7 +49,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
     setLoading(true);
     getCloudAccesses(groupId)
       .then((data) => {
-        setDriversData(data);
+        setDriversData(data.content);
       })
       .catch((error) => setError(error.message))
       .finally(() => setLoading(false));
@@ -109,8 +109,11 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
             <option value="">Wybierz sterownik</option>
             {driversData.map((driver) => {
               return (
-                <option key={driver.value} value={driver.value}>
-                  {driver.value}
+                <option
+                  key={driver.cloudAccessClientId}
+                  value={driver.cloudAccessClientId}
+                >
+                  {driver.cloudAccessClientId}
                 </option>
               );
             })}
