@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "../Buttons";
+import { Button } from "../utils/Buttons";
 import { CiPause1 } from "react-icons/ci";
 
 export function StopAllModal({ isOpen, setIsOpen }) {
@@ -11,9 +11,11 @@ export function StopAllModal({ isOpen, setIsOpen }) {
 
   //   const mutation = useMutation({
   //     mutationFn: ({ groupId }) => stopResourcesGroup(groupId),
+  //     mutationFn: ({ groupId }) => stopResourcesGroup(groupId),
   //     onSuccess: () => setIsOpen(false),
   //     onError: (error) =>
   //       setErrors({
+  //         error: error.message || "Błąd wstrzymywania usług grupy",
   //         error: error.message || "Błąd wstrzymywania usług grupy",
   //       }),
   //   });
@@ -46,11 +48,14 @@ export function StopAllModal({ isOpen, setIsOpen }) {
         </button>
       </div>
       <h2 className="text-xl font-semibold mb-10 text-center">
+      <h2 className="text-xl font-semibold mb-10 text-center">
         Wstrzymanie wszystkich usług
       </h2>
       <p className="text-gray-600 mb-6 text-center text-xl ">
+      <p className="text-gray-600 mb-6 text-center text-xl ">
         Czy jesteś pewny, że chcesz wstrzymać wszystkie usługi?
       </p>
+      {errors.error && <div className="text-red-600">{errors.error}</div>}
       {errors.error && <div className="text-red-600">{errors.error}</div>}
       <div className="flex justify-end items-center gap-4 pt-10">
         <Button
@@ -64,13 +69,17 @@ export function StopAllModal({ isOpen, setIsOpen }) {
         </Button>
         <Button
           color="bg-[#CD6200]"
+          color="bg-[#CD6200]"
           type="submit"
           // disabled={mutation.isLoading}
+          // disabled={mutation.isLoading}
           //   onClick={() => {
+          //     mutation.mutate({groupId});
           //     mutation.mutate({groupId});
           //   }}
         >
           {/* {mutation.isLoading ? "Wstrzymywanie..." : "Wstrzymaj"} */}
+          <CiPause1 />
           <CiPause1 />
           Wstrzymaj
         </Button>

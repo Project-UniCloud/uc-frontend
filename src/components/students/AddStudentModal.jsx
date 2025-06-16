@@ -1,15 +1,26 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import InputForm from "../InputForm";
-import { Button } from "../Buttons";
+import InputForm from "../utils/InputForm";
+import { Button } from "../utils/Buttons";
 import { addStudentToGroup } from "@/lib/studentApi";
 import React from "react";
+import { showErrorToast, showSuccessToast } from "../utils/Toast";
+import { z } from "zod";
 
 export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
+
+  const studentSchema = z.object({
+    firstName: z.string().nonempty("Imię jest wymagane"),
+    lastName: z.string().nonempty("Nazwisko jest wymagane"),
+    login: z
+      .string()
+      .regex(/^s\d{6}$/, 'Indeks musi zaczynać się od "s" i mieć 6 cyfr'),
+    email: z.string().email("Nieprawidłowy format e-maila"),
+  });
 
   const mutation = useMutation({
     mutationFn: ({ groupId, studentData }) =>
@@ -18,11 +29,19 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
       formRef.current?.reset();
       setFormErrors({});
       setIsOpen(false);
+<<<<<<< HEAD
+      showSuccessToast("Student został dodany do grupy!");
+    },
+    onError: (error) => {
+=======
     },
     onError: (error) =>
+>>>>>>> origin/develop
       setFormErrors({
         error: error.message || "Błąd dodawania studenta do grupy",
       }),
+        showErrorToast("Błąd dodawania studenta do grupy: " + error?.message);
+    },
   });
 
   useEffect(() => {
@@ -131,12 +150,20 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
             onClick={handleClose}
             color="bg-white"
             textColor="text-black"
-            className="border border-black"
+            className={`border border-black ${
+              mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             Anuluj
           </Button>
-          <Button type="submit" disabled={mutation.isLoading}>
-            {mutation.isLoading ? "Wysyłanie..." : "Dodaj studenta"}
+          <Button
+            type="submit"
+            disabled={mutation.isPending}
+            className={`${
+              mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {mutation.isPending ? "Wysyłanie..." : "Dodaj studenta"}
           </Button>
         </div>
       </form>

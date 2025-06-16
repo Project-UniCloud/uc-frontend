@@ -18,7 +18,7 @@ import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <div className="hidden md:w-52 lg:w-60 h-screen bg-purple md:flex flex-col justify-between p-4 text-white">
+    <div className="hidden md:w-52 lg:w-60  bg-purple md:flex flex-col justify-between p-4 text-white">
       <div>
         <Link href="/dashboard">
           <Image
@@ -44,11 +44,13 @@ export default function Sidebar() {
             icon={<FiBell />}
             label="Powiadomienia"
             itemPath="/notifications"
+            disabled
           />
           <SidebarItem
             icon={<FiDollarSign />}
             label="Finanse"
             itemPath="/finances"
+            disabled
           />
           <SidebarItem
             icon={<PiChalkboardTeacherLight />}
@@ -68,13 +70,15 @@ export default function Sidebar() {
           icon={<MdOutlineBugReport />}
           label="Zgłoś błąd"
           itemPath="/report-bug"
+          disabled
         />
         <SidebarItem
           icon={<FiSettings />}
           label="Ustawienia"
           itemPath="/settings"
+          disabled
         />
-        <SidebarItem icon={<FiLogOut />} label="Wyloguj" />
+        <SidebarItem icon={<FiLogOut />} label="Wyloguj" disabled />
       </div>
     </div>
   );
