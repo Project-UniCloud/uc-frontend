@@ -2,11 +2,15 @@ import { useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { addLecturer } from "@/lib/lecturersApi";
-import InputForm from "../InputForm";
+import InputForm from "../utils/InputForm";
 import { Button } from "../Buttons";
 import { FaCheck } from "react-icons/fa";
 
-export default function AddLecturerModal({ isOpen, setIsOpen, onLecturerAdded }) {
+export default function AddLecturerModal({
+  isOpen,
+  setIsOpen,
+  onLecturerAdded,
+}) {
   if (!isOpen) return null;
 
   const formRef = useRef(null);
@@ -112,7 +116,9 @@ export default function AddLecturerModal({ isOpen, setIsOpen, onLecturerAdded })
           </div>
 
           {formErrors.error && (
-            <div className="text-red-500 text-sm text-center">{formErrors.error}</div>
+            <div className="text-red-500 text-sm text-center">
+              {formErrors.error}
+            </div>
           )}
 
           <Button
