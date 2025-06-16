@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { getLecturerById } from "@/lib/lecturersApi";
-import InputForm from "@/components/InputForm";
-import { Button } from "@/components/Buttons";
+import InputForm from "@/components/utils/InputForm";
+import { Button } from "@/components/utils/Buttons";
 import { FaTrash } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 import { useRouter } from "next/navigation";
@@ -101,10 +101,7 @@ export default function LecturerDetailsPage({ params }) {
             </div>
             {/* Uwagi section */}
             <div className="flex flex-col items-center justify-center mt-5">
-              <label
-                htmlFor="uwagi"
-                className="block text-sm font-medium mb-1"
-              >
+              <label htmlFor="uwagi" className="block text-sm font-medium mb-1">
                 Uwagi
               </label>
               <textarea

@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getLecturers } from "@/lib/lecturersApi";
-import Table from "@/components/Table";
+import Table from "@/components/table/Table";
 import AddLecturerModal from "@/components/lecturer/AddLecturerModal";
-import { Button } from "@/components/Buttons";
+import { Button } from "@/components/utils/Buttons";
 import { FaPlus } from "react-icons/fa";
 
 const columns = [
@@ -25,15 +25,15 @@ export default function ListLecturersPage() {
     setError(null);
     getLecturers(searchQuery)
       .then((data) => {
-    // Każdemu wierszowi nadaj 'id' równe 'uuid'
-       const content = (data.content || []).map((item) => ({
-      ...item,
-      id: item.uuid,
-      groupId: item.uuid,        // <-- WAŻNE
-    }));
-    setLecturers(content);
-    setLoading(false);
-  })
+        // Każdemu wierszowi nadaj 'id' równe 'uuid'
+        const content = (data.content || []).map((item) => ({
+          ...item,
+          id: item.uuid,
+          groupId: item.uuid, // <-- WAŻNE
+        }));
+        setLecturers(content);
+        setLoading(false);
+      })
       .catch((error) => {
         setError(error.message);
         setLoading(false);
@@ -58,7 +58,7 @@ export default function ListLecturersPage() {
           placeholder="Szukaj"
           className="w-72 px-4 py-2 border border-gray-300 rounded-lg"
           value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
       <AddLecturerModal
@@ -74,6 +74,7 @@ export default function ListLecturersPage() {
           columns={columns}
           data={lecturers}
           whereNavigate="list-lecturers"
+          idKey="id"
         />
       )}
     </div>
