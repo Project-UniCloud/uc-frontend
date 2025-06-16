@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "../Buttons";
+import { Button } from "../utils/Buttons";
 import { CiPause1 } from "react-icons/ci";
 
 export function StopAllModal({ isOpen, setIsOpen }) {
@@ -11,9 +11,11 @@ export function StopAllModal({ isOpen, setIsOpen }) {
 
   //   const mutation = useMutation({
   //     mutationFn: ({ groupId }) => stopResourcesGroup(groupId),
+  //     mutationFn: ({ groupId }) => stopResourcesGroup(groupId),
   //     onSuccess: () => setIsOpen(false),
   //     onError: (error) =>
   //       setErrors({
+  //         error: error.message || "Błąd wstrzymywania usług grupy",
   //         error: error.message || "Błąd wstrzymywania usług grupy",
   //       }),
   //   });
@@ -66,11 +68,14 @@ export function StopAllModal({ isOpen, setIsOpen }) {
           color="bg-[#CD6200]"
           type="submit"
           // disabled={mutation.isLoading}
+          // disabled={mutation.isLoading}
           //   onClick={() => {
+          //     mutation.mutate({groupId});
           //     mutation.mutate({groupId});
           //   }}
         >
           {/* {mutation.isLoading ? "Wstrzymywanie..." : "Wstrzymaj"} */}
+          <CiPause1 />
           <CiPause1 />
           Wstrzymaj
         </Button>

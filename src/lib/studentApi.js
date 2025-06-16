@@ -1,8 +1,12 @@
 import { getApi, postApi } from "./utils/apiClient";
 import { getBaseApiUrl } from "@/lib/utils/baseUrl";
 
-export async function getStudentsFromGroup(groupId) {
-  const path = `/groups/${groupId}/students`;
+export async function getStudentsFromGroup({
+  groupId,
+  page = 0,
+  pageSize = 10,
+}) {
+  const path = `/groups/${groupId}/students?page=${page}&pageSize=${pageSize}`;
   return await getApi(path, "Nieudane pobieranie studentów");
 }
 
@@ -11,6 +15,7 @@ export async function addStudentToGroup(groupId, studentData) {
   return await postApi(
     path,
     studentData,
+
     "Nieudane dodawanie studenta do grupy"
   );
 }

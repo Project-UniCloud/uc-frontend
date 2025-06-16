@@ -22,7 +22,7 @@ export async function getApi(path, errorText) {
   }
 }
 
-export async function postApi(path, body, errorText, data = false) {
+export async function postApi(path, body = null, errorText, data = false) {
   try {
     const response = await fetch(`${getBaseApiUrl()}${path}`, {
       method: "POST",
