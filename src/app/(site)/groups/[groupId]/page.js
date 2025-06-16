@@ -5,12 +5,9 @@ import Table from "@/components/table/Table";
 import InputForm from "@/components/utils/InputForm";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { Button } from "@/components/utils/Buttons";
-import { FiArchive } from "react-icons/fi";
 import { getGroupById, updateGroup } from "@/lib/groupsApi";
 import { getStudentsFromGroup } from "@/lib/studentApi";
 import { FaPlus } from "react-icons/fa";
-import { CiPause1 } from "react-icons/ci";
-import { IoPlayCircleOutline } from "react-icons/io5";
 import { AddStudentModal } from "@/components/students/AddStudentModal";
 import { ImportStudentsModal } from "@/components/students/ImportStudentsModal";
 import {
@@ -21,6 +18,9 @@ import { getResourcesGroup } from "@/lib/resource";
 import { StopAllModal } from "@/components/resources/StopAllModal";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import Pagination from "@/components/pagination/Pagination";
+import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
+import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
+import { set } from "zod";
 
 const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
 
@@ -38,6 +38,7 @@ export default function GroupPage({ params }) {
   const [studentsData, setStudentsData] = useState([]);
   const [resourcesData, setResourcesData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isOpenStudent, setIsOpenStudent] = useState(false);
   const [isOpenImport, setIsOpenImport] = useState(false);
@@ -106,14 +107,7 @@ export default function GroupPage({ params }) {
   const handleEditClick = async () => {
     if (editing) {
       setError(null);
-      console.log(
-        "Updating group with data:",
-        groupData.name,
-        groupData.lecturers,
-        formatDateToDDMMYYYY(groupData.startDate),
-        formatDateToDDMMYYYY(groupData.endDate),
-        groupData.description || ""
-      );
+      setFormLoading(true);
       try {
         const updated = await updateGroup(groupId, {
           name: groupData.name,
@@ -123,15 +117,16 @@ export default function GroupPage({ params }) {
           description: groupData.description || "",
         });
         setGroupData((prev) => ({ ...prev, ...updated }));
-        console.log("groupData after update:", groupData);
+        showSuccessToast("Grupa została zaktualizowana pomyślnie.");
+        setEditing(false);
       } catch (error) {
         setError(error.message);
+        showErrorToast("Błąd podczas aktualizacji grupy: " + error.message);
       } finally {
-        if (!error) {
-          setEditing(false);
-        }
+        setFormLoading(false);
       }
     } else {
+      setFormLoading(false);
       setEditing(true);
     }
   };
@@ -149,17 +144,17 @@ export default function GroupPage({ params }) {
       ...prev,
       lecturers: prev.lecturers.filter((t) => t.id !== id),
     }));
-    console.log("Removed lecturer with ID:", id);
-    console.log("Updated lecturers:", groupData.lecturers);
   };
 
   return (
     <div className="min-w-120">
       <div className="flex justify-between items-center">
         <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
-        {activeTab === "Ogólne" && (
+        {activeTab === "Ogólne" && !loading && (
           <Button
             color={editing ? "bg-green-500" : "bg-purple"}
+            className={formLoading && "cursor-not-allowed opacity-50"}
+            disabled={formLoading}
             onClick={handleEditClick}
           >
             {editing ? "Zapisz" : "Edytuj"}
@@ -221,38 +216,10 @@ export default function GroupPage({ params }) {
                 value={groupData.status}
                 disabled
               />
-              <Button
-                label={
-                  groupData.status === "Aktywna"
-                    ? "Archiwizuj"
-                    : groupData.status === "Nieaktywna"
-                    ? "Aktywuj"
-                    : "Usuń"
-                }
-                color={
-                  groupData.status === "Aktywna"
-                    ? "bg-orange-400"
-                    : groupData.status === "Nieaktywna"
-                    ? "bg-green-400"
-                    : "bg-red-400"
-                }
-                center
-              >
-                {groupData.status === "Aktywna" && (
-                  <FiArchive className="text-lg" />
-                )}
-                {groupData.status === "Zarchiwizowana" && (
-                  <CiPause1 className="text-lg" />
-                )}
-                {groupData.status === "Nieaktywna" && (
-                  <IoPlayCircleOutline className="text-lg" />
-                )}
-                {groupData.status === "Aktywna"
-                  ? "Archiwizuj"
-                  : groupData.status === "Nieaktywna"
-                  ? "Aktywuj"
-                  : "Usuń"}
-              </Button>
+              <ButtonChangeStatus
+                groupId={groupId}
+                groupStatus={groupData.status}
+              />
             </div>
             <div className=" flex flex-col items-center justify-center mt-5">
               <label
@@ -268,6 +235,7 @@ export default function GroupPage({ params }) {
                 className="w-200 m-auto border border-gray-400 rounded-lg px-3 py-2 min-h-[80px]"
                 rows={5}
                 defaultValue={groupData.description || ""}
+                disabled={!editing}
                 onChange={handleChange("description")}
               />
             </div>
@@ -292,11 +260,14 @@ export default function GroupPage({ params }) {
               setIsOpen={setIsOpenStudent}
               groupId={groupId}
             />
-            <ImportStudentsModal
-              isOpen={isOpenImport}
-              setIsOpen={setIsOpenImport}
-              groupId={groupId}
-            />
+            {isOpenImport && (
+              <ImportStudentsModal
+                isOpen={isOpenImport}
+                setIsOpen={setIsOpenImport}
+                groupId={groupId}
+              />
+            )}
+
             {studentsData.length > 0 ? (
               <>
                 <Table
@@ -345,7 +316,6 @@ export default function GroupPage({ params }) {
                 { key: "name", header: "Nazwa" },
                 { key: "costLimit", header: "Limit Kosztu" },
                 { key: "expiresAt", header: "Wygasa" },
-                { key: "lastUsedAt", header: "Ostatnio Użyty" },
                 { key: "cronCleanupSchedule", header: "Wyczyść" },
                 { key: "status", header: "Status" },
               ]}

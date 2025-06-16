@@ -6,7 +6,8 @@ import Table from "@/components/table/Table";
 import { FaPlus } from "react-icons/fa";
 import AddGroupModal from "@/components/group/AddGroupModal";
 import Pagination from "@/components/pagination/Pagination";
-import { IoIosSearch } from "react-icons/io";
+import { z } from "zod";
+import LoadingSpinner from "@/components/utils/LoadingSpinner";
 
 const TABS = [
   { key: "ACTIVE", label: "Aktywne" },
@@ -22,6 +23,13 @@ const columns = [
   { key: "semester", header: "Semestr" },
   { key: "endDate", header: "Data Zakończenia" },
 ];
+
+const searchSchema = z
+  .string()
+  .regex(
+    /^[\wąćęłńóśźżĄĆĘŁŃÓŚŹŻ\- ]*$/,
+    "Dozwolone: litery, cyfry, spacje i '-'"
+  );
 
 export default function GroupsPage() {
   const [activeTab, setActiveTab] = useState("ACTIVE");
@@ -63,7 +71,14 @@ export default function GroupsPage() {
   };
 
   const onSearchChange = (e) => {
-    setSearch(e.target.value);
+    const value = e.target.value;
+    const result = searchSchema.safeParse(value);
+    if (!result.success) {
+      setError(result.error.errors[0].message);
+      return;
+    }
+    setError("");
+    setSearch(value);
     setPage(0);
   };
 
@@ -87,7 +102,12 @@ export default function GroupsPage() {
           placeholder="Szukaj grupy"
           value={search}
           onChange={onSearchChange}
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-md"
+          disabled={groups.length === 0 && search.length === 0}
+          className={`border border-gray-300 rounded-lg px-3 py-1.5 text-md ${
+            groups.length === 0 && search.length === 0
+              ? "opacity-50 cursor-not-allowed hidden"
+              : ""
+          }`}
         />
       </div>
 

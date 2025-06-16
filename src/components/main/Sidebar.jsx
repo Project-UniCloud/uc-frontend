@@ -44,11 +44,13 @@ export default function Sidebar() {
             icon={<FiBell />}
             label="Powiadomienia"
             itemPath="/notifications"
+            disabled
           />
           <SidebarItem
             icon={<FiDollarSign />}
             label="Finanse"
             itemPath="/finances"
+            disabled
           />
           <SidebarItem
             icon={<PiChalkboardTeacherLight />}
@@ -68,13 +70,15 @@ export default function Sidebar() {
           icon={<MdOutlineBugReport />}
           label="Zgłoś błąd"
           itemPath="/report-bug"
+          disabled
         />
         <SidebarItem
           icon={<FiSettings />}
           label="Ustawienia"
           itemPath="/settings"
+          disabled
         />
-        <SidebarItem icon={<FiLogOut />} label="Wyloguj" />
+        <SidebarItem icon={<FiLogOut />} label="Wyloguj" disabled />
       </div>
     </div>
   );

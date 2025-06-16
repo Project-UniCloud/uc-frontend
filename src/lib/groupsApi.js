@@ -23,3 +23,17 @@ export async function updateGroup(groupId, groupData) {
   const path = `/groups/${groupId}`;
   return await patchApi(path, groupData, "Nieudane aktualizowanie grupy");
 }
+
+export async function archiveGroup(groupId) {
+  return await postApi(
+    `/groups/${groupId}/archive`,
+    "Nieudane zarchiwizowanie grupy"
+  );
+}
+
+export async function activateGroup(groupId) {
+  return await postApi(
+    `/groups/${groupId}/activate`,
+    "Nieudane aktywowanie grupy"
+  );
+}

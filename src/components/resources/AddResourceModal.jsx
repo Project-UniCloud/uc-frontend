@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
 import { giveCloudResourceAccess } from "@/lib/resource";
 import { getCloudAccesses, getCloudResourcesTypes } from "@/lib/cloudApi";
+import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
 export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
   const dialogRef = useRef(null);
@@ -12,15 +13,26 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
   const [driversData, setDriversData] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState("");
   const [selectedResource, setSelectedResource] = useState("");
+  const [limit, setLimit] = useState("");
   const [loading, setLoading] = useState(true);
 
   const mutation = useMutation({
     mutationFn: ({ groupId, data }) => giveCloudResourceAccess(groupId, data),
-    onSuccess: () => setIsOpen(false),
-    onError: (error) =>
+    onSuccess: () => {
+      setIsOpen(false);
+      setSelectedDriver("");
+      setSelectedResource("");
+      setResourcesData([]);
+      setDriversData([]);
+      setLimit("");
+      showSuccessToast("Dostęp do usługi został dodany!");
+    },
+    onError: (error) => {
       setError({
         error: error.message || "Błąd dodawania usługi",
       }),
+        showErrorToast("Błąd dodawania usługi: " + error?.message);
+    },
   });
 
   useEffect(() => {
@@ -88,6 +100,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
         <div className="flex flex-col">
           <label className="mb-1 text-sm font-medium">Sterownik</label>
           <select
+            required
             value={selectedDriver}
             className="rounded-md border text-sm w-40 border-gray-300 px-1 py-2 shadow-sm focus:border-black focus:outline-none"
             onChange={handleDriverChange}
@@ -106,6 +119,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
         <div className="flex flex-col">
           <label className="mb-1 text-sm font-medium">Usługa</label>
           <select
+            required
             value={selectedResource}
             onChange={(event) => {
               setSelectedResource(event.target.value);
@@ -133,8 +147,11 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
           <label className="mb-1 text-sm font-medium ">Limit</label>
           <input
             type="number"
+            required
             className="rounded-md border text-sm  border-gray-300 px-4 py-2 shadow-sm focus:border-black focus:outline-none"
             placeholder="Wprowadź limit"
+            value={limit}
+            onChange={(e) => setLimit(e.target.value)}
           />
         </div>
       </div>
@@ -145,13 +162,21 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
           onClick={handleClose}
           color="bg-white"
           textColor="text-black"
-          className="border border-black"
+          disabled={mutation.isPending}
+          className={`border border-black ${
+            mutation.isPending && "opacity-50"
+          }`}
         >
           Anuluj
         </Button>
         <Button
+          className={`${
+            (mutation.isPending || !selectedDriver || !selectedResource) &&
+            "opacity-50 hover:cursor-not-allowed"
+          }
+          } `}
           type="submit"
-          disabled={mutation.isLoading || !selectedDriver || !selectedResource}
+          disabled={mutation.isPending || !selectedDriver || !selectedResource}
           onClick={() => {
             mutation.mutate({
               groupId,
@@ -162,7 +187,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
             });
           }}
         >
-          Dodaj
+          {mutation.isPending ? "Wysyłanie..." : "Dodaj"}
         </Button>
       </div>
     </dialog>
