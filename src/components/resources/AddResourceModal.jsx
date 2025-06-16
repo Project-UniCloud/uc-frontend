@@ -1,10 +1,16 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+<<<<<<< HEAD
 import { Button } from "../utils/Buttons";
 import { giveCloudResourceAccess } from "@/lib/resource";
 import { getCloudAccesses, getCloudResourcesTypes } from "@/lib/cloudApi";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
+=======
+import { Button } from "../Buttons";
+import { giveCloudResourceAccess } from "@/lib/resource";
+import { getCloudAccesses, getCloudResourcesTypes } from "@/lib/cloudApi";
+>>>>>>> origin/develop
 
 export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
   const dialogRef = useRef(null);
@@ -13,11 +19,15 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
   const [driversData, setDriversData] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState("");
   const [selectedResource, setSelectedResource] = useState("");
+<<<<<<< HEAD
   const [limit, setLimit] = useState("");
+=======
+>>>>>>> origin/develop
   const [loading, setLoading] = useState(true);
 
   const mutation = useMutation({
     mutationFn: ({ groupId, data }) => giveCloudResourceAccess(groupId, data),
+<<<<<<< HEAD
     onSuccess: () => {
       setIsOpen(false);
       setSelectedDriver("");
@@ -33,6 +43,13 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
       }),
         showErrorToast("Błąd dodawania usługi: " + error?.message);
     },
+=======
+    onSuccess: () => setIsOpen(false),
+    onError: (error) =>
+      setError({
+        error: error.message || "Błąd dodawania usługi",
+      }),
+>>>>>>> origin/develop
   });
 
   useEffect(() => {
@@ -49,7 +66,11 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
     setLoading(true);
     getCloudAccesses(groupId)
       .then((data) => {
+<<<<<<< HEAD
         setDriversData(data.content);
+=======
+        setDriversData(data);
+>>>>>>> origin/develop
       })
       .catch((error) => setError(error.message))
       .finally(() => setLoading(false));
@@ -100,7 +121,10 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
         <div className="flex flex-col">
           <label className="mb-1 text-sm font-medium">Sterownik</label>
           <select
+<<<<<<< HEAD
             required
+=======
+>>>>>>> origin/develop
             value={selectedDriver}
             className="rounded-md border text-sm w-40 border-gray-300 px-1 py-2 shadow-sm focus:border-black focus:outline-none"
             onChange={handleDriverChange}
@@ -109,11 +133,16 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
             <option value="">Wybierz sterownik</option>
             {driversData.map((driver) => {
               return (
+<<<<<<< HEAD
                 <option
                   key={driver.cloudAccessClientId}
                   value={driver.cloudAccessClientId}
                 >
                   {driver.cloudAccessClientId}
+=======
+                <option key={driver.value} value={driver.value}>
+                  {driver.value}
+>>>>>>> origin/develop
                 </option>
               );
             })}
@@ -122,7 +151,10 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
         <div className="flex flex-col">
           <label className="mb-1 text-sm font-medium">Usługa</label>
           <select
+<<<<<<< HEAD
             required
+=======
+>>>>>>> origin/develop
             value={selectedResource}
             onChange={(event) => {
               setSelectedResource(event.target.value);
@@ -150,11 +182,16 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
           <label className="mb-1 text-sm font-medium ">Limit</label>
           <input
             type="number"
+<<<<<<< HEAD
             required
             className="rounded-md border text-sm  border-gray-300 px-4 py-2 shadow-sm focus:border-black focus:outline-none"
             placeholder="Wprowadź limit"
             value={limit}
             onChange={(e) => setLimit(e.target.value)}
+=======
+            className="rounded-md border text-sm  border-gray-300 px-4 py-2 shadow-sm focus:border-black focus:outline-none"
+            placeholder="Wprowadź limit"
+>>>>>>> origin/develop
           />
         </div>
       </div>
@@ -165,14 +202,19 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
           onClick={handleClose}
           color="bg-white"
           textColor="text-black"
+<<<<<<< HEAD
           disabled={mutation.isPending}
           className={`border border-black ${
             mutation.isPending && "opacity-50"
           }`}
+=======
+          className="border border-black"
+>>>>>>> origin/develop
         >
           Anuluj
         </Button>
         <Button
+<<<<<<< HEAD
           className={`${
             (mutation.isPending || !selectedDriver || !selectedResource) &&
             "opacity-50 hover:cursor-not-allowed"
@@ -180,6 +222,10 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
           } `}
           type="submit"
           disabled={mutation.isPending || !selectedDriver || !selectedResource}
+=======
+          type="submit"
+          disabled={mutation.isLoading || !selectedDriver || !selectedResource}
+>>>>>>> origin/develop
           onClick={() => {
             mutation.mutate({
               groupId,
@@ -190,7 +236,11 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
             });
           }}
         >
+<<<<<<< HEAD
           {mutation.isPending ? "Wysyłanie..." : "Dodaj"}
+=======
+          Dodaj
+>>>>>>> origin/develop
         </Button>
       </div>
     </dialog>

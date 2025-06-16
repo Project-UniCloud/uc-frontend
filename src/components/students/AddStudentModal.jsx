@@ -29,9 +29,14 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
       formRef.current?.reset();
       setFormErrors({});
       setIsOpen(false);
+<<<<<<< HEAD
       showSuccessToast("Student został dodany do grupy!");
     },
     onError: (error) => {
+=======
+    },
+    onError: (error) =>
+>>>>>>> origin/develop
       setFormErrors({
         error: error.message || "Błąd dodawania studenta do grupy",
       }),

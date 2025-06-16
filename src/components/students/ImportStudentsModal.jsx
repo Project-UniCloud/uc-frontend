@@ -16,10 +16,15 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
     onSuccess: () => {
       setFile(null);
       setIsOpen(false);
+<<<<<<< HEAD
       setErrors({});
       showSuccessToast("Studenci zostali dodani do grupy!");
     },
     onError: (error) => {
+=======
+    },
+    onError: (error) =>
+>>>>>>> origin/develop
       setErrors({
         error: error.message || "Błąd dodawania studenta do grupy",
       }),
@@ -79,7 +84,11 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
           }}
           className={`${mutation.isPending && "opacity-50"}`}
         >
+<<<<<<< HEAD
           {mutation.isPending ? "Wysyłanie..." : "Dodaj studentów"}
+=======
+          {mutation.isLoading ? "Wysyłanie..." : "Dodaj studentów"}
+>>>>>>> origin/develop
         </Button>
       </div>
     </dialog>
