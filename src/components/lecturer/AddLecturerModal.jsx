@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { addLecturer } from "@/lib/lecturersApi";
@@ -7,22 +7,16 @@ import { Button } from "../Buttons";
 import { FaCheck } from "react-icons/fa";
 
 export default function AddLecturerModal({ isOpen, setIsOpen, onLecturerAdded }) {
-  // JEŚLI MODAL NIE POWINIEN BYĆ WIDOCZNY, NIE RENDERUJEMY NIC
   if (!isOpen) return null;
 
-  const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
   const [formValues, setFormValues] = useState({
     firstName: "",
     lastName: "",
     userIndexNumber: "",
+    email: "",
   });
-
-  // Autogenerowany mail na podstawie indexu
-  const generatedEmail = formValues.userIndexNumber
-    ? `${formValues.userIndexNumber}@st.amu.edu.pl`
-    : "";
 
   // Obsługa inputów
   const handleInputChange = (e) => {
@@ -39,6 +33,7 @@ export default function AddLecturerModal({ isOpen, setIsOpen, onLecturerAdded })
         firstName: "",
         lastName: "",
         userIndexNumber: "",
+        email: "",
       });
       setIsOpen(false);
       if (onLecturerAdded) onLecturerAdded();
@@ -52,14 +47,13 @@ export default function AddLecturerModal({ isOpen, setIsOpen, onLecturerAdded })
     setIsOpen(false);
   }
 
-  // Wyślij tylko wymagane dane
+  // Wyślij dane wymagane przez nowe API
   function handleSubmit(e) {
     e.preventDefault();
-    const { firstName, lastName, userIndexNumber } = formValues;
-    mutation.mutate({ firstName, lastName, userIndexNumber });
+    const { firstName, lastName, userIndexNumber, email } = formValues;
+    mutation.mutate({ firstName, lastName, userIndexNumber, email });
   }
 
-  // NIE używamy <dialog>, tylko klasyczny div-modal (jest czytelniej i bez bugów)
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
       <div className="relative bg-white rounded-2xl shadow-2xl p-10 w-[500px] max-w-[95vw] mx-auto flex flex-col items-center">
@@ -98,7 +92,7 @@ export default function AddLecturerModal({ isOpen, setIsOpen, onLecturerAdded })
               error={formErrors.lastName}
             />
             <InputForm
-              label="ID"
+              label="ID/Login"
               name="userIndexNumber"
               type="text"
               required
@@ -110,8 +104,10 @@ export default function AddLecturerModal({ isOpen, setIsOpen, onLecturerAdded })
               label="Mail"
               name="email"
               type="email"
-              disabled
-              value={generatedEmail}
+              required
+              value={formValues.email}
+              onChange={handleInputChange}
+              error={formErrors.email}
             />
           </div>
 

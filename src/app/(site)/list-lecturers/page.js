@@ -7,7 +7,7 @@ import { Button } from "@/components/Buttons";
 import { FaPlus } from "react-icons/fa";
 
 const columns = [
-  { key: "userIndexNumber", header: "ID" },
+  { key: "login", header: "ID/Login" },
   { key: "firstName", header: "Imię" },
   { key: "lastName", header: "Nazwisko" },
   { key: "email", header: "Mail" },
@@ -17,7 +17,7 @@ export default function ListLecturersPage() {
   const [lecturers, setLecturers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false); // <- DOMYŚLNIE FALSE
+  const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchLecturers = () => {
@@ -25,9 +25,15 @@ export default function ListLecturersPage() {
     setError(null);
     getLecturers(searchQuery)
       .then((data) => {
-        setLecturers(data.content || []);
-        setLoading(false);
-      })
+    // Każdemu wierszowi nadaj 'id' równe 'uuid'
+       const content = (data.content || []).map((item) => ({
+      ...item,
+      id: item.uuid,
+      groupId: item.uuid,        // <-- WAŻNE
+    }));
+    setLecturers(content);
+    setLoading(false);
+  })
       .catch((error) => {
         setError(error.message);
         setLoading(false);
@@ -64,7 +70,11 @@ export default function ListLecturersPage() {
       {loading ? (
         <div>Ładowanie...</div>
       ) : (
-        <Table columns={columns} data={lecturers} />
+        <Table
+          columns={columns}
+          data={lecturers}
+          whereNavigate="list-lecturers"
+        />
       )}
     </div>
   );
