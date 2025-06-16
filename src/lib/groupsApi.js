@@ -1,5 +1,4 @@
 import { getApi, postApi, patchApi } from "./utils/apiClient";
-import { getApi, postApi, patchApi } from "./utils/apiClient";
 
 export async function getGroups({
   status = "",

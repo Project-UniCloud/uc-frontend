@@ -7,9 +7,5 @@ export async function getResourcesGroup(groupId) {
 
 export async function giveCloudResourceAccess(groupId, data) {
   const path = `/groups/${groupId}/cloud-access`;
-<<<<<<< HEAD
-=======
-  console.log("giveCloudResourceAccess", data);
->>>>>>> origin/develop
   return await postApi(path, data, "Nieudane dodawanie usług");
 }

@@ -48,14 +48,11 @@ export function StopAllModal({ isOpen, setIsOpen }) {
         </button>
       </div>
       <h2 className="text-xl font-semibold mb-10 text-center">
-      <h2 className="text-xl font-semibold mb-10 text-center">
         Wstrzymanie wszystkich usług
       </h2>
       <p className="text-gray-600 mb-6 text-center text-xl ">
-      <p className="text-gray-600 mb-6 text-center text-xl ">
         Czy jesteś pewny, że chcesz wstrzymać wszystkie usługi?
       </p>
-      {errors.error && <div className="text-red-600">{errors.error}</div>}
       {errors.error && <div className="text-red-600">{errors.error}</div>}
       <div className="flex justify-end items-center gap-4 pt-10">
         <Button
@@ -68,7 +65,6 @@ export function StopAllModal({ isOpen, setIsOpen }) {
           Anuluj
         </Button>
         <Button
-          color="bg-[#CD6200]"
           color="bg-[#CD6200]"
           type="submit"
           // disabled={mutation.isLoading}

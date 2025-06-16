@@ -8,7 +8,6 @@ import { Button } from "@/components/utils/Buttons";
 import { getGroupById, updateGroup } from "@/lib/groupsApi";
 import { getStudentsFromGroup } from "@/lib/studentApi";
 import { FaPlus } from "react-icons/fa";
-import { CiPause1 } from "react-icons/ci";
 import { IoPlayCircleOutline } from "react-icons/io5";
 import { AddStudentModal } from "@/components/students/AddStudentModal";
 import { ImportStudentsModal } from "@/components/students/ImportStudentsModal";
@@ -38,7 +37,6 @@ export default function GroupPage({ params }) {
     status: "",
   });
   const [studentsData, setStudentsData] = useState([]);
-  const [resourcesData, setResourcesData] = useState([]);
   const [resourcesData, setResourcesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
@@ -252,14 +250,10 @@ export default function GroupPage({ params }) {
           <>
             <div className="flex items-center gap-5 mb-5">
               <Button onClick={() => setIsOpenStudent(true)}>
-              <Button onClick={() => setIsOpenStudent(true)}>
                 <FaPlus /> Dodaj Studenta
               </Button>
               <Button onClick={() => setIsOpenImport(true)}>
-              </Button>
-              <Button onClick={() => setIsOpenImport(true)}>
                 <FaPlus /> Importuj
-              </Button>
               </Button>
             </div>
             <AddStudentModal
@@ -309,7 +303,6 @@ export default function GroupPage({ params }) {
             </Button>
             <Button onClick={() => setIsOpenResource(true)}>
               <FaPlus /> Dodaj usługę
-            </Button>
             </Button>
           </div>
           <StopAllModal isOpen={isOpenStopAll} setIsOpen={setIsOpenStopAll} />
