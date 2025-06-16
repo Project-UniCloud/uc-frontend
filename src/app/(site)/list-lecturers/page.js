@@ -1,29 +1,80 @@
 "use client";
-import { useEffect, useState } from "react";
-import { getUser } from "@/lib/usersApi";
+import { useState, useEffect } from "react";
+import { getLecturers } from "@/lib/lecturersApi";
+import Table from "@/components/Table";
+import AddLecturerModal from "@/components/lecturer/AddLecturerModal";
+import { Button } from "@/components/Buttons";
+import { FaPlus } from "react-icons/fa";
 
-export default function ListLecturerPage() {
-  const [user, setUser] = useState(null);
+const columns = [
+  { key: "login", header: "ID/Login" },
+  { key: "firstName", header: "Imię" },
+  { key: "lastName", header: "Nazwisko" },
+  { key: "email", header: "Mail" },
+];
+
+export default function ListLecturersPage() {
+  const [lecturers, setLecturers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchLecturers = () => {
+    setLoading(true);
+    setError(null);
+    getLecturers(searchQuery)
+      .then((data) => {
+    // Każdemu wierszowi nadaj 'id' równe 'uuid'
+       const content = (data.content || []).map((item) => ({
+      ...item,
+      id: item.uuid,
+      groupId: item.uuid,        // <-- WAŻNE
+    }));
+    setLecturers(content);
+    setLoading(false);
+  })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
-    // Podstaw dowolne userId do testu
-    getUser("dd978dc3-661d-4a72-a210-51bfcecb33e3")
-      .then((data) => setUser(data))
-      .catch((err) => setError(err.message));
-  }, []);
+    fetchLecturers();
+    // eslint-disable-next-line
+  }, [searchQuery]);
 
   return (
-    <div>
-      <h1>List of Lecturers</h1>
-      <p>Welcome to the list of lecturers</p>
-      {error && <div className="text-red-600">Błąd: {error}</div>}
-      {user ? (
-        <pre className="bg-gray-100 p-2 rounded">
-          {JSON.stringify(user, null, 2)}
-        </pre>
+    <div className="p-8 min-w-120">
+      <h1 className="text-2xl font-bold mb-6">Lista prowadzących</h1>
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="primary" onClick={() => setIsOpen(true)}>
+          <FaPlus className="mr-2" />
+          Dodaj
+        </Button>
+        <input
+          type="text"
+          placeholder="Szukaj"
+          className="w-72 px-4 py-2 border border-gray-300 rounded-lg"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
+      </div>
+      <AddLecturerModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        onLecturerAdded={fetchLecturers}
+      />
+      {error && <div className="text-red-600 mb-4">{error}</div>}
+      {loading ? (
+        <div>Ładowanie...</div>
       ) : (
-        !error && <div>Ładowanie danych użytkownika...</div>
+        <Table
+          columns={columns}
+          data={lecturers}
+          whereNavigate="list-lecturers"
+        />
       )}
     </div>
   );

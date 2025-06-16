@@ -7,7 +7,7 @@ export async function getStudentsFromGroup(groupId) {
 }
 
 export async function addStudentToGroup(groupId, studentData) {
-  const path = `/groups/${groupId}/attenders`;
+  const path = `/groups/${groupId}/students`;
   return await postApi(
     path,
     studentData,
@@ -21,7 +21,7 @@ export async function addStudentsToGroup(groupId, file) {
   form.append("file", file);
   try {
     const response = await fetch(
-      `${getBaseApiUrl()}/groups/${groupId}/attenders/import`,
+      `${getBaseApiUrl()}/groups/${groupId}/students/import`,
       {
         method: "POST",
         credentials: "include",
