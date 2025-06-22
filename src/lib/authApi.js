@@ -8,3 +8,7 @@ export async function loginUser({ login, password }) {
     true
   );
 }
+
+export async function logoutUser() {
+  return await postApi("/auth/logout", {}, "Nie udało się wylogować", false);
+}
