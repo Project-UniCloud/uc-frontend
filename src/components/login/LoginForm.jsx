@@ -69,7 +69,7 @@ export default function LoginForm() {
         />
       </div>
 
-      <div className="flex items-center space-x-2">
+      {/* <div className="flex items-center space-x-2">
         <input
           type="checkbox"
           id="remember"
@@ -79,7 +79,7 @@ export default function LoginForm() {
         <label htmlFor="remember" className="text-sm text-black">
           Pamiętaj mnie
         </label>
-      </div>
+      </div> */}
 
       {formErrors.error && (
         <p className="text-red-400 text-xs">{formErrors.error}</p>
