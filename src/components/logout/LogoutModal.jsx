@@ -4,16 +4,21 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
 import { logoutUser } from "@/lib/authApi";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { logout as logoutAction } from "@/store/authSlice";
 
 export function LogoutModal({ isOpen, setIsOpen }) {
   const dialogRef = useRef(null);
   const router = useRouter();
   const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
 
   const mutation = useMutation({
     mutationFn: () => logoutUser(),
     onSuccess: () => {
-      setIsOpen(false), router.push("/login");
+      dispatch(logoutAction());
+      setIsOpen(false);
+      router.push("/login");
     },
     onError: (error) =>
       setErrors({
