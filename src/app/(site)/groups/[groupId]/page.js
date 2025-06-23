@@ -57,7 +57,6 @@ export default function GroupPage({ params }) {
     if (activeTab === "Ogólne") {
       getGroupById(groupId)
         .then((data) => {
-          console.log("Group data:", data);
           const teachers = data.lecturerFullNames.map((l) => ({
             id: l.userId,
             fullName: `${l.firstName} ${l.lastName}`,
@@ -79,7 +78,6 @@ export default function GroupPage({ params }) {
     if (activeTab === "Studenci") {
       getStudentsFromGroup({ groupId, page, pageSize })
         .then((data) => {
-          console.log("Students data:", data);
           setStudentsData(data.content || []);
           setTotalPages(data.totalPages || 0);
         })
@@ -233,7 +231,7 @@ export default function GroupPage({ params }) {
                 name="description"
                 id="description"
                 placeholder="Opis"
-                className="w-200 m-auto border border-gray-400 rounded-lg px-3 py-2 min-h-[80px]"
+                className="w-200 m-auto border border-gray-400 rounded-lg px-3 py-2 min-h-[80px]  text-gray-500 font-semibold"
                 rows={5}
                 defaultValue={groupData.description || ""}
                 disabled={!editing}
@@ -293,12 +291,16 @@ export default function GroupPage({ params }) {
             )}
           </>
         ))}
-      {/* Usługi */}
+
       {/* Usługi */}
       {activeTab === "Usługi" && (
         <>
           <div className="flex items-center gap-5 mb-5">
-            <Button onClick={() => setIsOpenStopAll(true)} color="bg-orange">
+            <Button
+              onClick={() => setIsOpenStopAll(true)}
+              color="bg-orange-200 cursor-not-allowed hover:not-allowed"
+              disabled
+            >
               <CiPause1 /> Zawieś wszystko
             </Button>
             <Button onClick={() => setIsOpenResource(true)}>
@@ -317,6 +319,7 @@ export default function GroupPage({ params }) {
                 { key: "clientId", header: "ID" },
                 { key: "name", header: "Nazwa" },
                 { key: "costLimit", header: "Limit Kosztu" },
+                { key: "limitUsed", header: "Koszt", numbers: true },
                 { key: "expiresAt", header: "Wygasa" },
                 { key: "cronCleanupSchedule", header: "Wyczyść" },
                 { key: "status", header: "Status" },
@@ -324,7 +327,7 @@ export default function GroupPage({ params }) {
               data={resourcesData}
             />
           ) : (
-            <div>Brak studentów w tej grupie.</div>
+            <div>Brak usług dla tej grupy.</div>
           )}
         </>
       )}

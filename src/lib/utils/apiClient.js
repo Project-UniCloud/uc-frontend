@@ -6,6 +6,11 @@ export async function getApi(path, errorText) {
       credentials: "include",
     });
 
+    if (response.status === 401) {
+      window.location.href = "/login";
+      throw new Error("unauthorized");
+    }
+
     if (!response.ok) {
       try {
         const errorData = await response.json();
@@ -32,6 +37,11 @@ export async function postApi(path, body = null, errorText, data = false) {
       credentials: "include",
       body: JSON.stringify(body),
     });
+
+    if (response.status === 401) {
+      window.location.href = "/login";
+      throw new Error("unauthorized");
+    }
 
     if (!response.ok) {
       try {
@@ -61,6 +71,11 @@ export async function patchApi(path, body, errorText, data = false) {
       credentials: "include",
       body: JSON.stringify(body),
     });
+
+    if (response.status === 401) {
+      window.location.href = "/login";
+      throw new Error("unauthorized");
+    }
 
     if (!response.ok) {
       try {

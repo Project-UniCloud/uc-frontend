@@ -17,7 +17,7 @@ const TABS = [
 
 export default function GroupPage({ params }) {
   const { driverName } = React.use(params);
-  const [activeTab, setActiveTab] = useState("Grupy zajęciowe");
+  const [activeTab, setActiveTab] = useState("Ustawienia");
   const [driverData, setdriverData] = useState({
     clean: "",
     limit: "",
@@ -49,7 +49,6 @@ export default function GroupPage({ params }) {
             status: data.isActive,
             description: data.description || "lorem ipsum dolor sit amet",
           });
-          console.log(data);
         })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
@@ -180,7 +179,7 @@ export default function GroupPage({ params }) {
                 name="description"
                 id="description"
                 placeholder="Opis"
-                className="w-200 m-auto border border-gray-400 rounded-lg px-3 py-2 min-h-[80px]"
+                className="w-200 m-auto border border-gray-400 rounded-lg px-3 py-2 min-h-[80px] text-gray-500 font-semibold"
                 rows={5}
                 defaultValue={driverData.description || ""}
                 disabled

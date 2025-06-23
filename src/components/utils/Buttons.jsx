@@ -7,6 +7,7 @@ export function Button({
   textColor = "text-white",
   label,
   center,
+  disabled = false,
   ...props
 }) {
   return (
@@ -15,7 +16,12 @@ export function Button({
       <button
         type={type}
         onClick={onClick}
-        className={`${color} hover:opacity-70  ${textColor} text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer w-full justify-center  ${className}`}
+        disabled={disabled}
+        className={`${color} ${
+          disabled
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:opacity-70 cursor-pointer"
+        }  ${textColor} text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-2 w-full justify-center`}
         {...props}
       >
         {children}
