@@ -8,11 +8,18 @@ export async function getLecturers(searchQuery) {
 }
 
 export async function addLecturer(lecturerData) {
-  return await postApi("/users/lecturers", lecturerData, "Nieudane dodanie prowadzącego");
+  return await postApi(
+    "/users/lecturers",
+    lecturerData,
+    "Nieudane dodanie prowadzącego"
+  );
 }
 
 export async function getLecturerById(lecturerId) {
-  return await getApi(`/users/${lecturerId}`, "Nieudane pobieranie prowadzącego");
+  return await getApi(
+    `/users/${lecturerId}`,
+    "Nieudane pobieranie prowadzącego"
+  );
 }
 
 // TODO: Implement these endpoints when backend is ready
@@ -37,4 +44,4 @@ export async function activateLecturer(lecturerId) {
     {},
     "Nieudane aktywowanie prowadzącego"
   );
-} 
+}

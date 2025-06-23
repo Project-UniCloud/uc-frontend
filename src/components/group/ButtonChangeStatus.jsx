@@ -67,6 +67,7 @@ export default function ButtonChangeStatus({ groupId, groupStatus }) {
           label="Usuń"
           color={`bg-red ${isLoading && "opacity-50"}`}
           center
+          disabled
         >
           <IoPlayCircleOutline className="text-lg" />
           Usuń

@@ -186,6 +186,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
               data: {
                 cloudAccessClientId: selectedDriver,
                 cloudResourceType: selectedResource,
+                costLimit: limit,
               },
             });
           }}

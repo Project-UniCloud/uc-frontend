@@ -31,10 +31,17 @@ export default function Table({ columns, data, whereNavigate, idKey }) {
               <td
                 key={col.key}
                 className={`p-2 text-center align-middle ${
-                  col.key === "status" && "text-green-500 font-semibold"
+                  col.key === "status" &&
+                  (row[col.key] == "INACTIVE"
+                    ? "text-red font-semibold"
+                    : "text-green font-semibold")
                 }`}
               >
-                {col.render ? col.render(row, idx) : row[col.key] || "-"}
+                {col.render
+                  ? col.render(row, idx)
+                  : typeof row[col.key] === "number" && col.numbers
+                  ? row[col.key].toFixed(2)
+                  : row[col.key] ?? "-"}
               </td>
             ))}
           </tr>
