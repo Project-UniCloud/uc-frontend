@@ -9,6 +9,7 @@ export default function TeacherSearchInput({
   onSelect,
   onRemove,
   useLecturerSearch,
+  useLecturerSearch,
 }) {
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
@@ -40,7 +41,7 @@ export default function TeacherSearchInput({
             key={teacher.id}
             className="flex items-center bg-gray-200 px-2 py-1 rounded-full text-sm"
           >
-            {teacher.fullName}
+            {teacher.firstName} {teacher.lastName} ({teacher.login})
             <button
               type="button"
               onClick={() => onRemove?.(teacher.id)}
@@ -82,6 +83,9 @@ export default function TeacherSearchInput({
                 <span>
                   {teacher.firstName} {teacher.lastName} ({teacher.login})
                 </span>
+                <span>
+                  {teacher.firstName} {teacher.lastName} ({teacher.login})
+                </span>
                 <button
                   type="button"
                   onClick={() => {
@@ -119,7 +123,8 @@ export default function TeacherSearchInput({
               onClick={() => handleSelect(lect)}
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer bg-white"
             >
-              {lect.firstName} {lect.lastName} ({lect.login})
+              {lect.firstName} {lect.lastName} ({lect.login}){lect.firstName}{" "}
+              {lect.lastName} ({lect.login})
             </li>
           ))}
         </ul>
