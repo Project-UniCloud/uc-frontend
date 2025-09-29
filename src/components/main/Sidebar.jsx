@@ -73,8 +73,7 @@ export default function Sidebar() {
           <SidebarItem
             icon={<MdOutlineBugReport />}
             label="Zgłoś błąd"
-            itemPath="/report-bug"
-            disabled
+            itemPath="https://michalluczak.atlassian.net/servicedesk/customer/portals"
           />
           <SidebarItem
             icon={<FiSettings />}
