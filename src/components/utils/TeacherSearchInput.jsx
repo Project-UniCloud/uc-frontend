@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { X } from "lucide-react";
 import { FaRegTrashAlt } from "react-icons/fa";
 
@@ -9,6 +8,7 @@ export default function TeacherSearchInput({
   disabled = false,
   onSelect,
   onRemove,
+  useLecturerSearch,
 }) {
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
@@ -17,7 +17,10 @@ export default function TeacherSearchInput({
   const handleSelect = (lect) => {
     const chosen = {
       id: lect.userId,
-      fullName: `${lect.firstName} ${lect.lastName}`,
+      firstName: `${lect.firstName}`,
+      lastName: `${lect.lastName}`,
+      login: `${lect.login}`,
+      email: `${lect.email}`,
     };
     onSelect?.(chosen);
     setQuery("");
@@ -36,14 +39,11 @@ export default function TeacherSearchInput({
             key={teacher.id}
             className="flex items-center bg-gray-200 px-2 py-1 rounded-full text-sm"
           >
-            {teacher.fullName}
+            {teacher.firstName} {teacher.lastName} ({teacher.login})
             <button
               type="button"
-              disabled={disabled}
               onClick={() => onRemove?.(teacher.id)}
-              className={`${
-                disabled && "hidden"
-              } ml-1 text-gray-500 hover:text-black cursor-pointer
+              className={`ml-1 text-gray-500 hover:text-black cursor-pointer
               `}
             >
               <X className="w-4" />
@@ -76,7 +76,9 @@ export default function TeacherSearchInput({
           <ul className="max-h-40 overflow-auto">
             {value.map((teacher) => (
               <li key={teacher.id} className="flex justify-between py-1">
-                <span>{teacher.fullName}</span>
+                <span>
+                  {teacher.firstName} {teacher.lastName} ({teacher.login})
+                </span>
                 <button
                   type="button"
                   onClick={() => {
@@ -114,7 +116,7 @@ export default function TeacherSearchInput({
               onClick={() => handleSelect(lect)}
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer bg-white"
             >
-              {lect.firstName} {lect.lastName}
+              {lect.firstName} {lect.lastName} ({lect.login})
             </li>
           ))}
         </ul>
