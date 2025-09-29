@@ -4,6 +4,7 @@ import Tabs from "@/components/utils/Tabs";
 import Table from "@/components/table/Table";
 import InputForm from "@/components/utils/InputForm";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
+import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { Button } from "@/components/utils/Buttons";
 import { getGroupById, updateGroup } from "@/lib/groupsApi";
 import { getStudentsFromGroup } from "@/lib/studentApi";
@@ -184,6 +185,7 @@ export default function GroupPage({ params }) {
                 disabled={!editing}
                 onSelect={handleLecturerAdd}
                 onRemove={handleLecturerRemove}
+                useLecturerSearch={useLecturerSearch}
               />
               <InputForm
                 label="Data rozpoczęcia"

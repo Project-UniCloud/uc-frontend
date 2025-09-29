@@ -5,6 +5,7 @@ import { addGroup } from "@/lib/groupsApi";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
+import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { formatDateToDDMMYYYY } from "@/lib/utils/formatDate";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
@@ -162,6 +163,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
           disabled={false}
           onSelect={handleLecturerAdd}
           onRemove={handleLecturerRemove}
+          useLecturerSearch={useLecturerSearch}
         />
         <div>
           <label

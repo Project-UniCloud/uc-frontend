@@ -45,3 +45,13 @@ export async function activateLecturer(lecturerId) {
     "Nieudane aktywowanie prowadzącego"
   );
 }
+
+export async function externalSearchLecturers(query) {
+  const path = `/users/lecturers/external/search?containsQuery=${encodeURIComponent(
+    query
+  )}`;
+  return await getApi(
+    path,
+    "Nie udało się pobrać prowadzących z zewnętrznego źródła"
+  );
+}

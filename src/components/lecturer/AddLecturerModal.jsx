@@ -5,6 +5,8 @@ import { addLecturer } from "@/lib/lecturersApi";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import { FaCheck } from "react-icons/fa";
+import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
+import { useLecturerExternalSearch } from "@/hooks/useLecturerExternalSearch";
 
 export default function AddLecturerModal({
   isOpen,
@@ -14,6 +16,7 @@ export default function AddLecturerModal({
   if (!isOpen) return null;
 
   const formRef = useRef(null);
+  const [lecturers, setLecturers] = useState([]);
   const [formErrors, setFormErrors] = useState({});
   const [formValues, setFormValues] = useState({
     firstName: "",
@@ -21,6 +24,27 @@ export default function AddLecturerModal({
     userIndexNumber: "",
     email: "",
   });
+
+  const handleLecturerAdd = (t) => {
+    setLecturers((prev) =>
+      prev.some((x) => x.id === t.id) ? prev : [...prev, t]
+    );
+    setFormValues({
+      firstName: t.firstName || "",
+      lastName: t.lastName || "",
+      userIndexNumber: t.login || "",
+      email: t.email || "",
+    });
+  };
+  const handleLecturerRemove = (id) => {
+    setLecturers((prev) => prev.filter((x) => x.id !== id));
+    setFormValues({
+      firstName: "",
+      lastName: "",
+      userIndexNumber: "",
+      email: "",
+    });
+  };
 
   // Obsługa inputów
   const handleInputChange = (e) => {
@@ -77,35 +101,15 @@ export default function AddLecturerModal({
           className="w-full flex flex-col gap-8"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            <InputForm
-              label="Imię"
-              name="firstName"
-              type="text"
-              required
-              value={formValues.firstName}
-              onChange={handleInputChange}
-              error={formErrors.firstName}
+            <TeacherSearchInput
+              value={lecturers}
+              disabled={lecturers.length >= 1}
+              onSelect={handleLecturerAdd}
+              onRemove={handleLecturerRemove}
+              useLecturerSearch={useLecturerExternalSearch}
             />
             <InputForm
-              label="Nazwisko"
-              name="lastName"
-              type="text"
-              required
-              value={formValues.lastName}
-              onChange={handleInputChange}
-              error={formErrors.lastName}
-            />
-            <InputForm
-              label="ID/Login"
-              name="userIndexNumber"
-              type="text"
-              required
-              value={formValues.userIndexNumber}
-              onChange={handleInputChange}
-              error={formErrors.userIndexNumber}
-            />
-            <InputForm
-              label="Mail"
+              label="Mail*"
               name="email"
               type="email"
               required
