@@ -40,9 +40,6 @@ export function useNamePath() {
     case "settings":
       namePath = "Ustawienia";
       break;
-    case "report-bug":
-      namePath = "Zgłoś błąd";
-      break;
     case "profile":
       namePath = "Profil";
       break;
