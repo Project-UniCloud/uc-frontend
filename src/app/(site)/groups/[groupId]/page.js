@@ -17,6 +17,7 @@ import {
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
 import { getResourcesGroup } from "@/lib/resourceApi";
+import { getResourcesGroup } from "@/lib/resourceApi";
 import { StopAllModal } from "@/components/resources/StopAllModal";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
@@ -261,6 +262,35 @@ export default function GroupPage({ params }) {
               />
             )}
 
+            <DataTableView
+              leftActions={
+                <>
+                  <Button onClick={() => setIsOpenStudent(true)}>
+                    <FaPlus /> Dodaj Studenta
+                  </Button>
+                  <Button onClick={() => setIsOpenImport(true)}>
+                    <FaPlus /> Importuj
+                  </Button>
+                </>
+              }
+              loading={loading}
+              error={error}
+              data={studentsData}
+              columns={[
+                { key: "login", header: "ID" },
+                { key: "firstName", header: "Imię" },
+                { key: "lastName", header: "Nazwisko" },
+                { key: "email", header: "Mail" },
+              ]}
+              whereNavigate={"students"}
+              idKey={"login"}
+              page={page}
+              setPage={setPage}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalPages={totalPages}
+              emptyMessage={"Brak studentów w tej grupie."}
+            />
             <DataTableView
               leftActions={
                 <>
