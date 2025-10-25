@@ -2,10 +2,9 @@
 import { useState, useEffect } from "react";
 import { getGroups } from "@/lib/groupsApi";
 import Tabs from "@/components/utils/Tabs";
-import Table from "@/components/table/Table";
 import { FaPlus } from "react-icons/fa";
 import AddGroupModal from "@/components/group/AddGroupModal";
-import Pagination from "@/components/pagination/Pagination";
+import DataTableView from "@/components/views/DataTableView";
 import { z } from "zod";
 import LoadingSpinner from "@/components/utils/LoadingSpinner";
 
@@ -86,61 +85,46 @@ export default function GroupsPage() {
     <div className="min-w-120">
       <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 
-      <div className="flex items-center gap-5 mb-5">
-        {activeTab === "ACTIVE" && (
-          <button
-            className="bg-purple hover:opacity-70 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1 cursor-pointer"
-            onClick={() => setIsOpen(true)}
-          >
-            <FaPlus />
-            Dodaj Grupę
-          </button>
-        )}
-
-        <input
-          type="text"
-          placeholder="Szukaj grupy"
-          value={search}
-          onChange={onSearchChange}
-          disabled={groups.length === 0 && search.length === 0}
-          className={`border border-gray-300 rounded-lg px-3 py-1.5 text-md ${
-            groups.length === 0 && search.length === 0
-              ? "opacity-50 cursor-not-allowed hidden"
-              : ""
-          }`}
-        />
-      </div>
-
       <AddGroupModal isOpen={isOpen} setIsOpen={setIsOpen} />
 
-      {error && <div className="text-red-600 mb-4">{error}</div>}
-      {!loading && groups.length === 0 && (
-        <div className="text-gray-500">Brak grup do wyświetlenia</div>
-      )}
-
-      {loading ? (
-        <div>Ładowanie...</div>
-      ) : (
-        !error &&
-        groups.length > 0 && (
+      <DataTableView
+        leftActions={
           <>
-            <Table
-              columns={columns}
-              data={tableData}
-              whereNavigate="groups"
-              idKey={"groupId"}
-            />
-
-            <Pagination
-              page={page}
-              setPage={setPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
+            {activeTab === "ACTIVE" && (
+              <button
+                className="bg-purple hover:opacity-70 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1 cursor-pointer"
+                onClick={() => setIsOpen(true)}
+              >
+                <FaPlus />
+                Dodaj Grupę
+              </button>
+            )}
+            <input
+              type="text"
+              placeholder="Szukaj grupy"
+              value={search}
+              onChange={onSearchChange}
+              disabled={groups.length === 0 && search.length === 0}
+              className={`border border-gray-300 rounded-lg px-3 py-1.5 text-md ${
+                groups.length === 0 && search.length === 0
+                  ? "opacity-50 cursor-not-allowed hidden"
+                  : ""
+              }`}
             />
           </>
-        )
-      )}
+        }
+        loading={loading}
+        error={error}
+        data={tableData}
+        columns={columns}
+        whereNavigate="groups"
+        idKey={"groupId"}
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        totalPages={totalPages}
+      />
     </div>
   );
 }

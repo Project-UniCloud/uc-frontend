@@ -2,6 +2,7 @@
 import React, { useState, useEffect, act } from "react";
 import Tabs from "@/components/utils/Tabs";
 import Table from "@/components/table/Table";
+import DataTableView from "@/components/views/DataTableView";
 import InputForm from "@/components/utils/InputForm";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { useLecturerSearch } from "@/hooks/useLecturerSearch";
@@ -17,7 +18,7 @@ import {
   formatDateToYYYYMMDD,
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
-import { getResourcesGroup } from "@/lib/resource";
+import { getResourcesGroup } from "@/lib/resourceApi";
 import { StopAllModal } from "@/components/resources/StopAllModal";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import Pagination from "@/components/pagination/Pagination";
@@ -248,14 +249,6 @@ export default function GroupPage({ params }) {
           <div>Ładowanie...</div>
         ) : (
           <>
-            <div className="flex items-center gap-5 mb-5">
-              <Button onClick={() => setIsOpenStudent(true)}>
-                <FaPlus /> Dodaj Studenta
-              </Button>
-              <Button onClick={() => setIsOpenImport(true)}>
-                <FaPlus /> Importuj
-              </Button>
-            </div>
             <AddStudentModal
               isOpen={isOpenStudent}
               setIsOpen={setIsOpenStudent}
@@ -269,68 +262,83 @@ export default function GroupPage({ params }) {
               />
             )}
 
-            {studentsData.length > 0 ? (
-              <>
-                <Table
-                  columns={[
-                    { key: "login", header: "ID" },
-                    { key: "firstName", header: "Imię" },
-                    { key: "lastName", header: "Nazwisko" },
-                    { key: "email", header: "Mail" },
-                  ]}
-                  data={studentsData}
-                />
-                <Pagination
-                  page={page}
-                  setPage={setPage}
-                  totalPages={totalPages}
-                  pageSize={pageSize}
-                  setPageSize={setPageSize}
-                />{" "}
-              </>
-            ) : (
-              <div>Brak studentów w tej grupie.</div>
-            )}
+            <DataTableView
+              leftActions={
+                <>
+                  <Button onClick={() => setIsOpenStudent(true)}>
+                    <FaPlus /> Dodaj Studenta
+                  </Button>
+                  <Button onClick={() => setIsOpenImport(true)}>
+                    <FaPlus /> Importuj
+                  </Button>
+                </>
+              }
+              loading={loading}
+              error={error}
+              data={studentsData}
+              columns={[
+                { key: "login", header: "ID" },
+                { key: "firstName", header: "Imię" },
+                { key: "lastName", header: "Nazwisko" },
+                { key: "email", header: "Mail" },
+              ]}
+              whereNavigate={"students"}
+              idKey={"login"}
+              page={page}
+              setPage={setPage}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalPages={totalPages}
+              emptyMessage={"Brak studentów w tej grupie."}
+            />
           </>
         ))}
 
       {/* Usługi */}
       {activeTab === "Usługi" && (
         <>
-          <div className="flex items-center gap-5 mb-5">
-            <Button
-              onClick={() => setIsOpenStopAll(true)}
-              color="bg-orange-200 cursor-not-allowed hover:not-allowed"
-              disabled
-            >
-              <CiPause1 /> Zawieś wszystko
-            </Button>
-            <Button onClick={() => setIsOpenResource(true)}>
-              <FaPlus /> Dodaj usługę
-            </Button>
-          </div>
           <StopAllModal isOpen={isOpenStopAll} setIsOpen={setIsOpenStopAll} />
           <AddResourceModal
             isOpen={isOpenResource}
             setIsOpen={setIsOpenResource}
             groupId={groupId}
           />
-          {resourcesData.length > 0 ? (
-            <Table
-              columns={[
-                { key: "clientId", header: "ID" },
-                { key: "name", header: "Nazwa" },
-                { key: "costLimit", header: "Limit Kosztu" },
-                { key: "limitUsed", header: "Koszt", numbers: true },
-                { key: "expiresAt", header: "Wygasa" },
-                { key: "cronCleanupSchedule", header: "Wyczyść" },
-                { key: "status", header: "Status" },
-              ]}
-              data={resourcesData}
-            />
-          ) : (
-            <div>Brak usług dla tej grupy.</div>
-          )}
+          <DataTableView
+            leftActions={
+              <>
+                <Button
+                  onClick={() => setIsOpenStopAll(true)}
+                  color="bg-orange-200 cursor-not-allowed hover:not-allowed"
+                  disabled
+                >
+                  <CiPause1 /> Zawieś wszystko
+                </Button>
+                <Button onClick={() => setIsOpenResource(true)}>
+                  <FaPlus /> Dodaj usługę
+                </Button>
+              </>
+            }
+            loading={loading}
+            error={error}
+            data={resourcesData}
+            columns={[
+              { key: "clientId", header: "ID" },
+              { key: "name", header: "Nazwa" },
+              { key: "costLimit", header: "Limit Kosztu" },
+              { key: "limitUsed", header: "Koszt" },
+              { key: "expiresAt", header: "Wygasa" },
+              { key: "cronCleanupSchedule", header: "Wyczyść" },
+              { key: "status", header: "Status" },
+            ]}
+            whereNavigate={"resources"}
+            idKey={"clientId"}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalPages={totalPages}
+            emptyMessage={"Brak usług dla tej grupy."}
+          />
         </>
       )}
     </div>

@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
-import { giveCloudResourceAccess } from "@/lib/resource";
+import { giveCloudResourceAccess } from "@/lib/resourceApi";
 import { getCloudAccesses, getCloudResourcesTypes } from "@/lib/cloudApi";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
