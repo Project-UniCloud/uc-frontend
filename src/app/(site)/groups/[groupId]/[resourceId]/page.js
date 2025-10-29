@@ -11,6 +11,7 @@ import {
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
 import ButtonChangeResourceStatus from "@/components/resources/ButtonChangeResourceStatus";
+import ButtonChangeResourceStatus from "@/components/resources/ButtonChangeResourceStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 
 const TABS = [{ label: "Informacje" }, { label: "Edycja" }];
@@ -47,11 +48,13 @@ export default function GroupPage({ params }) {
       .finally(() => setLoading(false));
   }, [groupId, resourceId]);
 
-  const handleChange = (fieldName) => (event) => {
-    const newValue = event.target.value;
+  const handleChange =
+    (fieldName, tabKey = activeTab) =>
+    (event) => {
+      const newValue = event.target.value;
 
-    setEditData((prev) => ({ ...prev, [fieldName]: newValue }));
-  };
+      setEditData((prev) => ({ ...prev, [fieldName]: newValue }));
+    };
 
   const handleEditClick = async () => {
     if (editing) {
@@ -73,6 +76,7 @@ export default function GroupPage({ params }) {
         showErrorToast("Błąd podczas aktualizacji danych: " + error.message);
       } finally {
         setFormLoading(false);
+        setEditing(false);
         setEditing(false);
       }
     } else {
