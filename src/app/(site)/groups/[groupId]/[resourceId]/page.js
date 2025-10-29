@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Tabs from "@/components/utils/Tabs";
 import InputForm from "@/components/utils/InputForm";
 import { Button } from "@/components/utils/Buttons";
 import {
