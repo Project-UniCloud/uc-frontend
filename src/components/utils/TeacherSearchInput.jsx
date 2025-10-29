@@ -5,7 +5,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 export default function TeacherSearchInput({
   value = [],
   label = "Prowadzący*",
-  disabled = false,
+  disabled = true,
   onSelect,
   onRemove,
   useLecturerSearch,
@@ -19,6 +19,7 @@ export default function TeacherSearchInput({
       id: lect.userId,
       firstName: `${lect.firstName}`,
       lastName: `${lect.lastName}`,
+      fullName: `${lect.firstName} ${lect.lastName}`,
       login: `${lect.login}`,
       email: `${lect.email}`,
     };
@@ -43,7 +44,9 @@ export default function TeacherSearchInput({
             <button
               type="button"
               onClick={() => onRemove?.(teacher.id)}
-              className={`ml-1 text-gray-500 hover:text-black cursor-pointer
+              className={`ml-1 text-gray-500 ${
+                disabled ? "" : "hover:text-black cursor-pointer"
+              }
               `}
             >
               <X className="w-4" />
