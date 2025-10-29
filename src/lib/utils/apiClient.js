@@ -6,7 +6,7 @@ export async function getApi(path, errorText) {
       credentials: "include",
     });
 
-    if (response.status === 401) {
+    if (response.status === 401 || response.status === 403) {
       window.location.href = "/login";
       throw new Error("unauthorized");
     }
@@ -38,7 +38,7 @@ export async function postApi(path, body = null, errorText, data = false) {
       body: JSON.stringify(body),
     });
 
-    if (response.status === 401) {
+    if (response.status === 401 || response.status === 403) {
       window.location.href = "/login";
       throw new Error("unauthorized");
     }
@@ -65,6 +65,39 @@ export async function patchApi(path, body, errorText, data = false) {
   try {
     const response = await fetch(`${getBaseApiUrl()}${path}`, {
       method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      window.location.href = "/login";
+      throw new Error("unauthorized");
+    }
+
+    if (!response.ok) {
+      try {
+        const errorData = await response.json();
+        errorText = errorData.detail || errorText;
+      } catch {}
+      throw new Error(errorText);
+    }
+
+    if (data) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function putApi(path, body = null, errorText, data = false) {
+  try {
+    const response = await fetch(`${getBaseApiUrl()}${path}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
