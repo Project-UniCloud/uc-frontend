@@ -40,10 +40,9 @@ export default function TeacherSearchInput({
             key={teacher.id}
             className="flex items-center bg-gray-200 px-2 py-1 rounded-full text-sm"
           >
-            {teacher.fullName}
+            {teacher.firstName} {teacher.lastName} ({teacher.login})
             <button
               type="button"
-              disabled={disabled}
               onClick={() => onRemove?.(teacher.id)}
               className={`ml-1 text-gray-500 ${
                 disabled ? "" : "hover:text-black cursor-pointer"
