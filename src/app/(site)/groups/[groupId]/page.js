@@ -330,7 +330,7 @@ export default function GroupPage({ params }) {
               { key: "status", header: "Status" },
             ]}
             whereNavigate={`${groupId}`}
-            idKey={"clientId"}
+            idKey={"id"}
             page={page}
             setPage={setPage}
             pageSize={pageSize}

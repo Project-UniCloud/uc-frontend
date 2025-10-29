@@ -40,7 +40,7 @@ export default function TeacherSearchInput({
             key={teacher.id}
             className="flex items-center bg-gray-200 px-2 py-1 rounded-full text-sm"
           >
-            {teacher.firstName} {teacher.lastName} ({teacher.login})
+            {teacher.fullName}
             <button
               type="button"
               onClick={() => onRemove?.(teacher.id)}
