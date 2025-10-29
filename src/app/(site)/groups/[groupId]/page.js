@@ -330,7 +330,7 @@ export default function GroupPage({ params }) {
               { key: "cronCleanupSchedule", header: "Wyczyść" },
               { key: "status", header: "Status" },
             ]}
-            whereNavigate={"resources"}
+            whereNavigate={`${groupId}`}
             idKey={"clientId"}
             page={page}
             setPage={setPage}

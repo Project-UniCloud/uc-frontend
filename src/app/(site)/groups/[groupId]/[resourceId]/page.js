@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Tabs from "@/components/utils/Tabs";
 import InputForm from "@/components/utils/InputForm";
-import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
-import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { Button } from "@/components/utils/Buttons";
 import {
   getResourceGeneralInfoByGroupId,
@@ -11,12 +9,11 @@ import {
   updateResourceEditInfoByGroupId,
   updateResourceGeneralInfoByGroupId,
 } from "@/lib/resourceApi";
-import { CiPause1 } from "react-icons/ci";
 import {
   formatDateToYYYYMMDD,
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
-import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
+import ButtonChangeResourceStatus from "@/components/resources/ButtonChangeResourceStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 
 const TABS = [{ label: "Informacje" }, { label: "Edycja" }];
@@ -45,9 +42,8 @@ export default function GroupPage({ params }) {
   useEffect(() => {
     setLoading(true);
     setError(null);
-
     if (activeTab === "Informacje") {
-      getResourceGeneralInfoByGroupId(groupId)
+      getResourceGeneralInfoByGroupId(groupId, resourceId)
         .then((data) => {
           setInfoData({
             owner: data.owner,
@@ -62,7 +58,7 @@ export default function GroupPage({ params }) {
     }
 
     if (activeTab === "Edycja") {
-      getResourceEditInfoByGroupId(groupId)
+      getResourceEditInfoByGroupId(groupId, resourceId)
         .then((data) => {
           setEditData({
             limit: data.name,
@@ -74,38 +70,58 @@ export default function GroupPage({ params }) {
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
     }
-  }, [activeTab, groupId]);
+  }, [activeTab, groupId, resourceId]);
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
+    setEditing(false);
   };
 
-  const handleChange = (fieldName) => (event) => {
-    const newValue = event.target.value;
+  const handleChange =
+    (fieldName, tabKey = activeTab) =>
+    (event) => {
+      const newValue = event.target.value;
 
-    setInfoData((prev) => ({ ...prev, [fieldName]: newValue }));
-  };
+      if (tabKey === "Informacje") {
+        setInfoData((prev) => ({ ...prev, [fieldName]: newValue }));
+      } else if (tabKey === "Edycja") {
+        setEditData((prev) => ({ ...prev, [fieldName]: newValue }));
+      }
+    };
 
-  const handleEditClick = async (tabKey) => {
+  const handleEditClick = async (tabKey = activeTab) => {
     if (editing) {
       setError(null);
       setFormLoading(true);
       try {
-        const updated = await updateGroup(groupId, {
-          owner: infoData.owner,
-          creationDate: formatDateToDDMMYYYY(infoData.creationDate),
-          ownerId: infoData.ownerId,
-          cloudId: infoData.cloudId,
-          description: infoData.description || "",
-        });
-        setInfoData((prev) => ({ ...prev, ...updated }));
-        showSuccessToast("Grupa została zaktualizowana pomyślnie.");
-        setEditing(false);
+        if (tabKey === "Informacje") {
+          const updated = await updateResourceGeneralInfoByGroupId(groupId, {
+            owner: infoData.owner,
+            creationDate: formatDateToDDMMYYYY(infoData.creationDate),
+            ownerId: infoData.ownerId,
+            cloudId: infoData.cloudId,
+            description: infoData.description || "",
+          });
+          setInfoData((prev) => ({ ...prev, ...updated }));
+          showSuccessToast("Informacje zostały zaktualizowane pomyślnie.");
+          setEditing(false);
+        } else if (tabKey === "Edycja") {
+          const updated = await updateResourceEditInfoByGroupId(groupId, {
+            name: editData.limit,
+            clean: editData.clean,
+            endDate: formatDateToDDMMYYYY(editData.endDate),
+            description: editData.description || "",
+          });
+          setEditData((prev) => ({ ...prev, ...updated }));
+          showSuccessToast("Dane zostały zaktualizowane pomyślnie.");
+          setEditing(false);
+        }
       } catch (error) {
         setError(error.message);
         showErrorToast("Błąd podczas aktualizacji danych: " + error.message);
       } finally {
         setFormLoading(false);
+        setEditing(false);
       }
     } else {
       setFormLoading(false);
@@ -122,7 +138,7 @@ export default function GroupPage({ params }) {
             color={editing ? "bg-green-500" : "bg-purple"}
             className={formLoading && "cursor-not-allowed opacity-50"}
             disabled={formLoading}
-            onClick={handleEditClick}
+            onClick={() => handleEditClick(activeTab)}
           >
             {editing ? "Zapisz" : "Edytuj"}
           </Button>
@@ -143,7 +159,7 @@ export default function GroupPage({ params }) {
                 label="Właściciel"
                 name="owner"
                 value={infoData.owner}
-                onChange={handleChange("owner")}
+                onChange={handleChange("owner", "Informacje")}
                 disabled={!editing}
               />
               <InputForm
@@ -151,21 +167,21 @@ export default function GroupPage({ params }) {
                 name="creationDate"
                 type="date"
                 value={infoData.creationDate}
-                onChange={handleChange("creationDate")}
+                onChange={handleChange("creationDate", "Informacje")}
                 disabled={!editing}
               />
               <InputForm
                 label="Indeks właściciela"
                 name="ownerId"
                 value={infoData.ownerId}
-                onChange={handleChange("ownerId")}
+                onChange={handleChange("ownerId", "Informacje")}
                 disabled={!editing}
               />
               <InputForm
                 label="ID zasobu w chmurze"
                 name="cloudId"
                 value={infoData.cloudId}
-                onChange={handleChange("cloudId")}
+                onChange={handleChange("cloudId", "Informacje")}
                 disabled={!editing}
               />
             </div>
@@ -184,7 +200,7 @@ export default function GroupPage({ params }) {
                 rows={5}
                 defaultValue={infoData.description || ""}
                 disabled={!editing}
-                onChange={handleChange("description")}
+                onChange={handleChange("description", "Informacje")}
               />
             </div>
           </>
@@ -203,14 +219,14 @@ export default function GroupPage({ params }) {
                 label="Limit"
                 name="limit"
                 value={editData.limit}
-                onChange={handleChange("limit")}
+                onChange={handleChange("limit", "Edycja")}
                 disabled={!editing}
               />
               <InputForm
                 label="Czyszczenie"
                 name="clean"
                 value={editData.clean}
-                onChange={handleChange("clean")}
+                onChange={handleChange("clean", "Edycja")}
                 disabled={!editing}
               />
               <InputForm
@@ -218,12 +234,14 @@ export default function GroupPage({ params }) {
                 name="endDate"
                 type="date"
                 value={editData.endDate}
-                onChange={handleChange("endDate")}
+                onChange={handleChange("endDate", "Edycja")}
                 disabled={!editing}
               />
-              <ButtonChangeStatus // TODO BUTTON -> CHANGE STATUS AND DELETE RESOURCE
+
+              <ButtonChangeResourceStatus
                 groupId={groupId}
-                groupStatus={groupData.status}
+                resourceId={resourceId}
+                // resourceStatus={editData.status}
               />
             </div>
             <div className=" flex flex-col items-center justify-center mt-5">
@@ -241,7 +259,7 @@ export default function GroupPage({ params }) {
                 rows={5}
                 defaultValue={editData.description || ""}
                 disabled={!editing}
-                onChange={handleChange("description")}
+                onChange={handleChange("description", "Edycja")}
               />
             </div>
           </>

@@ -1,4 +1,4 @@
-import { getApi, postApi } from "./utils/apiClient";
+import { getApi, postApi, patchApi } from "./utils/apiClient";
 
 export async function getResourcesGroup(groupId) {
   const path = `/groups/${groupId}/cloud-access`;
@@ -43,5 +43,26 @@ export async function updateResourceGeneralInfoByGroupId(
     path,
     data,
     "Nieudane aktualizowanie informacji o zasobie"
+  );
+}
+
+// TODO CHANGE TO CORRECT PATHS AND NAMES
+export async function deactivationResource(groupId, resourceId) {
+  return await postApi(
+    `/groups/${groupId}/resources/${resourceId}/deactivate`,
+    "Nieudane dezaktywowanie zasobu"
+  );
+}
+
+export async function activationResource(groupId, resourceId) {
+  return await postApi(
+    `/groups/${groupId}/resources/${resourceId}/activate`,
+    "Nieudane aktywowanie zasobu"
+  );
+}
+export async function deleteResource(groupId, resourceId) {
+  return await postApi(
+    `/groups/${groupId}/resources/${resourceId}/delete`,
+    "Nieudane usuwanie zasobu"
   );
 }

@@ -10,8 +10,8 @@ export default function DataTableView({
   error,
   data,
   columns,
-  whereNavigate,
-  idKey,
+  whereNavigate = "",
+  idKey = "",
   page,
   setPage,
   pageSize,
@@ -23,6 +23,7 @@ export default function DataTableView({
     <div>
       <div className="flex items-center gap-5 mb-5">
         {leftActions}
+
         <div className="ml-auto">{rightActions}</div>
       </div>
 
