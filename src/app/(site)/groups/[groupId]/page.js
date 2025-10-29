@@ -1,7 +1,6 @@
 "use client";
-import React, { useState, useEffect, act } from "react";
+import React, { useState, useEffect } from "react";
 import Tabs from "@/components/utils/Tabs";
-import Table from "@/components/table/Table";
 import DataTableView from "@/components/views/DataTableView";
 import InputForm from "@/components/utils/InputForm";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
@@ -10,7 +9,6 @@ import { Button } from "@/components/utils/Buttons";
 import { getGroupById, updateGroup } from "@/lib/groupsApi";
 import { getStudentsFromGroup } from "@/lib/studentApi";
 import { FaPlus } from "react-icons/fa";
-import { IoPlayCircleOutline } from "react-icons/io5";
 import { AddStudentModal } from "@/components/students/AddStudentModal";
 import { ImportStudentsModal } from "@/components/students/ImportStudentsModal";
 import { CiPause1 } from "react-icons/ci";
@@ -21,7 +19,6 @@ import {
 import { getResourcesGroup } from "@/lib/resourceApi";
 import { StopAllModal } from "@/components/resources/StopAllModal";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
-import Pagination from "@/components/pagination/Pagination";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 
@@ -96,6 +93,7 @@ export default function GroupPage({ params }) {
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
+    setEditing(false);
     setPage(0);
     setPageSize(10);
   };
@@ -124,6 +122,7 @@ export default function GroupPage({ params }) {
         setError(error.message);
         showErrorToast("Błąd podczas aktualizacji grupy: " + error.message);
       } finally {
+        setEditing(false);
         setFormLoading(false);
       }
     } else {
