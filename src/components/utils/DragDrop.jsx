@@ -1,5 +1,6 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
+import { useEffect } from "react";
 
 const ERROR_TRANSLATIONS = {
   "file-invalid-type": "Nieobsługiwany typ pliku",
@@ -8,14 +9,13 @@ const ERROR_TRANSLATIONS = {
   "too-many-files": "Za dużo plików",
 };
 
-export default function Basic({ onDropFile }) {
+export default function DragDrop({ onDropFile }) {
   const { acceptedFiles, fileRejections, getRootProps, getInputProps } =
     useDropzone({
       accept: { "text/csv": [".csv"] },
       maxSize: 100 * 1024 * 1024,
       maxFiles: 1,
       onDrop: (files) => {
-        console.log("Plik został dodany:", files[0]);
         onDropFile(files[0]);
       },
     });
@@ -51,7 +51,7 @@ export default function Basic({ onDropFile }) {
       </div>
 
       <aside className="mt-4">
-        {acceptedFiles.length > 0 && (
+        {acceptedFiles.length > 0 && acceptedFiles !== "null" && (
           <>
             <h4>Twój plik:</h4>
             <ul>{acceptedFileItems}</ul>

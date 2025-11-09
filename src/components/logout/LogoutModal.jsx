@@ -2,23 +2,29 @@ import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
-import { CiPause1 } from "react-icons/ci";
+import { logoutUser } from "@/lib/authApi";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { logout as logoutAction } from "@/store/authSlice";
 
-export function StopAllModal({ isOpen, setIsOpen }) {
+export function LogoutModal({ isOpen, setIsOpen }) {
   const dialogRef = useRef(null);
+  const router = useRouter();
   const [errors, setErrors] = useState({});
-  const [file, setFile] = useState(null);
+  const dispatch = useDispatch();
 
-  //   const mutation = useMutation({
-  //     mutationFn: ({ groupId }) => stopResourcesGroup(groupId),
-  //     mutationFn: ({ groupId }) => stopResourcesGroup(groupId),
-  //     onSuccess: () => setIsOpen(false),
-  //     onError: (error) =>
-  //       setErrors({
-  //         error: error.message || "Błąd wstrzymywania usług grupy",
-  //         error: error.message || "Błąd wstrzymywania usług grupy",
-  //       }),
-  //   });
+  const mutation = useMutation({
+    mutationFn: () => logoutUser(),
+    onSuccess: () => {
+      dispatch(logoutAction());
+      setIsOpen(false);
+      router.push("/login");
+    },
+    onError: (error) =>
+      setErrors({
+        error: error.message || "Błąd podczas wylogowania",
+      }),
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -47,11 +53,9 @@ export function StopAllModal({ isOpen, setIsOpen }) {
           <X />
         </button>
       </div>
-      <h2 className="text-xl font-semibold mb-10 text-center">
-        Wstrzymanie wszystkich usług
-      </h2>
+      <h2 className="text-xl font-semibold mb-10 text-center">Wylogowanie</h2>
       <p className="text-gray-600 mb-6 text-center text-xl ">
-        Czy jesteś pewny, że chcesz wstrzymać wszystkie usługi?
+        Czy chcesz się wylogować?
       </p>
       {errors.error && <div className="text-red-600">{errors.error}</div>}
       <div className="flex justify-end items-center gap-4 pt-10">
@@ -65,19 +69,16 @@ export function StopAllModal({ isOpen, setIsOpen }) {
           Anuluj
         </Button>
         <Button
-          color="bg-[#CD6200]"
+          color={`bg-red ${
+            mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           type="submit"
-          // disabled={mutation.isLoading}
-          // disabled={mutation.isLoading}
-          //   onClick={() => {
-          //     mutation.mutate({groupId});
-          //     mutation.mutate({groupId});
-          //   }}
+          disabled={mutation.isPending}
+          onClick={() => {
+            mutation.mutate();
+          }}
         >
-          {/* {mutation.isLoading ? "Wstrzymywanie..." : "Wstrzymaj"} */}
-          <CiPause1 />
-          <CiPause1 />
-          Wstrzymaj
+          {mutation.isPending ? "Wylogowywanie..." : "Wyloguj"}
         </Button>
       </div>
     </dialog>

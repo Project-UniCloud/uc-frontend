@@ -40,15 +40,15 @@ export function useNamePath() {
     case "settings":
       namePath = "Ustawienia";
       break;
-    case "report-bug":
-      namePath = "Zgłoś błąd";
-      break;
     case "profile":
       namePath = "Profil";
       break;
     default:
       if (isDetailsPath(parts, "groups")) {
         namePath = "Informacje o grupie";
+      }
+      if (parts[parts.length - 2] === "drivers") {
+        return "Informacje o sterowniku";
       }
       break;
   }

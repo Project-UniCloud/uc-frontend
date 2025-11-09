@@ -69,17 +69,17 @@ export default function LoginForm() {
         />
       </div>
 
-      <div className="flex items-center space-x-2" data-cy="remebeer-me-checkbox">
+      {/* <div className="flex items-center space-x-2">
         <input
           type="checkbox"
           id="remember"
           name="remember"
           className="cursor-pointer"
         />
-        <label htmlFor="remember" className="text-sm text-black" data-cy="remebeer-me-text">
+        <label htmlFor="remember" className="text-sm text-black">
           Pamiętaj mnie
         </label>
-      </div>
+      </div> */}
 
       {formErrors.error && (
         <p className="text-red-400 text-xs">{formErrors.error}</p>
@@ -93,7 +93,6 @@ export default function LoginForm() {
             : "hover:bg-indigo-700 cursor-pointer"
         }`}
         disabled={mutation.isPending}
-        data-cy="login-submit-button"
       >
         {mutation.isPending ? "Logowanie..." : "Zaloguj"}
       </button>

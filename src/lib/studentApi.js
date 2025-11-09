@@ -1,16 +1,21 @@
 import { getApi, postApi } from "./utils/apiClient";
 import { getBaseApiUrl } from "@/lib/utils/baseUrl";
 
-export async function getStudentsFromGroup(groupId) {
-  const path = `/groups/${groupId}/students`;
+export async function getStudentsFromGroup({
+  groupId,
+  page = 0,
+  pageSize = 10,
+}) {
+  const path = `/groups/${groupId}/students?page=${page}&pageSize=${pageSize}`;
   return await getApi(path, "Nieudane pobieranie studentów");
 }
 
 export async function addStudentToGroup(groupId, studentData) {
-  const path = `/groups/${groupId}/attenders`;
+  const path = `/groups/${groupId}/students`;
   return await postApi(
     path,
     studentData,
+
     "Nieudane dodawanie studenta do grupy"
   );
 }
@@ -21,7 +26,7 @@ export async function addStudentsToGroup(groupId, file) {
   form.append("file", file);
   try {
     const response = await fetch(
-      `${getBaseApiUrl()}/groups/${groupId}/attenders/import`,
+      `${getBaseApiUrl()}/groups/${groupId}/students/import`,
       {
         method: "POST",
         credentials: "include",

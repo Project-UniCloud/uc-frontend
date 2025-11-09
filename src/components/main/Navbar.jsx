@@ -15,9 +15,15 @@ export default function Navbar({ back }) {
       </div>
 
       <div className="cursor-pointer">
-        <Link href="/profile">
-          <FaUserCircle className="text-3xl text-blac" />
-        </Link>
+        {/* <Link href="/profile"> */}
+        <button
+          type="button"
+          disabled
+          className="cursor-not-allowed bg-transparent border-none p-0"
+        >
+          <FaUserCircle className="text-3xl text-gray-400 cursor-not-allowed" />
+        </button>
+        {/* </Link> */}
       </div>
     </div>
   );

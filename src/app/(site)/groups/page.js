@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getGroups } from "@/lib/groupsApi";
-import Tabs from "@/components/Tabs";
-import Table from "@/components/Table";
+import Tabs from "@/components/utils/Tabs";
 import { FaPlus } from "react-icons/fa";
 import AddGroupModal from "@/components/group/AddGroupModal";
+import DataTableView from "@/components/views/DataTableView";
+import { z } from "zod";
+import LoadingSpinner from "@/components/utils/LoadingSpinner";
 
 const TABS = [
   { key: "ACTIVE", label: "Aktywne" },
@@ -21,6 +23,13 @@ const columns = [
   { key: "endDate", header: "Data Zakończenia" },
 ];
 
+const searchSchema = z
+  .string()
+  .regex(
+    /^[\wąćęłńóśźżĄĆĘŁŃÓŚŹŻ\- ]*$/,
+    "Dozwolone: litery, cyfry, spacje i '-'"
+  );
+
 export default function GroupsPage() {
   const [activeTab, setActiveTab] = useState("ACTIVE");
   const [groups, setGroups] = useState([]);
@@ -28,56 +37,94 @@ export default function GroupsPage() {
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getGroups(activeTab)
+    getGroups({ status: activeTab, page, pageSize, groupName: search })
       .then((data) => {
         setGroups(data.content);
+        setTotalPages(data.totalPages);
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
         setError(error.message);
       });
-  }, [activeTab]);
+  }, [activeTab, page, pageSize, search]);
 
   const tableData = groups.map((group, idx) => ({
     ...group,
     id: idx + 1,
   }));
 
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    setPage(0);
+    setPageSize(10);
+    setSearch("");
+  };
+
+  const onSearchChange = (e) => {
+    const value = e.target.value;
+    const result = searchSchema.safeParse(value);
+    if (!result.success) {
+      setError(result.error.errors[0].message);
+      return;
+    }
+    setError("");
+    setSearch(value);
+    setPage(0);
+  };
+
   return (
     <div className="min-w-120">
-      <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
-
-      <div className="flex items-center justify-between mb-5">
-        {activeTab === "ACTIVE" && (
-          <button
-            className="bg-purple hover:opacity-70 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1 cursor-pointer"
-            onClick={() => setIsOpen(true)}
-          >
-            <FaPlus />
-            Dodaj Grupę
-          </button>
-        )}
-      </div>
+      <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 
       <AddGroupModal isOpen={isOpen} setIsOpen={setIsOpen} />
 
-      {error && <div className="text-red-600 mb-4">{error}</div>}
-      {tableData.length === 0 && !loading && (
-        <div className="text-gray-500">Brak grup do wyświetlenia</div>
-      )}
-
-      {loading ? (
-        <div>Ładowanie...</div>
-      ) : (
-        !error &&
-        tableData.length > 0 && (
-          <Table columns={columns} data={tableData} whereNavigate="groups" />
-        )
-      )}
+      <DataTableView
+        leftActions={
+          <>
+            {activeTab === "ACTIVE" && (
+              <button
+                className="bg-purple hover:opacity-70 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1 cursor-pointer"
+                onClick={() => setIsOpen(true)}
+              >
+                <FaPlus />
+                Dodaj Grupę
+              </button>
+            )}
+            <input
+              type="text"
+              placeholder="Szukaj grupy"
+              value={search}
+              onChange={onSearchChange}
+              disabled={groups.length === 0 && search.length === 0}
+              className={`border border-gray-300 rounded-lg px-3 py-1.5 text-md ${
+                groups.length === 0 && search.length === 0
+                  ? "opacity-50 cursor-not-allowed hidden"
+                  : ""
+              }`}
+            />
+          </>
+        }
+        loading={loading}
+        error={error}
+        data={tableData}
+        columns={columns}
+        whereNavigate="groups"
+        idKey={"groupId"}
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        totalPages={totalPages}
+      />
     </div>
   );
 }
