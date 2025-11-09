@@ -15,17 +15,17 @@ function stubLogin() {
 }
 
 Cypress.Commands.add('loginAsAdmin', () => {
-    cy.session(
-        'admin',
-        () => {
-            stubLogin(); // interceptujemy zapytanie logowania
+    cy.session('admin', () => {
+        cy.intercept('POST', 'http://localhost:8080/api/auth', {
+            statusCode: 200,
+            body: { role: 'ADMIN' },
+            headers: {
+                'Set-Cookie': 'jwt=twojastara2137; Path=/; HttpOnly;',
+            },
+        }).as('loginStub');
 
-            // symulacja zalogowanego użytkownika – np. ustawiamy cookie
-            cy.setCookie('jwt', 'twojastara2137');
-
-            // możesz też przejść od razu na stronę chronioną
-            // cy.visit('/dashboard'); ← opcjonalnie
-        },
-        { cacheAcrossSpecs: false }
-    );
+        // ustawiamy cookie jak po zalogowaniu
+        cy.setCookie('jwt', 'twojastara2137');
+    }, { cacheAcrossSpecs: true }); // true, żeby nie logować za każdym razem
 });
+

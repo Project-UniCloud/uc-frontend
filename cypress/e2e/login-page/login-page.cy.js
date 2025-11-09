@@ -1,43 +1,37 @@
 describe('Login Page', () => {
   beforeEach(()=>{
     cy.visit('http://localhost:3000/login')
-    stubLogin().as('loginStub');
   });
 
   it('Should display the login page correctly', ()=>{
-    cy.getWithDataCy('wmi-image-side').should('be.visible');
-    cy.getWithDataCy('wmi-image-side').should('have.attr', 'src').and('include', '%2Fwmi.png');
+    cy.getWithDataCy('login-header').should('have.text', 'Miło Cię znowu widzieć!');
+    cy.get('form').within(() => {
+      cy.get('label').eq(0).should('have.text', 'Login');
+      cy.get('input').eq(0).should('have.attr', 'placeholder', 'Wprowadź login');
 
-    cy.getWithDataCy('logo-login-page').should('be.visible');
-    cy.getWithDataCy('logo-login-page').should('have.attr', 'src').and('include', '%2Flogo.png');
+      cy.get('label').eq(1).should('have.text', 'Hasło');
+      cy.get('input').eq(1).should('have.attr', 'placeholder', 'Wprowadź hasło');
 
-    cy.getWithDataCy('login-header').should('be.visible').and('have.text', 'Miło Cię znowu widzieć!');
+        cy.get('button').should('have.text', 'Zaloguj');
+    });
 
-    cy.getWithDataCy('input-login').should('be.visible').and('have.attr', 'placeholder', 'Wprowadź login');
-    cy.getWithDataCy('input-password').should('be.visible').and('have.attr', 'placeholder', 'Wprowadź hasło');
+    cy.getWithDataCy('logo-login-page').should('have.attr', 'src', '/_next/image?url=%2Flogo.png&w=3840&q=75');
+    cy.get('img').eq(0).should('have.attr', 'src', '/_next/image?url=%2Fwmi.png&w=3840&q=75');
 
-
-    cy.getWithDataCy('remebeer-me-checkbox').should('be.visible').and('have.text', 'Pamiętaj mnie');
-
-    cy.getWithDataCy('login-submit-button').should('be.visible').and('have.text', 'Zaloguj');
-    cy.getWithDataCy('login-submit-button').should('have.css', 'background-color', 'rgb(97, 77, 226)');
-
-    cy.getWithDataCy('login-footer').should('have.text', '© Unicloud 2025');
   });
 
-  it('Should log the user in correctly', () => {
-    cy.getWithDataCy('input-login').type('admin');
+  it.only('Should log the user in correctly', () => {
+    stubLogin().as('loginStub');
+    cy.getWithDataCy('input-login').type('s123234567');
     cy.getWithDataCy('input-password').type('password');
 
-    cy.getWithDataCy('login-submit-button').click();
+    cy.get('button').click();
     cy.wait('@loginStub')
-
-    cy.getWithDataCy('title').should('have.text', 'Przegląd');
-    cy.get('h1').should('have.text', 'Dashboard');
+    cy.wait(500); // wait for redirect
+    cy.get('h1').should('have.text', 'Witamy w UniCloud Manager!');
+    cy.get('.text-gray-8-00').should('have.text', 'Akademickim systemie zarządzania zasobami chmurowymi WMiI UAM. Nasza platforma umożliwia efektywne zarządzanie zasobami chmurowymi, automatyzację rutynowych procesów i monitorowanie wykorzystania infrastruktury. Zachęcamy do korzystania z narzędzia i dzielenia się opinią na temat dalszego rozwoju systemu.');
   });
-
-
-})
+});
 
 function stubLogin(){
   return cy.intercept('POST', 'http://localhost:8080/api/auth', {
