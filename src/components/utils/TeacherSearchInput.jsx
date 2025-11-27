@@ -40,9 +40,10 @@ export default function TeacherSearchInput({
             key={teacher.id}
             className="flex items-center bg-gray-200 px-2 py-1 rounded-full text-sm"
           >
-            {teacher.firstName} {teacher.lastName} ({teacher.login})
+            {teacher.fullName}
             <button
               type="button"
+              disabled={disabled}
               onClick={() => onRemove?.(teacher.id)}
               className={`ml-1 text-gray-500 ${
                 disabled ? "" : "hover:text-black cursor-pointer"
@@ -79,6 +80,9 @@ export default function TeacherSearchInput({
           <ul className="max-h-40 overflow-auto">
             {value.map((teacher) => (
               <li key={teacher.id} className="flex justify-between py-1">
+                <span>
+                  {teacher.firstName} {teacher.lastName} ({teacher.login})
+                </span>
                 <span>
                   {teacher.firstName} {teacher.lastName} ({teacher.login})
                 </span>
@@ -119,7 +123,8 @@ export default function TeacherSearchInput({
               onClick={() => handleSelect(lect)}
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer bg-white"
             >
-              {lect.firstName} {lect.lastName} ({lect.login})
+              {lect.firstName} {lect.lastName} ({lect.login}){lect.firstName}{" "}
+              {lect.lastName} ({lect.login})
             </li>
           ))}
         </ul>
