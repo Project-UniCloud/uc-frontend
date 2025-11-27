@@ -17,17 +17,21 @@ const TABS = [{ label: "Informacje" }, { label: "Edycja" }];
 
 export default function GroupPage({ params }) {
   const { groupId, resourceId } = React.use(params);
-  const [editData, setEditData] = useState({
+  const [infoData, setInfoData] = useState({
     id: "",
     limit: "",
     cron: "",
     expiresAt: "",
     status: "",
+    notificationLevel1: "",
+    notificationLevel2: "",
+    notificationLevel3: "",
   });
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [snapshotInfoData, setSnapshotInfoData] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -35,12 +39,15 @@ export default function GroupPage({ params }) {
 
     getResourceEditInfoByGroupId(groupId, resourceId)
       .then((data) => {
-        setEditData({
+        setInfoData({
           id: data.id,
           limit: data.limit,
           cron: data.cron || "",
           expiresAt: formatDateToYYYYMMDD(data.expiresAt),
           status: data.status || "",
+          notificationLevel1: data.notificationLevel1 || "",
+          notificationLevel2: data.notificationLevel2 || "",
+          notificationLevel3: data.notificationLevel3 || "",
         });
       })
       .catch((error) => setError(error.message))
@@ -48,11 +55,11 @@ export default function GroupPage({ params }) {
   }, [groupId, resourceId]);
 
   const handleChange =
-    (fieldName, tabKey = activeTab) =>
+    (fieldName = activeTab) =>
     (event) => {
       const newValue = event.target.value;
 
-      setEditData((prev) => ({ ...prev, [fieldName]: newValue }));
+      setInfoData((prev) => ({ ...prev, [fieldName]: newValue }));
     };
 
   const handleEditClick = async () => {
@@ -61,24 +68,33 @@ export default function GroupPage({ params }) {
       setFormLoading(true);
       try {
         const updated = await updateResourceEditInfoByGroupId(groupId, {
-          id: editData.id,
-          limit: editData.limit,
-          cron: editData.cron,
-          expiresAt: formatDateToDDMMYYYY(editData.expiresAt),
-          status: editData.status,
+          id: infoData.id,
+          limit: infoData.limit,
+          cron: infoData.cron,
+          expiresAt: formatDateToDDMMYYYY(infoData.expiresAt),
+          status: infoData.status,
+          notificationLevel1: infoData.notificationLevel1,
+          notificationLevel2: infoData.notificationLevel2,
+          notificationLevel3: infoData.notificationLevel3,
         });
-        setEditData((prev) => ({ ...prev, ...updated }));
+        setInfoData((prev) => ({ ...prev, ...updated }));
         showSuccessToast("Dane zostały zaktualizowane pomyślnie.");
+        setSnapshotInfoData(null);
         setEditing(false);
       } catch (error) {
         setError(error.message);
         showErrorToast("Błąd podczas aktualizacji danych: " + error.message);
+        if (snapshotInfoData) {
+          setInfoData((prev) => ({ ...prev, ...snapshotInfoData }));
+          setSnapshotInfoData(null);
+        }
       } finally {
+        setSnapshotInfoData(null);
         setFormLoading(false);
-        setEditing(false);
         setEditing(false);
       }
     } else {
+      setSnapshotInfoData(infoData);
       setFormLoading(false);
       setEditing(true);
     }
@@ -112,14 +128,14 @@ export default function GroupPage({ params }) {
             <InputForm
               label="Limit"
               name="limit"
-              value={editData.limit}
+              value={infoData.limit}
               onChange={handleChange("limit", "Edycja")}
               disabled={!editing}
             />
             <InputForm
               label="Czyszczenie"
               name="cron"
-              value={editData.cron}
+              value={infoData.cron}
               onChange={handleChange("cron", "Edycja")}
               disabled={!editing}
             />
@@ -127,15 +143,51 @@ export default function GroupPage({ params }) {
               label="Data zakończenia"
               name="expiresAt"
               type="date"
-              value={editData.expiresAt}
+              value={infoData.expiresAt}
               onChange={handleChange("expiresAt", "Edycja")}
+              disabled={!editing}
+            />
+
+            <InputForm
+              label="Próg powiadomień 1 (%)"
+              name="notificationLevel1"
+              type="number"
+              min={0}
+              max={100}
+              step={1}
+              value={infoData.notificationLevel1}
+              onChange={handleChange("notificationLevel1", "Edycja")}
+              disabled={!editing}
+            />
+
+            <InputForm
+              label="Próg powiadomień 2 (%)"
+              name="notificationLevel2"
+              type="number"
+              min={0}
+              max={100}
+              step={1}
+              value={infoData.notificationLevel2}
+              onChange={handleChange("notificationLevel2", "Edycja")}
+              disabled={!editing}
+            />
+
+            <InputForm
+              label="Próg powiadomień 3 (%)"
+              name="notificationLevel3"
+              type="number"
+              min={0}
+              max={100}
+              step={1}
+              value={infoData.notificationLevel3}
+              onChange={handleChange("notificationLevel3", "Edycja")}
               disabled={!editing}
             />
 
             <ButtonChangeResourceStatus
               groupId={groupId}
               resourceId={resourceId}
-              resourceStatus={editData.status}
+              resourceStatus={infoData.status}
             />
           </div>
         </>
