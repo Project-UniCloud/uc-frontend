@@ -45,6 +45,7 @@ export default function GroupPage({ params }) {
   const [isOpenResource, setIsOpenResource] = useState(false);
   const [isOpenStopAll, setIsOpenStopAll] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [snapshotGroupData, setSnapshotGroupData] = useState(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -117,15 +118,21 @@ export default function GroupPage({ params }) {
         });
         setGroupData((prev) => ({ ...prev, ...updated }));
         showSuccessToast("Grupa została zaktualizowana pomyślnie.");
+        setSnapshotGroupData(null);
         setEditing(false);
       } catch (error) {
         setError(error.message);
         showErrorToast("Błąd podczas aktualizacji grupy: " + error.message);
+        if (snapshotGroupData) {
+          setGroupData((prev) => ({ ...prev, ...snapshotGroupData }));
+          setSnapshotGroupData(null);
+        }
       } finally {
         setEditing(false);
         setFormLoading(false);
       }
     } else {
+      setSnapshotGroupData(groupData);
       setFormLoading(false);
       setEditing(true);
     }
@@ -260,7 +267,6 @@ export default function GroupPage({ params }) {
                 groupId={groupId}
               />
             )}
-
             <DataTableView
               leftActions={
                 <>
