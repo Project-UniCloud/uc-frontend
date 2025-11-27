@@ -9,7 +9,6 @@ export default function TeacherSearchInput({
   onSelect,
   onRemove,
   useLecturerSearch,
-  useLecturerSearch,
 }) {
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(false);

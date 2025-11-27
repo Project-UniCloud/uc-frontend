@@ -13,7 +13,6 @@ import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
 export default function ButtonChangeResourceStatus({
   groupId,
-<<<<<<< HEAD
   resourceStatus,
   resourceId,
 }) {
@@ -24,15 +23,6 @@ export default function ButtonChangeResourceStatus({
       console.log("Mutating deactivation for:", groupId, resourceId);
       deactivationResource(groupId, resourceId);
     },
-=======
-  resourceStatus = "Aktywna",
-  resourceId,
-}) {
-  const router = useRouter();
-  const deactivationMutation = useMutation({
-    mutationFn: (groupId, resourceId) =>
-      deactivationResource(groupId, resourceId),
->>>>>>> a8ccee8 (Add details to group's resource page)
     onSuccess: () => {
       router.push(`/groups/${groupId}`);
       showSuccessToast("Usługa została zdezaktywowana!");
@@ -44,11 +34,7 @@ export default function ButtonChangeResourceStatus({
   });
 
   const deleteMutation = useMutation({
-<<<<<<< HEAD
     mutationFn: () => deleteResource(groupId, resourceId),
-=======
-    mutationFn: (groupId, resourceId) => deleteResource(groupId, resourceId),
->>>>>>> a8ccee8 (Add details to group's resource page)
     onSuccess: () => {
       router.push(`/groups/${groupId}`);
       showSuccessToast("Usługa została usunięta!");
@@ -60,12 +46,7 @@ export default function ButtonChangeResourceStatus({
   });
 
   const activationMutation = useMutation({
-<<<<<<< HEAD
     mutationFn: () => activationResource(groupId, resourceId),
-=======
-    mutationFn: (groupId, resourceId) =>
-      activationResource(groupId, resourceId),
->>>>>>> a8ccee8 (Add details to group's resource page)
     onSuccess: () => {
       router.push(`/groups/${groupId}`);
       showSuccessToast("Usługa została aktywowana!");
@@ -82,61 +63,37 @@ export default function ButtonChangeResourceStatus({
     activationMutation.isPending;
   return (
     <>
-<<<<<<< HEAD
       {resourceStatus === "ACTIVE" && (
-=======
-      {resourceStatus === "Aktywna" && (
->>>>>>> a8ccee8 (Add details to group's resource page)
         <Button
           label="Dezaktywuj"
           color={`bg-orange ${isLoading && "opacity-50"}`}
           center
-<<<<<<< HEAD
           onClick={() => deactivationMutation.mutate()}
           // onClick={() => console.log(resourceId)}
-=======
-          onClick={() => deactivationMutation.mutate(groupId, resourceId)}
->>>>>>> a8ccee8 (Add details to group's resource page)
           disabled={isLoading}
         >
           <FiArchive className="text-lg" />
           {isLoading ? "Ładowanie..." : "Dezaktywuj"}
         </Button>
       )}
-<<<<<<< HEAD
       {resourceStatus === "INACTIVE" && (
-=======
-      {resourceStatus === "Nieaktywna" && (
->>>>>>> a8ccee8 (Add details to group's resource page)
         <Button
           label="Aktywuj"
           color={`bg-green ${isLoading && "opacity-50"}`}
           center
-<<<<<<< HEAD
           onClick={() => activationMutation.mutate()}
-=======
-          onClick={() => activateMutation.mutate(groupId, resourceId)}
->>>>>>> a8ccee8 (Add details to group's resource page)
           disabled={isLoading}
         >
           <CiPause1 className="text-lg" />
           {isLoading ? "Ładowanie..." : "Aktywuj"}
         </Button>
       )}
-<<<<<<< HEAD
       {resourceStatus === "DEACTIVATED" && (
-=======
-      {resourceStatus === "Zdezaktywowana" && (
->>>>>>> a8ccee8 (Add details to group's resource page)
         <Button
           label="Usuń"
           color={`bg-red ${isLoading && "opacity-50"}`}
           center
-<<<<<<< HEAD
           onClick={() => deleteMutation.mutate()}
-=======
-          onClick={() => deleteMutation.mutate(groupId, resourceId)}
->>>>>>> a8ccee8 (Add details to group's resource page)
           disabled={isLoading}
         >
           <IoPlayCircleOutline className="text-lg" />

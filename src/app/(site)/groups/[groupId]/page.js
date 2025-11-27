@@ -17,7 +17,6 @@ import {
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
 import { getResourcesGroup } from "@/lib/resourceApi";
-import { getResourcesGroup } from "@/lib/resourceApi";
 import { StopAllModal } from "@/components/resources/StopAllModal";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";

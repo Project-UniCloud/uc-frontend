@@ -11,7 +11,6 @@ import {
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
 import ButtonChangeResourceStatus from "@/components/resources/ButtonChangeResourceStatus";
-import ButtonChangeResourceStatus from "@/components/resources/ButtonChangeResourceStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 
 const TABS = [{ label: "Informacje" }, { label: "Edycja" }];

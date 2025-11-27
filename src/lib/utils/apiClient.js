@@ -7,7 +7,6 @@ export async function getApi(path, errorText) {
     });
 
     if (response.status === 401 || response.status === 403) {
-    if (response.status === 401 || response.status === 403) {
       window.location.href = "/login";
       throw new Error("unauthorized");
     }
@@ -39,7 +38,6 @@ export async function postApi(path, body = null, errorText, data = false) {
       body: JSON.stringify(body),
     });
 
-    if (response.status === 401 || response.status === 403) {
     if (response.status === 401 || response.status === 403) {
       window.location.href = "/login";
       throw new Error("unauthorized");
