@@ -1,13 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
-import { getDrivers } from "@/lib/driversApi";
+import {useEffect, useState} from "react";
 import Table from "@/components/table/Table";
 import Pagination from "@/components/pagination/Pagination";
-import { useRef } from "react";
-import { getCloudAccesses } from "@/lib/cloudApi";
+import {getCloudAccesses} from "@/lib/cloudApi";
 
 const columns = [
-  { key: "cloudAccessClientName", header: "Nazwa" },
+  { key: "cloudConnectorName", header: "Nazwa" },
   { key: "costLimit", header: "Limit Kosztu" },
   { key: "defaultCronExpression", header: "Wyczyść" },
 ];
@@ -59,7 +57,7 @@ export default function GroupsPage() {
               columns={columns}
               data={tableData}
               whereNavigate="drivers"
-              idKey={"cloudAccessClientId"}
+              idKey={"cloudConnectorId"}
             />
 
             <Pagination

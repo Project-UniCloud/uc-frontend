@@ -1,13 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import Tabs from "@/components/utils/Tabs";
 import Table from "@/components/table/Table";
 import InputForm from "@/components/utils/InputForm";
-import { getGroups } from "@/lib/groupsApi";
-import { getCloudAccesses } from "@/lib/cloudApi";
+import {getGroups} from "@/lib/groupsApi";
+import {getCloudAccessesById} from "@/lib/cloudApi";
 import Pagination from "@/components/pagination/Pagination";
-import { getCloudAccessesById } from "@/lib/cloudApi";
-import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 
 const TABS = [
   { label: "Ustawienia" },
@@ -26,9 +24,7 @@ export default function GroupPage({ params }) {
     status: "",
   });
   const [groupsData, setGroupsData] = useState([]);
-  const [authData, setAuthData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState(null);
   //   const [editing, setEditing] = useState(false);
   const [page, setPage] = useState(0);
@@ -45,7 +41,7 @@ export default function GroupPage({ params }) {
           setdriverData({
             clean: data.defaultCronExpression,
             limit: data.costLimit,
-            name: data.cloudAccessClientName,
+            name: data.cloudConnectorName,
             status: data.isActive,
             description: data.description || "lorem ipsum dolor sit amet",
           });
