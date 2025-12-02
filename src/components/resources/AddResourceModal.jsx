@@ -30,7 +30,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
     onError: (error) => {
       setError({
         error: error.message || "Błąd dodawania usługi",
-      }),
+      })
         showErrorToast("Błąd dodawania usługi: " + error?.message);
     },
   });
@@ -110,10 +110,10 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
             {driversData.map((driver) => {
               return (
                 <option
-                  key={driver.cloudAccessClientId}
-                  value={driver.cloudAccessClientId}
+                  key={driver.cloudConnectorId}
+                  value={driver.cloudConnectorId}
                 >
-                  {driver.cloudAccessClientId}
+                  {driver.cloudConnectorId}
                 </option>
               );
             })}
@@ -184,7 +184,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
             mutation.mutate({
               groupId,
               data: {
-                cloudAccessClientId: selectedDriver,
+                cloudConnectorId: selectedDriver,
                 cloudResourceType: selectedResource,
                 costLimit: limit,
               },
