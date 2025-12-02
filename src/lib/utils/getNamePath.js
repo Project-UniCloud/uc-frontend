@@ -53,6 +53,9 @@ export function useNamePath() {
       if (parts[parts.length - 2] === "drivers") {
         return "Informacje o sterowniku";
       }
+      if (isDetailsPath(parts, "list-lecturers", 2)) {
+        namePath = "Informacje o prowadzącym";
+      }
       break;
   }
   return namePath;
