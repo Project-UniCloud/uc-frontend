@@ -1,10 +1,10 @@
 "use client";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Tabs from "@/components/utils/Tabs";
 import Table from "@/components/table/Table";
 import InputForm from "@/components/utils/InputForm";
-import {getGroups} from "@/lib/groupsApi";
-import {getCloudAccessesById} from "@/lib/cloudApi";
+import { getGroups } from "@/lib/groupsApi";
+import { getCloudAccessesById } from "@/lib/cloudApi";
 import Pagination from "@/components/pagination/Pagination";
 
 const TABS = [
@@ -39,11 +39,11 @@ export default function GroupPage({ params }) {
       getCloudAccessesById(driverName)
         .then((data) => {
           setdriverData({
+            id: data.cloudConnectorId,
+            name: data.cloudConnectorName,
             clean: data.defaultCronExpression,
             limit: data.costLimit,
-            name: data.cloudConnectorName,
             status: data.isActive,
-            description: data.description || "lorem ipsum dolor sit amet",
           });
         })
         .catch((error) => setError(error.message))
@@ -137,6 +137,26 @@ export default function GroupPage({ params }) {
                           grid-cols-1 md:grid-cols-2 md:grid-rows-3 "
             >
               <InputForm
+                label="ID Sterownika"
+                name="id"
+                type="text"
+                value={driverData.id}
+                disabled
+              />
+              <InputForm
+                label="Nazwa"
+                name="name"
+                type="name"
+                value={driverData.name}
+                disabled
+              />
+              <InputForm
+                label="Wyczyść"
+                name="clean"
+                value={driverData.clean}
+                disabled
+              />
+              <InputForm
                 label="Wyczyść"
                 name="clean"
                 value={driverData.clean}
@@ -149,37 +169,12 @@ export default function GroupPage({ params }) {
                 disabled
               />
               <InputForm
-                label="Nazwa"
-                name="name"
-                type="name"
-                value={driverData.name}
-                disabled
-              />
-              <InputForm
                 label="Status"
                 name="status"
                 colors={driverData.status ? "text-green" : "text-red"}
                 center
                 value={driverData.status ? "Aktywny" : "Nieaktywny"}
                 disabled
-              />
-            </div>
-            <div className=" flex flex-col items-center justify-center mt-5">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium mb-1"
-              >
-                Uwagi
-              </label>
-              <textarea
-                name="description"
-                id="description"
-                placeholder="Opis"
-                className="w-200 m-auto border border-gray-400 rounded-lg px-3 py-2 min-h-[80px] text-gray-500 font-semibold"
-                rows={5}
-                defaultValue={driverData.description || ""}
-                disabled
-                // onChange={handleChange("description")}
               />
             </div>
           </>
@@ -242,23 +237,6 @@ export default function GroupPage({ params }) {
                 label="Access Token"
                 name="accessToken"
                 value="s3cr3tT0k3n_AbCdEfGhIjKlMnOpQrStUvWxYz"
-                disabled
-              />
-            </div>
-            <div className=" flex flex-col items-center justify-center mt-5">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium mb-1"
-              >
-                Uwagi
-              </label>
-              <textarea
-                name="description"
-                id="description"
-                placeholder="Opis"
-                className="w-200 m-auto border border-gray-400 rounded-lg px-3 py-2 min-h-[80px]"
-                rows={5}
-                defaultValue="lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
                 disabled
               />
             </div>
