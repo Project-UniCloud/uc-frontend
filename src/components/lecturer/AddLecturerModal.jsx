@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { addLecturer } from "@/lib/lecturersApi";
@@ -7,135 +7,185 @@ import { Button } from "../utils/Buttons";
 import { FaCheck } from "react-icons/fa";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { useLecturerExternalSearch } from "@/hooks/useLecturerExternalSearch";
+import { showErrorToast, showSuccessToast } from "../utils/Toast";
 
-export default function AddLecturerModal({
-  isOpen,
-  setIsOpen,
-  onLecturerAdded,
-}) {
-  if (!isOpen) return null;
-
+export default function AddLecturerModal({ isOpen, setIsOpen }) {
+  const dialogRef = useRef(null);
   const formRef = useRef(null);
-  const [lecturers, setLecturers] = useState([]);
   const [formErrors, setFormErrors] = useState({});
+  const [lecturers, setLecturers] = useState([]);
   const [formValues, setFormValues] = useState({
     firstName: "",
     lastName: "",
-    userIndexNumber: "",
+    login: "",
     email: "",
   });
 
-  const handleLecturerAdd = (t) => {
-    setLecturers((prev) =>
-      prev.some((x) => x.id === t.id) ? prev : [...prev, t]
-    );
-    setFormValues({
-      firstName: t.firstName || "",
-      lastName: t.lastName || "",
-      userIndexNumber: t.login || "",
-      email: t.email || "",
-    });
-  };
-  const handleLecturerRemove = (id) => {
-    setLecturers((prev) => prev.filter((x) => x.id !== id));
-    setFormValues({
-      firstName: "",
-      lastName: "",
-      userIndexNumber: "",
-      email: "",
-    });
-  };
-
-  // Obsługa inputów
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
-  };
+  // const lecturerSchema = z.object({
+  //   firstName: z.string().nonempty("Imię jest wymagane"),
+  //   lastName: z.string().nonempty("Nazwisko jest wymagane"),
+  //   login: z
+  //     .string()
+  //     .regex(/^s\d{6}$/, 'Indeks musi zaczynać się od "s" i mieć 6 cyfr'),
+  //   email: z.string().email("Nieprawidłowy format e-maila"),
+  // });
 
   const mutation = useMutation({
     mutationFn: (lecturerData) => addLecturer(lecturerData),
     onSuccess: () => {
       formRef.current?.reset();
-      setFormErrors({});
+      setLecturers([]);
       setFormValues({
         firstName: "",
         lastName: "",
-        userIndexNumber: "",
+        login: "",
         email: "",
       });
+      setFormErrors({});
       setIsOpen(false);
-      if (onLecturerAdded) onLecturerAdded();
+      showSuccessToast("Prowadzący został dodany!");
     },
-    onError: (error) =>
-      setFormErrors({ error: error.message || "Błąd dodawania prowadzącego" }),
+    onError: (error) => {
+      setFormErrors({ error: error.message || "Błąd dodawania prowadzącego" });
+      showErrorToast("Błąd dodawania prowadzącego: " + error?.message);
+    },
   });
 
-  // Zamykanie modala na X
+  useEffect(() => {
+    if (isOpen) {
+      dialogRef.current?.showModal();
+    } else dialogRef.current?.close();
+  }, [isOpen]);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const login = formValues.login || formData.get("login");
+    const firstName = formValues.firstName || formData.get("firstName");
+    const lastName = formValues.lastName || formData.get("lastName");
+    const email = formValues.email || formData.get("email");
+
+    const lecturerData = {
+      userIndexNumber: login,
+      firstName,
+      lastName,
+      email,
+    };
+
+    mutation.mutate(lecturerData);
+  }
+
   function handleClose() {
+    setLecturers([]);
+    setFormValues({
+      firstName: "",
+      lastName: "",
+      login: "",
+      email: "",
+    });
     setIsOpen(false);
   }
 
-  // Wyślij dane wymagane przez nowe API
-  function handleSubmit(e) {
-    e.preventDefault();
-    const { firstName, lastName, userIndexNumber, email } = formValues;
-    mutation.mutate({ firstName, lastName, userIndexNumber, email });
-  }
+  const handleLecturerAdd = (t) => {
+    setLecturers((prev) =>
+      prev.some((x) => x.id === t.id) ? prev : [...prev, t]
+    );
+    if (t) {
+      setFormValues((prev) => ({
+        ...prev,
+        firstName: t.firstName || prev.firstName,
+        lastName: t.lastName || prev.lastName,
+        login: t.login || prev.login,
+        email: t.email || prev.email,
+      }));
+    }
+  };
+  const handleLecturerRemove = (id) => {
+    setLecturers((prev) => prev.filter((t) => t.id !== id));
+    setFormValues({
+      firstName: "",
+      lastName: "",
+      login: "",
+      email: "",
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+  };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-      <div className="relative bg-white rounded-2xl shadow-2xl p-10 w-[500px] max-w-[95vw] mx-auto flex flex-col items-center">
-        <button
-          onClick={handleClose}
-          className="absolute top-5 right-5 text-gray-400 hover:text-gray-700"
-          tabIndex={0}
-        >
-          <X size={26} />
-        </button>
-        <h2 className="text-2xl font-extrabold mb-8 w-full text-center">
-          Wprowadź dane prowadzącego
+    <dialog
+      ref={dialogRef}
+      className="rounded-2xl shadow-xl w-full max-w-xl p-0 m-auto overflow-visible"
+      onClose={handleClose}
+    >
+      <form
+        method="dialog"
+        className="relative p-8 overflow-visible"
+        onSubmit={handleSubmit}
+        ref={formRef}
+      >
+        <div className="flex flex-col items-end">
+          <button
+            type="button"
+            className=" text-gray-500 hover:text-black cursor-pointer"
+            onClick={handleClose}
+          >
+            <X />
+          </button>
+        </div>
+        <h2 className="text-xl font-semibold mb-6 text-center">
+          Dodaj prowadzącego
         </h2>
-        <form
-          ref={formRef}
-          onSubmit={handleSubmit}
-          className="w-full flex flex-col gap-8"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            <TeacherSearchInput
-              value={lecturers}
-              disabled={lecturers.length >= 1}
-              onSelect={handleLecturerAdd}
-              onRemove={handleLecturerRemove}
-              useLecturerSearch={useLecturerExternalSearch}
-            />
-            <InputForm
-              label="Mail*"
-              name="email"
-              type="email"
-              required
-              value={formValues.email}
-              onChange={handleInputChange}
-              error={formErrors.email}
-            />
-          </div>
 
-          {formErrors.error && (
-            <div className="text-red-500 text-sm text-center">
-              {formErrors.error}
-            </div>
-          )}
+        <div className="grid grid-cols-2 gap-4">
+          <TeacherSearchInput
+            value={lecturers}
+            disabled={lecturers.length >= 1}
+            onSelect={handleLecturerAdd}
+            onRemove={handleLecturerRemove}
+            useLecturerSearch={useLecturerExternalSearch}
+          />
+          <InputForm
+            label="Email*"
+            name="email"
+            type="email"
+            required
+            value={formValues.email}
+            onChange={handleInputChange}
+          />
+        </div>
 
+        {formErrors.error && (
+          <div className="text-red-600">{formErrors.error}</div>
+        )}
+
+        <div className="flex justify-end items-center gap-4 pt-10">
+          <Button
+            type="button"
+            onClick={handleClose}
+            color="bg-white"
+            textColor="text-black"
+            className={`border border-black ${
+              mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            Anuluj
+          </Button>
           <Button
             type="submit"
-            variant="primary"
             disabled={mutation.isPending}
-            className="mt-6 w-full py-3 text-lg font-semibold flex items-center justify-center"
+            className={`${
+              mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            <FaCheck className="mr-2" />
-            {mutation.isPending ? "Dodawanie..." : "DODAJ"}
+            <FaCheck className="mr-2" />{" "}
+            {mutation.isPending ? "Dodawanie..." : "Dodaj prowadzącego"}
           </Button>
-        </form>
-      </div>
-    </div>
+        </div>
+      </form>
+    </dialog>
   );
 }

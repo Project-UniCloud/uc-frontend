@@ -10,13 +10,13 @@ import { Button } from "@/components/utils/Buttons";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
+import Hint from "../utils/Hint";
 
 export default function ButtonChangeResourceStatus({
   groupId,
   resourceStatus,
   resourceId,
 }) {
-  console.log(resourceId);
   const router = useRouter();
   const deactivationMutation = useMutation({
     mutationFn: () => {
@@ -65,11 +65,11 @@ export default function ButtonChangeResourceStatus({
     <>
       {resourceStatus === "ACTIVE" && (
         <Button
+          hint="Dezaktywuj usługę dla tej grupy. Użytkownicy z tej grupy stracą dostęp do zasobu."
           label="Dezaktywuj"
           color={`bg-orange ${isLoading && "opacity-50"}`}
           center
           onClick={() => deactivationMutation.mutate()}
-          // onClick={() => console.log(resourceId)}
           disabled={isLoading}
         >
           <FiArchive className="text-lg" />
@@ -78,6 +78,7 @@ export default function ButtonChangeResourceStatus({
       )}
       {resourceStatus === "INACTIVE" && (
         <Button
+          hint="Aktywuj usługę dla tej grupy. Użytkownicy z tej grupy uzyskają dostęp do zasobu."
           label="Aktywuj"
           color={`bg-green ${isLoading && "opacity-50"}`}
           center
@@ -90,6 +91,7 @@ export default function ButtonChangeResourceStatus({
       )}
       {resourceStatus === "DEACTIVATED" && (
         <Button
+          hint="Usuń usługę dla tej grupy. Ta operacja jest nieodwracalna."
           label="Usuń"
           color={`bg-red ${isLoading && "opacity-50"}`}
           center
