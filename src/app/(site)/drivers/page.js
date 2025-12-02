@@ -7,6 +7,7 @@ import { Button } from "@/components/utils/Buttons";
 import { FaPlus } from "react-icons/fa";
 
 const columns = [
+  { key: "cloudConnectorId", header: "ID" },
   { key: "cloudConnectorName", header: "Nazwa" },
   { key: "costLimit", header: "Limit Kosztu" },
   { key: "defaultCronExpression", header: "Wyczyść" },
