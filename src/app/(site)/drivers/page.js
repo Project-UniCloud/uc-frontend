@@ -1,13 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
-import { getDrivers } from "@/lib/driversApi";
-import Table from "@/components/table/Table";
-import Pagination from "@/components/pagination/Pagination";
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import { getCloudAccesses } from "@/lib/cloudApi";
+import DataTableView from "@/components/views/DataTableView";
+import AddDriverModal from "@/components/drivers/AddDriverModal";
+import { Button } from "@/components/utils/Buttons";
+import { FaPlus } from "react-icons/fa";
 
 const columns = [
-  { key: "cloudAccessClientName", header: "Nazwa" },
+  { key: "cloudConnectorId", header: "ID" },
+  { key: "cloudConnectorName", header: "Nazwa" },
   { key: "costLimit", header: "Limit Kosztu" },
   { key: "defaultCronExpression", header: "Wyczyść" },
 ];
@@ -16,6 +17,7 @@ export default function GroupsPage() {
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -28,7 +30,7 @@ export default function GroupsPage() {
     getCloudAccesses({ page, pageSize })
       .then((data) => {
         setDrivers(data.content);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.page.totalPages);
         setLoading(false);
       })
       .catch((error) => {
@@ -43,35 +45,29 @@ export default function GroupsPage() {
   }));
 
   return (
-    <div className="min-w-120 mt-15">
-      {error && <div className="text-red-600 mb-4">{error}</div>}
-      {!loading && drivers.length === 0 && (
-        <div className="text-gray-500">Brak sterowników do wyświetlenia</div>
-      )}
-
-      {loading ? (
-        <div>Ładowanie...</div>
-      ) : (
-        !error &&
-        drivers.length > 0 && (
-          <>
-            <Table
-              columns={columns}
-              data={tableData}
-              whereNavigate="drivers"
-              idKey={"cloudAccessClientId"}
-            />
-
-            <Pagination
-              page={page}
-              setPage={setPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-            />
-          </>
-        )
-      )}
+    <div className="min-w-120">
+      <AddDriverModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <DataTableView
+        leftActions={
+          <Button
+            onClick={() => setIsOpen(true)}
+            hint="Tworzy nowe polaczenie do sterownika chmurowego. Czym jest sterownik do chmury mozna przeczytac w dokumentacji."
+          >
+            <FaPlus /> Dodaj sterownik
+          </Button>
+        }
+        loading={loading}
+        error={error}
+        data={tableData}
+        columns={columns}
+        whereNavigate="drivers"
+        idKey={"cloudConnectorId"}
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        totalPages={totalPages}
+      />
     </div>
   );
 }

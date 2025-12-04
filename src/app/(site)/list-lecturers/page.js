@@ -28,7 +28,7 @@ export default function ListLecturersPage() {
   const fetchLecturers = () => {
     setLoading(true);
     setError(null);
-    getLecturers(searchQuery)
+    getLecturers({ searchQuery, page, pageSize })
       .then((data) => {
         // Każdemu wierszowi nadaj 'id' równe 'uuid'
         const content = (data.content || []).map((item) => ({
@@ -37,7 +37,7 @@ export default function ListLecturersPage() {
           groupId: item.uuid, // <-- WAŻNE
         }));
         setLecturers(content);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.page.totalPages);
         setLoading(false);
       })
       .catch((error) => {
@@ -64,7 +64,7 @@ export default function ListLecturersPage() {
           <>
             <Button onClick={() => setIsOpen(true)}>
               <FaPlus />
-              Dodaj
+              Dodaj Prowadzącego
             </Button>
             <input
               type="text"

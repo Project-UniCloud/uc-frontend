@@ -21,6 +21,7 @@ import { StopAllModal } from "@/components/resources/StopAllModal";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
+import Hint from "@/components/utils/Hint";
 
 const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
 
@@ -79,7 +80,7 @@ export default function GroupPage({ params }) {
       getStudentsFromGroup({ groupId, page, pageSize })
         .then((data) => {
           setStudentsData(data.content || []);
-          setTotalPages(data.totalPages || 0);
+          setTotalPages(data.page.totalPages || 0);
         })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
@@ -182,6 +183,7 @@ export default function GroupPage({ params }) {
               <InputForm
                 label="Nazwa"
                 name="name"
+                hint="Nazwa reprezentująca daną grupę"
                 value={groupData.name}
                 onChange={handleChange("name")}
                 disabled={!editing}
@@ -193,11 +195,13 @@ export default function GroupPage({ params }) {
                 onSelect={handleLecturerAdd}
                 onRemove={handleLecturerRemove}
                 useLecturerSearch={useLecturerSearch}
+                hint="Lista prowadzących przypisanych do danej grupy"
               />
               <InputForm
                 label="Data rozpoczęcia"
                 name="startDate"
                 type="date"
+                hint="Data rozpoczęcia działania danej grupy"
                 value={groupData.startDate}
                 onChange={handleChange("startDate")}
                 disabled={!editing}
@@ -206,6 +210,7 @@ export default function GroupPage({ params }) {
                 label="Data zakończenia"
                 name="endDate"
                 type="date"
+                hint="Data zakończenia działania danej grupy"
                 value={groupData.endDate}
                 onChange={handleChange("endDate")}
                 disabled={!editing}
@@ -213,6 +218,7 @@ export default function GroupPage({ params }) {
               <InputForm
                 label="Status"
                 name="status"
+                hint="Status danej grupy. Możliwe wartości: Aktywna, Nieaktywna, Zarchiwizowana"
                 colors={
                   groupData.status === "Aktywna"
                     ? "text-green-400"
@@ -225,6 +231,13 @@ export default function GroupPage({ params }) {
                 disabled
               />
               <ButtonChangeStatus
+                hint={
+                  groupData.status === "Aktywna"
+                    ? "Zarchiwizuj daną grupę"
+                    : groupData.status === "Nieaktywna"
+                    ? "Aktywuj daną grupę"
+                    : "Usuń daną grupę"
+                }
                 groupId={groupId}
                 groupStatus={groupData.status}
               />
@@ -276,6 +289,7 @@ export default function GroupPage({ params }) {
                   <Button onClick={() => setIsOpenImport(true)}>
                     <FaPlus /> Importuj
                   </Button>
+                  <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV." />
                 </>
               }
               loading={loading}
@@ -321,6 +335,7 @@ export default function GroupPage({ params }) {
                 <Button onClick={() => setIsOpenResource(true)}>
                   <FaPlus /> Dodaj usługę
                 </Button>
+                <Hint hint="Zarządzaj usługami przypisanymi do tej grupy. Możesz dodawać nowe usługi - przydzielać do nich dostęp twojej grupie lub wstrzymywać działające." />
               </>
             }
             loading={loading}

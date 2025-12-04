@@ -7,7 +7,11 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
-export default function ButtonChangeStatus({ groupId, groupStatus }) {
+export default function ButtonChangeStatus({
+  groupId,
+  groupStatus,
+  hint = "",
+}) {
   const router = useRouter();
   const archiveMutation = useMutation({
     mutationFn: (groupId) => archiveGroup(groupId),
@@ -40,6 +44,7 @@ export default function ButtonChangeStatus({ groupId, groupStatus }) {
     <>
       {groupStatus === "Aktywna" && (
         <Button
+          hint={hint}
           label="Archiwizuj"
           color={`bg-orange ${isLoading && "opacity-50"}`}
           center
@@ -52,6 +57,7 @@ export default function ButtonChangeStatus({ groupId, groupStatus }) {
       )}
       {groupStatus === "Nieaktywna" && (
         <Button
+          hint={hint}
           label="Aktywuj"
           color={`bg-green ${isLoading && "opacity-50"}`}
           center
@@ -64,6 +70,7 @@ export default function ButtonChangeStatus({ groupId, groupStatus }) {
       )}
       {groupStatus === "Zarchiwizowana" && (
         <Button
+          hint={hint}
           label="Usuń"
           color={`bg-red ${isLoading && "opacity-50"}`}
           center

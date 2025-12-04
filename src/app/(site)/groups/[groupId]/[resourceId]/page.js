@@ -13,8 +13,6 @@ import {
 import ButtonChangeResourceStatus from "@/components/resources/ButtonChangeResourceStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 
-const TABS = [{ label: "Informacje" }, { label: "Edycja" }];
-
 export default function GroupPage({ params }) {
   const { groupId, resourceId } = React.use(params);
   const [infoData, setInfoData] = useState({
@@ -131,6 +129,7 @@ export default function GroupPage({ params }) {
               value={infoData.limit}
               onChange={handleChange("limit", "Edycja")}
               disabled={!editing}
+              hint="Limit kosztowy dla danej usługi przydzielonej do tej grupy"
             />
             <InputForm
               label="Czyszczenie"
@@ -138,6 +137,7 @@ export default function GroupPage({ params }) {
               value={infoData.cron}
               onChange={handleChange("cron", "Edycja")}
               disabled={!editing}
+              hint="Harmonogram czyszczenia zasobu w formacie CRON"
             />
             <InputForm
               label="Data zakończenia"
@@ -146,6 +146,7 @@ export default function GroupPage({ params }) {
               value={infoData.expiresAt}
               onChange={handleChange("expiresAt", "Edycja")}
               disabled={!editing}
+              hint="Data, po której dostęp do zasobu zostanie automatycznie wyłączony dla tej grupy"
             />
 
             <InputForm
@@ -158,6 +159,7 @@ export default function GroupPage({ params }) {
               value={infoData.notificationLevel1}
               onChange={handleChange("notificationLevel1", "Edycja")}
               disabled={!editing}
+              hint="Po przekroczeniu tego progu kosztów, użytkownicy z tej grupy otrzymają powiadomienie e-mailowe."
             />
 
             <InputForm
@@ -170,6 +172,7 @@ export default function GroupPage({ params }) {
               value={infoData.notificationLevel2}
               onChange={handleChange("notificationLevel2", "Edycja")}
               disabled={!editing}
+              hint="Po przekroczeniu tego progu kosztów, użytkownicy z tej grupy otrzymają powiadomienie e-mailowe."
             />
 
             <InputForm
@@ -182,6 +185,7 @@ export default function GroupPage({ params }) {
               value={infoData.notificationLevel3}
               onChange={handleChange("notificationLevel3", "Edycja")}
               disabled={!editing}
+              hint="Po przekroczeniu tego progu kosztów, użytkownicy z tej grupy otrzymają powiadomienie e-mailowe."
             />
 
             <ButtonChangeResourceStatus
