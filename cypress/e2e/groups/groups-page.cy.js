@@ -114,7 +114,7 @@ describe('Strona Zarządzania Grupami', () => {
         cy.get(selectors.pagination.displaySelect).should('have.value', '10'); // Domyślna wartość
     });
 
-    it.only('TC02: Powinien dodać nową grupę przez Modal', () => {
+    it('TC02: Powinien dodać nową grupę przez Modal', () => {
         // Dane testowe do wpisania
         const newGroup = {
             name: 'Nowa Grupa 2024',
