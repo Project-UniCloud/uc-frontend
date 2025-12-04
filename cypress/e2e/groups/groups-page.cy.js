@@ -115,11 +115,9 @@ describe('Strona Zarządzania Grupami', () => {
     });
 
     it('TC02: Powinien dodać nową grupę przez Modal', () => {
-        // Dane testowe do wpisania
         const newGroup = {
             name: 'Nowa Grupa 2024',
             year: '2024',
-            semester: 'L', // Zgodnie z selectem na obrazku
             startDate: '2024-02-20',
             endDate: '2024-06-30',
             lecturer: 'Jan Kowalski',
