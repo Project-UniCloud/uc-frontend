@@ -1,0 +1,18 @@
+{
+  "content": [
+    {
+      "groupId": "9fb6ccc8-b707-4d3f-ad86-494177e7618c",
+      "name": "abc",
+      "semester": "2023Z",
+      "endDate": "17-01-2026",
+      "lecturers": "Radosław Kazibut",
+      "CloudResourceAccesses": ""
+    }
+  ],
+  "page": {
+    "size": 10,
+    "number": 0,
+    "totalElements": 1,
+    "totalPages": 1
+  }
+}
