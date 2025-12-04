@@ -71,11 +71,17 @@ export async function deleteResource(groupId, resourceId) {
 }
 
 export async function addResourceType(data) {
-  const path = `/cloud/connector/resource-type`;
-  return await postApi(path, data, "Nieudane dodanie typu zasobu");
+  const { cloudConnectorId, resourceType } = data || {};
+  const path = `/connector/${cloudConnectorId}/resource-type`;
+  return await postApi(
+    path,
+    { resourceType },
+    "Nieudane dodanie typu zasobu"
+  );
 }
 
 export async function deleteResourceType(data) {
-  const path = `/cloud/connector/resource-type`;
-  return await deleteApi(path, data, "Nieudane usunięcie typu zasobu");
+  const { cloudConnectorId, resourceType } = data || {};
+  const path = `/connector/${cloudConnectorId}/resource-type/${resourceType}`;
+  return await deleteApi(path, null, "Nieudane usunięcie typu zasobu");
 }
