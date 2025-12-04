@@ -6,7 +6,11 @@ import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
-export default function AddResourceTypeModal({ isOpen, setIsOpen }) {
+export default function AddResourceTypeModal({
+  isOpen,
+  setIsOpen,
+  cloudConnectorId,
+}) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
@@ -39,7 +43,8 @@ export default function AddResourceTypeModal({ isOpen, setIsOpen }) {
     const name = formData.get("name");
 
     const resourceTypeData = {
-      name,
+      cloudConnectorId,
+      resourceType: name,
     };
 
     mutation.mutate(resourceTypeData);

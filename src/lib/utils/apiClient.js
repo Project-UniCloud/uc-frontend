@@ -127,11 +127,15 @@ export async function putApi(path, body = null, errorText, data = false) {
   }
 }
 
-export async function deleteApi(path, errorText, data = false) {
+export async function deleteApi(path, body = null, errorText, data = false) {
   try {
     const response = await fetch(`${getBaseApiUrl()}${path}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: "include",
+      body: JSON.stringify(body),
     });
     if (response.status === 401) {
       window.location.href = "/login";

@@ -71,13 +71,11 @@ export async function deleteResource(groupId, resourceId) {
 }
 
 export async function addResourceType(data) {
-  const path = `/resource-type`; //TODO CHANGE TO CORRECT PATH
+  const path = `/cloud/connector/resource-type`;
   return await postApi(path, data, "Nieudane dodanie typu zasobu");
 }
 
-export async function deleteResourceType(resourceTypeId) {
-  return await deleteApi(
-    `/resource-type/${resourceTypeId}`, //TODO CHANGE TO CORRECT PATH
-    "Nieudane usunięcie typu zasobu"
-  );
+export async function deleteResourceType(data) {
+  const path = `/cloud/connector/resource-type`;
+  return await deleteApi(path, data, "Nieudane usunięcie typu zasobu");
 }

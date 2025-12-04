@@ -86,7 +86,7 @@ export default function GroupPage({ params }) {
       getGroups({ page, pageSize, cloudClientId: driverName })
         .then((data) => {
           setGroupsData(data.content || []);
-          setTotalPages(data.totalPages || 0);
+          setTotalPages(data.page.totalPages || 0);
         })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));

@@ -16,8 +16,13 @@ export default function DeleteResourceTypeModal({
   const [errors, setErrors] = useState({});
 
   const mutation = useMutation({
-    mutationFn: (resourceTypeId, cloudConnectorId) =>
-      deleteResourceType(resourceTypeId, cloudConnectorId),
+    mutationFn: ({ resourceTypeId, cloudConnectorId }) => {
+      const data = {
+        cloudConnectorId,
+        resourceType: resourceTypeId,
+      };
+      return deleteResourceType(data);
+    },
     onSuccess: () => {
       setIsOpen(false), setErrors({}), formRef.current?.reset();
       setSelectedResourceTypeId(null);
@@ -87,7 +92,7 @@ export default function DeleteResourceTypeModal({
           className={`${
             mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
           }`}
-          onClick={() => mutation.mutate(resourceTypeId, cloudConnectorId)}
+          onClick={() => mutation.mutate({ resourceTypeId, cloudConnectorId })}
         >
           {mutation.isLoading ? "Usuwanie..." : "Usuń"}
           <FaRegTrashAlt />
