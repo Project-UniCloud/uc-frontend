@@ -2,12 +2,12 @@
 
 import { usePathname } from "next/navigation";
 
-function isDetailsPath(parts, prefix) {
+function isDetailsPath(parts, prefix, step) {
   // Sprawdza czy ścieżka to /prefix/:id gdzie :id to UUID v4
+  if (parts.length !== step) return false;
   return (
-    parts.length >= 2 &&
-    parts[parts.length - 2] === prefix &&
-    /^[0-9a-fA-F-]{36}$/.test(parts[parts.length - 1])
+    parts[parts.length - step] === prefix &&
+    /^[0-9a-fA-F-]{36}$/.test(parts[parts.length - (step - 1)])
   );
 }
 
@@ -44,11 +44,17 @@ export function useNamePath() {
       namePath = "Profil";
       break;
     default:
-      if (isDetailsPath(parts, "groups")) {
+      if (isDetailsPath(parts, "groups", 2)) {
         namePath = "Informacje o grupie";
+      }
+      if (isDetailsPath(parts, "groups", 3)) {
+        namePath = "Informacje o zasobie";
       }
       if (parts[parts.length - 2] === "drivers") {
         return "Informacje o sterowniku";
+      }
+      if (isDetailsPath(parts, "list-lecturers", 2)) {
+        namePath = "Informacje o prowadzącym";
       }
       break;
   }

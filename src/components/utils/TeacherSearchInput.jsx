@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { X } from "lucide-react";
 import { FaRegTrashAlt } from "react-icons/fa";
+import Hint from "./Hint";
 
 export default function TeacherSearchInput({
   value = [],
@@ -9,10 +10,12 @@ export default function TeacherSearchInput({
   onSelect,
   onRemove,
   useLecturerSearch,
+  hint = "",
 }) {
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
   const { results: options, loading } = useLecturerSearch(query);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSelect = (lect) => {
     const chosen = {
@@ -30,19 +33,32 @@ export default function TeacherSearchInput({
   const visibleTags = value.slice(0, 2);
   const hiddenCount = value.length - visibleTags.length;
 
+  const keyFor = (teacher, idx) =>
+    teacher?.id ??
+    teacher?.login ??
+    teacher?.email ??
+    `${teacher?.firstName}-${teacher?.lastName}-${idx}`;
+
   return (
     <div className="mb-4 relative">
-      <label className="block text-sm font-medium mb-1">{label}</label>
-
-      <div className="flex flex-wrap gap-1 mb-1 z-0">
-        {visibleTags.map((teacher) => (
+      <div className="flex items-center gap-2">
+        {label && (
+          <>
+            <label className="block text-sm font-medium">{label}</label>
+            <Hint hint={hint} />
+          </>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-1 z-0">
+        {visibleTags.map((teacher, i) => (
           <span
-            key={teacher.id}
+            key={keyFor(teacher, i)}
             className="flex items-center bg-gray-200 px-2 py-1 rounded-full text-sm"
           >
-            {teacher.firstName} {teacher.lastName} ({teacher.login})
+            {teacher.fullName}
             <button
               type="button"
+              disabled={disabled}
               onClick={() => onRemove?.(teacher.id)}
               className={`ml-1 text-gray-500 ${
                 disabled ? "" : "hover:text-black cursor-pointer"
@@ -63,7 +79,6 @@ export default function TeacherSearchInput({
           </button>
         )}
       </div>
-
       {showAll && (
         <div className="absolute top-0 left-0 z-30 mt-1 w-64 lg:w-89 bg-white border rounded shadow-lg p-2">
           <div className="flex justify-between items-center mb-2">
@@ -77,8 +92,11 @@ export default function TeacherSearchInput({
             </button>
           </div>
           <ul className="max-h-40 overflow-auto">
-            {value.map((teacher) => (
-              <li key={teacher.id} className="flex justify-between py-1">
+            {value.map((teacher, i) => (
+              <li
+                key={keyFor(teacher, i)}
+                className="flex justify-between py-1"
+              >
                 <span>
                   {teacher.firstName} {teacher.lastName} ({teacher.login})
                 </span>
@@ -97,7 +115,6 @@ export default function TeacherSearchInput({
           </ul>
         </div>
       )}
-
       <div
         className={`${!disabled ? "h-10 overflow-visible" : "h-0 invisible"} `}
       >
@@ -105,26 +122,35 @@ export default function TeacherSearchInput({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => {
+            setIsFocused(true);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            setShowAll(false);
+          }}
           disabled={disabled}
           placeholder="Wyszukaj prowadzącego"
           className={`w-full border border-gray-300 rounded px-3 py-2 `}
         />{" "}
       </div>
 
-      {query && options.length > 0 && !disabled && (
-        <ul className="absolute z-50 border border-gray-300 rounded mt-1 max-h-40 overflow-auto ">
-          {options.map((lect) => (
+      {query && options.length > 0 && !disabled && isFocused && (
+        <ul className="absolute z-50 border border-gray-300 rounded mt-1 max-h-40 overflow-auto bg-white">
+          {options.map((lect, i) => (
             <li
-              key={lect.userId}
-              onClick={() => handleSelect(lect)}
-              className="px-3 py-2 hover:bg-gray-100 cursor-pointer bg-white"
+              key={lect.userId ?? lect.login ?? lect.email ?? i}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelect(lect);
+              }}
+              className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
             >
               {lect.firstName} {lect.lastName} ({lect.login})
             </li>
           ))}
         </ul>
       )}
-
       {loading && <p className="text-sm text-gray-500 mt-1">Ładowanie…</p>}
     </div>
   );

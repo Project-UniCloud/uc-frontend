@@ -8,6 +8,7 @@ export async function getLecturers({ searchQuery, page = 0, pageSize = 10 }) {
 }
 
 export async function addLecturer(lecturerData) {
+  console.log("Adding lecturer:", lecturerData);
   return await postApi(
     "/users/lecturers",
     lecturerData,
@@ -29,7 +30,10 @@ export async function updateLecturer(lecturerId, lecturerData) {
 }
 
 export async function deleteLecturer(lecturerId) {
-  console.log("Delete lecturer not implemented yet:", lecturerId);
+  // return await postApi(
+  //   `/lecturers/${lecturerId}/delete`,
+  //   "Nieudane usuwanie prowadzącego"
+  // );
   return Promise.reject(new Error("Delete lecturer not implemented yet"));
 }
 

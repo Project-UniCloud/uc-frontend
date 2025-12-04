@@ -1,3 +1,5 @@
+import Hint from "./Hint";
+
 export function Button({
   children,
   type = "button",
@@ -7,12 +9,21 @@ export function Button({
   textColor = "text-white",
   label,
   center,
+  hint = "",
   disabled = false,
   ...props
 }) {
   return (
     <div>
-      {label && <span className="block text-sm font-medium mb-1">{label}</span>}
+      <div className="flex items-center gap-2 mb-1">
+        {label && (
+          <>
+            <span className="block text-sm font-medium ">{label}</span>
+            <Hint hint={hint} />
+          </>
+        )}
+      </div>
+
       <button
         type={type}
         onClick={onClick}

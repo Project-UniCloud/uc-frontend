@@ -6,7 +6,7 @@ import { FaPlus } from "react-icons/fa";
 import AddGroupModal from "@/components/group/AddGroupModal";
 import DataTableView from "@/components/views/DataTableView";
 import { z } from "zod";
-import LoadingSpinner from "@/components/utils/LoadingSpinner";
+import { Button } from "@/components/utils/Buttons";
 
 const TABS = [
   { key: "ACTIVE", label: "Aktywne" },
@@ -91,13 +91,12 @@ export default function GroupsPage() {
         leftActions={
           <>
             {activeTab === "ACTIVE" && (
-              <button
-                className="bg-purple hover:opacity-70 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1 cursor-pointer"
+              <Button
                 onClick={() => setIsOpen(true)}
+                hint="Tworzenie nowej grupy zajęciowej. Podanym prowadzącym przydzielany jest dostęp, dostaną oni maila z loginem i hasłem"
               >
-                <FaPlus />
-                Dodaj Grupę
-              </button>
+                <FaPlus /> Dodaj grupę
+              </Button>
             )}
             <input
               type="text"
