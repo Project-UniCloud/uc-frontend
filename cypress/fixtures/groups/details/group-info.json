@@ -1,0 +1,16 @@
+{
+  "groupId": "9fb6ccc8-b707-4d3f-ad86-494177e7618c",
+  "name": "abc",
+  "lecturerFullNames": [
+    {
+      "userId": "a9eef051-f179-41b8-8422-4b1ab7a91367",
+      "firstName": "Radosław",
+      "lastName": "Kazibut"
+    }
+  ],
+  "semester": "2023Z",
+  "startDate": "18-12-2025",
+  "endDate": "17-01-2026",
+  "status": "Aktywna",
+  "description": "a"
+}
