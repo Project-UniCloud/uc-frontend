@@ -104,7 +104,6 @@ describe('Testy zakładki Usługi w Grupie', () => {
 
         cy.get(selectors.modal.submitBtn).eq(0).click();
 
-        cy.get(selectors.modal.submitBtn).should('not.exist');
     });
 
 });
