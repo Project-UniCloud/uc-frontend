@@ -1,0 +1,17 @@
+{
+  "content": [
+    {
+      "uuid": "aa75aedb-c4b0-4ec7-9d71-3d9b9737438e",
+      "firstName": "Jakub",
+      "lastName": "Wieczór",
+      "login": "s485704",
+      "email": "jakwie13@st.amu.edu.pl"
+    }
+  ],
+  "page": {
+    "size": 10,
+    "number": 0,
+    "totalElements": 1,
+    "totalPages": 1
+  }
+}

@@ -18,7 +18,7 @@ describe('Testy widoku szczegółów Grupy', () => {
             startDateInput: 'input[value="18/12/2025"], input[type="date"]',
             endDateInput: 'input[value="17/01/2026"], input[type="date"]',
 
-            statusBadge: 'div:contains("Aktywna")',
+            statusBadge: 'input[name="status"]',
 
             archiveButton: 'button:contains("Archiwizuj")',
 
@@ -46,7 +46,7 @@ describe('Testy widoku szczegółów Grupy', () => {
         cy.get(selectors.tabs.services).should('be.visible');
     });
 
-    it.only('TC02: Powinien wyświetlić dane grupy zgodne z Fixture (API)', () => {
+    it('TC02: Powinien wyświetlić dane grupy zgodne z Fixture (API)', () => {
         cy.fixture('groups/details/group-info.json').then((group) => {
 
             cy.get('input[name="name"]')
@@ -59,13 +59,13 @@ describe('Testy widoku szczegółów Grupy', () => {
                 .should('contain', fullName);
 
             cy.get('input[name="startDate"]')
-                .should('have.value', group.startDate);
+                .should('have.value', '2025-12-18');
 
             cy.get('input[name="endDate"]')
-                .should('have.value', group.endDate);
+                .should('have.value', '2026-01-17');
 
             cy.get(selectors.form.statusBadge)
-                .should('contain', group.status);
+                .should('have.value', group.status);
 
             cy.get(selectors.form.descriptionTextarea)
                 .should('have.value', group.description);
