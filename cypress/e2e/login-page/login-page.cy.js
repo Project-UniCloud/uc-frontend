@@ -28,9 +28,7 @@ describe('Login Page', () => {
     cy.get('button').click();
     cy.wait('@loginStub')
     cy.wait(500); // wait for redirect
-    cy.get('h1').should('have.text', 'Witamy w UniCloud Manager!');
-    cy.get('.text-gray-8-00').should('have.text', 'Akademickim systemie zarządzania zasobami chmurowymi WMiI UAM. Nasza platforma umożliwia efektywne zarządzanie zasobami chmurowymi, automatyzację rutynowych procesów i monitorowanie wykorzystania infrastruktury. Zachęcamy do korzystania z narzędzia i dzielenia się opinią na temat dalszego rozwoju systemu.');
-  });
+    cy.get('.flex.items-center.gap-2.text-black.text-2xl.font-bold').should('have.text', 'Przegląd');});
 });
 
 function stubLogin(){

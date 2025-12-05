@@ -80,7 +80,7 @@ export default function GroupPage({ params }) {
       getStudentsFromGroup({ groupId, page, pageSize })
         .then((data) => {
           setStudentsData(data.content || []);
-          setTotalPages(data.totalPages || 0);
+          setTotalPages(data.page.totalPages || 0);
         })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));

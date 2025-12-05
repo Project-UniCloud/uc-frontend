@@ -30,7 +30,7 @@ export default function GroupsPage() {
     getCloudAccesses({ page, pageSize })
       .then((data) => {
         setDrivers(data.content);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.page.totalPages);
         setLoading(false);
       })
       .catch((error) => {

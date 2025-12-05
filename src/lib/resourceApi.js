@@ -1,4 +1,10 @@
-import { getApi, postApi, patchApi, putApi } from "./utils/apiClient";
+import {
+  getApi,
+  postApi,
+  patchApi,
+  putApi,
+  deleteApi,
+} from "./utils/apiClient";
 
 export async function getResourcesGroup(groupId) {
   const path = `/groups/${groupId}/cloud-access`;
@@ -62,4 +68,20 @@ export async function deleteResource(groupId, resourceId) {
     `/groups/${groupId}/resources/${resourceId}/delete`,
     "Nieudane usuwanie zasobu"
   );
+}
+
+export async function addResourceType(data) {
+    const { cloudConnectorId, resourceType } = data || {};
+    const path = `/cloud/connector/${cloudConnectorId}/resource-type`;
+    return await postApi(
+        path,
+        { resourceType },
+        "Nieudane dodanie typu zasobu"
+    );
+}
+
+export async function deleteResourceType(data) {
+    const { cloudConnectorId, resourceType } = data || {};
+    const path = `/cloud/connector/${cloudConnectorId}/resource-type/${resourceType}`;
+    return await deleteApi(path, null, "Nieudane usunięcie typu zasobu");
 }

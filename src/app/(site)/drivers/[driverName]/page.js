@@ -5,16 +5,24 @@ import Table from "@/components/table/Table";
 import InputForm from "@/components/utils/InputForm";
 import { getGroups } from "@/lib/groupsApi";
 import { getCloudAccessesById } from "@/lib/cloudApi";
+import { getResourceTypesByDriverId } from "@/lib/cloudApi";
 import Pagination from "@/components/pagination/Pagination";
+import DataTableView from "@/components/views/DataTableView";
+import { Button } from "@/components/utils/Buttons";
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import AddResourceTypeModal from "@/components/resources/AddResourceTypeModal";
+import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeModal";
 
 const TABS = [
   { label: "Ustawienia" },
   { label: "Grupy zajęciowe" },
   { label: "Autoryzacja" },
+  { label: "Typy zasobów" },
 ];
 
 export default function GroupPage({ params }) {
   const { driverName } = React.use(params);
+
   const [activeTab, setActiveTab] = useState("Ustawienia");
   const [driverData, setdriverData] = useState({
     clean: "",
@@ -23,6 +31,7 @@ export default function GroupPage({ params }) {
     description: "",
     status: "",
   });
+  const [driverResourceTypesData, setDriverResourceTypesData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,6 +39,29 @@ export default function GroupPage({ params }) {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
+  const [isOpenAddModal, setIsOpenAddModal] = useState(false);
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
+  const [selectedResourceTypeId, setSelectedResourceTypeId] = useState(null);
+
+  const columns = [
+    { key: "name", header: "Nazwa zasobu" },
+    {
+      key: "actions",
+      header: "Wyczyść",
+      render: (row) => (
+        <button
+          className="text-red hover:text-red-800 text-sm cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpenDeleteModal(true);
+            setSelectedResourceTypeId(row.name);
+          }}
+        >
+          <FaRegTrashAlt />
+        </button>
+      ),
+    },
+  ];
 
   useEffect(() => {
     setLoading(true);
@@ -54,7 +86,7 @@ export default function GroupPage({ params }) {
       getGroups({ page, pageSize, cloudClientId: driverName })
         .then((data) => {
           setGroupsData(data.content || []);
-          setTotalPages(data.totalPages || 0);
+          setTotalPages(data.page.totalPages || 0);
         })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
@@ -65,6 +97,14 @@ export default function GroupPage({ params }) {
       //   .catch((error) => setError(error.message))
       //   .finally(() => setLoading(false));
       setLoading(false);
+    }
+    if (activeTab === "Typy zasobów") {
+      getResourceTypesByDriverId(driverName)
+        .then((data) => {
+          setDriverResourceTypesData(data || []);
+        })
+        .catch((error) => setError(error.message))
+        .finally(() => setLoading(false));
     }
   }, [activeTab, driverName, page, pageSize]);
 
@@ -114,6 +154,18 @@ export default function GroupPage({ params }) {
     <div className="min-w-120">
       <div className="flex justify-between items-center">
         <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
+        <AddResourceTypeModal
+          isOpen={isOpenAddModal}
+          setIsOpen={setIsOpenAddModal}
+          cloudConnectorId={driverName}
+        />
+        <DeleteResourceTypeModal
+          isOpen={isOpenDeleteModal}
+          setIsOpen={setIsOpenDeleteModal}
+          resourceTypeId={selectedResourceTypeId}
+          setSelectedResourceTypeId={setSelectedResourceTypeId}
+          cloudConnectorId={driverName}
+        />
         {/* {activeTab === "Ustawienia" && !loading && (
           <Button
             color={editing ? "bg-green-500" : "bg-purple"}
@@ -204,7 +256,7 @@ export default function GroupPage({ params }) {
                   totalPages={totalPages}
                   pageSize={pageSize}
                   setPageSize={setPageSize}
-                />{" "}
+                />
               </>
             ) : (
               <div>Brak grup dla tego sterownika.</div>
@@ -240,6 +292,33 @@ export default function GroupPage({ params }) {
                 disabled
               />
             </div>
+          </>
+        ))}
+      {/* Typy zasobów */}
+      {activeTab === "Typy zasobów" &&
+        (loading ? (
+          <div>Ładowanie...</div>
+        ) : (
+          <>
+            <DataTableView
+              leftActions={
+                <Button
+                  hint="Tworzy nowe polaczenie do sterownika chmurowego. Czym jest sterownik do chmury mozna przeczytac w dokumentacji."
+                  onClick={() => setIsOpenAddModal(true)}
+                >
+                  <FaPlus /> Dodaj typ zasobu
+                </Button>
+              }
+              loading={loading}
+              error={error}
+              data={driverResourceTypesData}
+              columns={columns}
+              page={page}
+              setPage={setPage}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalPages={totalPages}
+            />
           </>
         ))}
     </div>

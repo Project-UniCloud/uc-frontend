@@ -37,7 +37,7 @@ export default function ListLecturersPage() {
           groupId: item.uuid, // <-- WAŻNE
         }));
         setLecturers(content);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.page.totalPages);
         setLoading(false);
       })
       .catch((error) => {

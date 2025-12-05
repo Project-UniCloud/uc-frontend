@@ -14,3 +14,8 @@ export async function getCloudAccessesById(id) {
   const path = `/cloud/connector/${id}`;
   return await getApi(path, "Nieudane pobranie informacji o sterowniku");
 }
+
+export async function getResourceTypesByDriverId(driverId) {
+  const path = `/cloud/connector/${driverId}/resource-types`;
+  return await getApi(path, "Nieudane pobranie typów zasobów dla sterownika");
+}

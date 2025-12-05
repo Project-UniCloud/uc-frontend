@@ -48,7 +48,7 @@ export default function GroupsPage() {
     getGroups({ status: activeTab, page, pageSize, groupName: search })
       .then((data) => {
         setGroups(data.content);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.page.totalPages);
         setLoading(false);
       })
       .catch((error) => {

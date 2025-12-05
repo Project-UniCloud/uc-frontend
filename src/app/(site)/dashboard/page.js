@@ -1,17 +1,79 @@
-export default async function DashboardPage() {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+"use client";
+import MyLineChart from "@/components/dahsboard/LineChart";
+import SummaryStats from "@/components/dahsboard/SummaryStats";
+import PieChart from "@/components/dahsboard/PieChart";
+import CostBarChart from "@/components/dahsboard/CostBarChart";
+import TopCostGroups from "@/components/dahsboard/TopCostGroups";
+import {
+  getOverallStats,
+  getCostInTime,
+  getCostPerResourceType,
+  getCostPerGroup,
+} from "@/lib/statisticsApi";
+import { useEffect, useState } from "react";
+import objectToArray from "@/lib/utils/statsToArray";
+
+export default function DashboardPage() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [overallStats, setOverallStats] = useState(null);
+  const [costPerGroup, setCostPerGroup] = useState([]);
+  const [costPerResourceType, setCostPerResourceType] = useState([]);
+  const [costInTime, setCostInTime] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    getOverallStats()
+      .then((data) => {
+        setOverallStats(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
+
+    getCostPerGroup()
+      .then((data) => {
+        setCostPerGroup(objectToArray(data));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
+
+    getCostPerResourceType()
+      .then((data) => {
+        setCostPerResourceType(objectToArray(data));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
+    getCostInTime()
+      .then((data) => {
+        setCostInTime(objectToArray(data));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center gap-10 h-2/3 max-w-3xl m-auto ">
-      <h1 className="font-semibold text-purple md:text-5xl text-3xl text-center">
-        Witamy w UniCloud Manager!
-      </h1>
-      <p className="text-gray-8-00 text-MD text-center mt-4">
-        Akademickim systemie zarządzania zasobami chmurowymi WMiI UAM. Nasza
-        platforma umożliwia efektywne zarządzanie zasobami chmurowymi,
-        automatyzację rutynowych procesów i monitorowanie wykorzystania
-        infrastruktury. Zachęcamy do korzystania z narzędzia i dzielenia się
-        opinią na temat dalszego rozwoju systemu.
-      </p>
+    <div className="flex flex-col items-center justify-center gap-10 w-full">
+      <div className="grid grid-cols-2 gap-10 w-full h-full ">
+        <MyLineChart data={costInTime} />
+        <SummaryStats stats={overallStats} />
+        <CostBarChart data={costPerGroup} />
+        <PieChart data={costPerResourceType} />
+      </div>
+
+      {/* <TopCostGroups /> */}
     </div>
   );
 }
