@@ -83,6 +83,7 @@ export default function AddLecturerModal({ isOpen, setIsOpen }) {
       login: "",
       email: "",
     });
+
     setIsOpen(false);
   }
 

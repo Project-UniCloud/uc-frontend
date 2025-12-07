@@ -1,7 +1,7 @@
 import { getApi } from "./utils/apiClient";
 
 export async function getCloudAccesses({ page = 0, pageSize = 10 }) {
-  const path = `/cloud/connector?page=${page}&pageSize=${pageSize}`;
+  const path = `/cloud/connector?pageNumber=${page}&pageSize=${pageSize}`;
   return await getApi(path, "Nieudane pobranie sterowników");
 }
 

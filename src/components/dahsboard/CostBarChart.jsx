@@ -20,13 +20,6 @@ import {
 //   { name: "APO", cost: 100 },
 // ];
 
-// const colorMap = Object.fromEntries([
-//   ["Bazy Danych", "#3b82f6"],
-//   ["AWS", "#ef4444"],
-//   ["Big Data", "#f59e0b"],
-//   ["APO", "#10b981"],
-// ]);
-
 export default function CostBarChart({ data = null }) {
   return (
     <div className="flex flex-col justify-center items-center">
@@ -44,14 +37,7 @@ export default function CostBarChart({ data = null }) {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="cost" fill="#8884d8">
-            {/* {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={colorMap[entry.name] || "#9ca3af"}
-              />
-            ))} */}
-          </Bar>
+          <Bar dataKey="cost" fill="#8884d8"></Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
