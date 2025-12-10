@@ -51,12 +51,6 @@ export default function Sidebar() {
               disabled
             />
             <SidebarItem
-              icon={<FiDollarSign />}
-              label="Finanse"
-              itemPath="/finances"
-              disabled
-            />
-            <SidebarItem
               icon={<PiChalkboardTeacherLight />}
               label="Prowadzący"
               itemPath="/list-lecturers"
@@ -74,12 +68,6 @@ export default function Sidebar() {
             icon={<MdOutlineBugReport />}
             label="Zgłoś błąd"
             itemPath="https://michalluczak.atlassian.net/servicedesk/customer/portals"
-          />
-          <SidebarItem
-            icon={<FiSettings />}
-            label="Ustawienia"
-            itemPath="/settings"
-            disabled
           />
           <SidebarItem
             icon={<FiLogOut />}

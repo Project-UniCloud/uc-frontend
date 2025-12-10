@@ -1,7 +1,7 @@
 import { getApi, postApi } from "./utils/apiClient";
 
 export async function getDrivers({ page = 0, pageSize = 10 }) {
-  const path = `/cloud/connector?page=${page}&pageSize=${pageSize}`;
+  const path = `/cloud/connector?pageNumber=${page}&pageSize=${pageSize}`;
   return await getApi(path, "Nieudane pobieranie sterowników");
 }
 

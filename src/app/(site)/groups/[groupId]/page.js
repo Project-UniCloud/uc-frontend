@@ -16,12 +16,16 @@ import {
   formatDateToYYYYMMDD,
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
-import { getResourcesGroup } from "@/lib/resourceApi";
-import { StopAllModal } from "@/components/resources/StopAllModal";
+import {
+  getResourcesGroup,
+  getAvailableResourcesForGroup,
+} from "@/lib/resourceApi";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 import Hint from "@/components/utils/Hint";
+import DeleteResourceModal from "@/components/group/DeleteResourceModal";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
 
@@ -38,18 +42,40 @@ export default function GroupPage({ params }) {
   });
   const [studentsData, setStudentsData] = useState([]);
   const [resourcesData, setResourcesData] = useState([]);
+  const [availableResourcesData, setAvailableResourcesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isOpenStudent, setIsOpenStudent] = useState(false);
   const [isOpenImport, setIsOpenImport] = useState(false);
   const [isOpenResource, setIsOpenResource] = useState(false);
-  const [isOpenStopAll, setIsOpenStopAll] = useState(false);
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
+  const [selectedResourceTypeId, setSelectedResourceTypeId] = useState(null);
   const [editing, setEditing] = useState(false);
   const [snapshotGroupData, setSnapshotGroupData] = useState(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
+
+  const columns = [
+    { key: "name", header: "Nazwa zasobu" },
+    {
+      key: "actions",
+      header: "Wyczyść",
+      render: (row) => (
+        <button
+          className="text-red hover:text-red-800 text-sm cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpenDeleteModal(true);
+            setSelectedResourceTypeId(row.name);
+          }}
+        >
+          <FaRegTrashAlt />
+        </button>
+      ),
+    },
+  ];
 
   useEffect(() => {
     setLoading(true);
@@ -88,6 +114,12 @@ export default function GroupPage({ params }) {
     if (activeTab === "Usługi") {
       getResourcesGroup(groupId)
         .then((data) => setResourcesData(data || []))
+        .catch((error) => setError(error.message))
+        .finally(() => setLoading(false));
+    }
+    if (activeTab === "Zasoby") {
+      getAvailableResourcesForGroup(groupId)
+        .then((data) => setAvailableResourcesData(data || []))
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
     }
@@ -301,8 +333,6 @@ export default function GroupPage({ params }) {
                 { key: "lastName", header: "Nazwisko" },
                 { key: "email", header: "Mail" },
               ]}
-              whereNavigate={"students"}
-              idKey={"login"}
               page={page}
               setPage={setPage}
               pageSize={pageSize}
@@ -316,7 +346,6 @@ export default function GroupPage({ params }) {
       {/* Usługi */}
       {activeTab === "Usługi" && (
         <>
-          <StopAllModal isOpen={isOpenStopAll} setIsOpen={setIsOpenStopAll} />
           <AddResourceModal
             isOpen={isOpenResource}
             setIsOpen={setIsOpenResource}
@@ -358,6 +387,28 @@ export default function GroupPage({ params }) {
             setPageSize={setPageSize}
             totalPages={totalPages}
             emptyMessage={"Brak usług dla tej grupy."}
+          />
+        </>
+      )}
+      {/* Zasoby */}
+      {activeTab === "Zasoby" && (
+        <>
+          <DeleteResourceModal
+            isOpen={isOpenDeleteModal}
+            setIsOpen={setIsOpenDeleteModal}
+            groupId={groupId}
+            resourceId={selectedResourceTypeId}
+          />
+          <DataTableView
+            loading={loading}
+            error={error}
+            data={availableResourcesData}
+            columns={columns}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalPages={totalPages}
           />
         </>
       )}
