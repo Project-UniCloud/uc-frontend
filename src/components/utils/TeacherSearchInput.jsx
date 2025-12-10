@@ -7,6 +7,7 @@ export default function TeacherSearchInput({
   value = [],
   label = "Prowadzący*",
   disabled = true,
+  disabledOnlyList = true,
   onSelect,
   onRemove,
   useLecturerSearch,
@@ -58,10 +59,10 @@ export default function TeacherSearchInput({
             {teacher.fullName}
             <button
               type="button"
-              disabled={disabled}
+              disabled={disabledOnlyList}
               onClick={() => onRemove?.(teacher.id)}
               className={`ml-1 text-gray-500 ${
-                disabled ? "" : "hover:text-black cursor-pointer"
+                disabledOnlyList ? "" : "hover:text-black cursor-pointer"
               }
               `}
             >

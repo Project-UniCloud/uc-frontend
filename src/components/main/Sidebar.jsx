@@ -44,12 +44,12 @@ export default function Sidebar() {
               itemPath="/dashboard"
             />
             <SidebarItem icon={<FiUsers />} label="Grupy" itemPath="/groups" />
-            <SidebarItem
+            {/* <SidebarItem
               icon={<FiBell />}
               label="Powiadomienia"
               itemPath="/notifications"
               disabled
-            />
+            /> */}
             <SidebarItem
               icon={<PiChalkboardTeacherLight />}
               label="Prowadzący"

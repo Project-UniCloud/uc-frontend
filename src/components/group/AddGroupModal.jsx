@@ -161,6 +161,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
         <TeacherSearchInput
           value={lecturers}
           disabled={false}
+          disabledOnlyList={false}
           onSelect={handleLecturerAdd}
           onRemove={handleLecturerRemove}
           useLecturerSearch={useLecturerSearch}

@@ -16,7 +16,6 @@ import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeMo
 const TABS = [
   { label: "Ustawienia" },
   { label: "Grupy zajęciowe" },
-  { label: "Autoryzacja" },
   { label: "Typy zasobów" },
 ];
 
@@ -90,13 +89,6 @@ export default function GroupPage({ params }) {
         })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
-    }
-    if (activeTab === "Autoryzacja") {
-      // getAuthDriver(driverId)
-      //   .then((data) => setAuthData(data || []))
-      //   .catch((error) => setError(error.message))
-      //   .finally(() => setLoading(false));
-      setLoading(false);
     }
     if (activeTab === "Typy zasobów") {
       getResourceTypesByDriverId(driverName)
@@ -263,37 +255,7 @@ export default function GroupPage({ params }) {
             )}
           </>
         ))}
-      {/* Autoryzacja */}
-      {activeTab === "Autoryzacja" &&
-        (loading ? (
-          <div>Ładowanie...</div>
-        ) : (
-          <>
-            <div
-              className="grid lg:max-w-3xl md:max-w-xl max-w-xs m-auto gap-x-15 gap-y-5
-                          grid-cols-1 md:grid-cols-2 md:grid-rows-3"
-            >
-              <InputForm
-                label="Access Token ID"
-                name="accessTokenId"
-                value="34fc8E22-9A3B-4F89-8C3E-1234567890AB"
-                disabled
-              />
-              <InputForm
-                label="Limit kosztów"
-                name="cost"
-                value="3000"
-                disabled
-              />
-              <InputForm
-                label="Access Token"
-                name="accessToken"
-                value="s3cr3tT0k3n_AbCdEfGhIjKlMnOpQrStUvWxYz"
-                disabled
-              />
-            </div>
-          </>
-        ))}
+
       {/* Typy zasobów */}
       {activeTab === "Typy zasobów" &&
         (loading ? (

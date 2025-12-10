@@ -6,16 +6,6 @@ import {
   deleteApi,
 } from "./utils/apiClient";
 
-export async function getResourcesGroup(groupId) {
-  const path = `/groups/${groupId}/cloud-access`;
-  return await getApi(path, "Nieudane pobieranie usług");
-}
-
-export async function getAvailableResourcesForGroup(groupId) {
-  const path = `/groups/${groupId}/available-cloud-resources`; //CHANGE TO CORRECT PATH
-  return await getApi(path, "Nieudane pobieranie dostępnych usług");
-}
-
 export async function giveCloudResourceAccess(groupId, data) {
   const path = `/groups/${groupId}/cloud-access`;
   return await postApi(path, data, "Nieudane dodawanie usług");
