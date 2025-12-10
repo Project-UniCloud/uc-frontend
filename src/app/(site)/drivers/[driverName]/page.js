@@ -8,8 +8,6 @@ import { getCloudAccessesById } from "@/lib/cloudApi";
 import { getResourceTypesByDriverId } from "@/lib/cloudApi";
 import Pagination from "@/components/pagination/Pagination";
 import DataTableView from "@/components/views/DataTableView";
-import { Button } from "@/components/utils/Buttons";
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import AddResourceTypeModal from "@/components/resources/AddResourceTypeModal";
 import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeModal";
 
@@ -42,25 +40,7 @@ export default function GroupPage({ params }) {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [selectedResourceTypeId, setSelectedResourceTypeId] = useState(null);
 
-  const columns = [
-    { key: "name", header: "Nazwa zasobu" },
-    {
-      key: "actions",
-      header: "Wyczyść",
-      render: (row) => (
-        <button
-          className="text-red hover:text-red-800 text-sm cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOpenDeleteModal(true);
-            setSelectedResourceTypeId(row.name);
-          }}
-        >
-          <FaRegTrashAlt />
-        </button>
-      ),
-    },
-  ];
+  const columns = [{ key: "name", header: "Nazwa zasobu" }];
 
   useEffect(() => {
     setLoading(true);
@@ -91,12 +71,18 @@ export default function GroupPage({ params }) {
         .finally(() => setLoading(false));
     }
     if (activeTab === "Typy zasobów") {
-      getResourceTypesByDriverId(driverName)
-        .then((data) => {
-          setDriverResourceTypesData(data || []);
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
+      // getResourceTypesByDriverId(driverName)
+      //   .then((data) => {
+      //     setDriverResourceTypesData(data || []);
+      //   })
+      //   .catch((error) => setError(error.message))
+      //   .finally(() => setLoading(false));
+      setDriverResourceTypesData([
+        { id: "rt1", name: "Maszyna Wirtualna" },
+        { id: "rt2", name: "Baza Danych" },
+        { id: "rt3", name: "Storage" },
+      ]);
+      setLoading(false);
     }
   }, [activeTab, driverName, page, pageSize]);
 
@@ -263,14 +249,6 @@ export default function GroupPage({ params }) {
         ) : (
           <>
             <DataTableView
-              leftActions={
-                <Button
-                  hint="Tworzy nowe polaczenie do sterownika chmurowego. Czym jest sterownik do chmury mozna przeczytac w dokumentacji."
-                  onClick={() => setIsOpenAddModal(true)}
-                >
-                  <FaPlus /> Dodaj typ zasobu
-                </Button>
-              }
               loading={loading}
               error={error}
               data={driverResourceTypesData}

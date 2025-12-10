@@ -8,14 +8,15 @@ import {
   YAxis,
 } from "recharts";
 
-// const data = [
-//   { date: "January", cost: 400 },
-//   { date: "February", cost: 300 },
-//   { date: "March", cost: 500 },
-//   { date: "April", cost: 250 },
-// ];
-
 export default function MyLineChart({ data = null }) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center">
+        <h3 className="text-lg font-semibold mb-4">Trend kosztów</h3>
+        <div className="text-gray-500">Brak danych do wyświetlenia</div>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col justify-center items-center ">
       <h3 className="text-lg font-semibold mb-4">Trend kosztów</h3>

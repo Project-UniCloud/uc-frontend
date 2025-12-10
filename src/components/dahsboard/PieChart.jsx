@@ -20,6 +20,15 @@ import {
 const COLORS = ["#8b5cf6", "#6b2135", "#4f46e5", "#93c5fd"];
 
 export default function ResourcePieChart({ data = null }) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center">
+        <h3 className="text-lg font-semibold mb-4">Udział typów zasobów</h3>
+        <div className="text-gray-500">Brak danych do wyświetlenia</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col justify-center items-center ">
       <h3 className="text-lg font-semibold mb-4">Udział typów zasobów</h3>
@@ -30,7 +39,7 @@ export default function ResourcePieChart({ data = null }) {
       >
         <PieChart width="100%" height="100%">
           <Pie data={data} dataKey="value" nameKey="name" label>
-            {data?.map((entry, index) => (
+            {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}

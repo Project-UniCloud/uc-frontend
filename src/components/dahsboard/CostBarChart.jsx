@@ -21,6 +21,16 @@ import {
 // ];
 
 export default function CostBarChart({ data = null }) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center">
+        <h3 className="text-lg font-semibold mb-4">
+          Porównanie grup zajęciowych
+        </h3>
+        <div className="text-gray-500">Brak danych do wyświetlenia</div>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col justify-center items-center">
       <h3 className="text-lg font-semibold mb-4">
