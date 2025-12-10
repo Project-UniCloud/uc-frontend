@@ -40,3 +40,13 @@ export async function activateGroup(groupId) {
     "Nieudane aktywowanie grupy"
   );
 }
+
+export async function getResourcesGroup(groupId) {
+  const path = `/groups/${groupId}/cloud-access`;
+  return await getApi(path, "Nieudane pobieranie usług");
+}
+
+export async function getAvailableResourcesForGroup(groupId) {
+  const path = `/groups/${groupId}/available-cloud-resources`; //CHANGE TO CORRECT PATH
+  return await getApi(path, "Nieudane pobieranie dostępnych usług");
+}

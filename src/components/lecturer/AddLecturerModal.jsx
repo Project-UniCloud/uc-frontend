@@ -145,6 +145,7 @@ export default function AddLecturerModal({ isOpen, setIsOpen }) {
           <TeacherSearchInput
             value={lecturers}
             disabled={lecturers.length >= 1}
+            disabledOnlyList={false}
             onSelect={handleLecturerAdd}
             onRemove={handleLecturerRemove}
             useLecturerSearch={useLecturerExternalSearch}

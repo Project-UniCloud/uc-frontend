@@ -6,7 +6,7 @@ export async function getStudentsFromGroup({
   page = 0,
   pageSize = 10,
 }) {
-  const path = `/groups/${groupId}/students?pageNumber=${page}&pageSize=${pageSize}`;
+  const path = `/groups/${groupId}/students?page=${page}&pageSize=${pageSize}`;
   return await getApi(path, "Nieudane pobieranie studentów");
 }
 

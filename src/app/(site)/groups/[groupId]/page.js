@@ -19,7 +19,7 @@ import {
 import {
   getResourcesGroup,
   getAvailableResourcesForGroup,
-} from "@/lib/resourceApi";
+} from "@/lib/groupsApi";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
@@ -27,7 +27,21 @@ import Hint from "@/components/utils/Hint";
 import DeleteResourceModal from "@/components/group/DeleteResourceModal";
 import { FaRegTrashAlt } from "react-icons/fa";
 
-const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
+const TABS = [
+  { label: "Ogólne" },
+  { label: "Studenci" },
+  { label: "Usługi" },
+  { label: "Zasoby" },
+];
+
+const staticResourceData = [
+  { name: "Dysk 100GB" },
+  { name: "Dysk 200GB" },
+  { name: "Dysk 500GB" },
+  { name: "Dysk 1TB" },
+  { name: "Dysk 2TB" },
+  { name: "Dysk 5TB" },
+];
 
 export default function GroupPage({ params }) {
   const { groupId } = React.use(params);
@@ -118,10 +132,13 @@ export default function GroupPage({ params }) {
         .finally(() => setLoading(false));
     }
     if (activeTab === "Zasoby") {
-      getAvailableResourcesForGroup(groupId)
-        .then((data) => setAvailableResourcesData(data || []))
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
+      // getAvailableResourcesForGroup(groupId)
+      //   .then((data) => setAvailableResourcesData(data || []))
+      //   .catch((error) => setError(error.message))
+      //   .finally(() => setLoading(false));
+      // Tymczasowe dane statyczne
+      setAvailableResourcesData(staticResourceData);
+      setLoading(false);
     }
   }, [activeTab, groupId, page, pageSize]);
 
@@ -354,17 +371,17 @@ export default function GroupPage({ params }) {
           <DataTableView
             leftActions={
               <>
-                <Button
+                {/* <Button
                   onClick={() => setIsOpenStopAll(true)}
                   color="bg-orange-200 cursor-not-allowed hover:not-allowed"
                   disabled
                 >
                   <CiPause1 /> Zawieś wszystko
-                </Button>
+                </Button> */}
                 <Button onClick={() => setIsOpenResource(true)}>
                   <FaPlus /> Dodaj usługę
                 </Button>
-                <Hint hint="Zarządzaj usługami przypisanymi do tej grupy. Możesz dodawać nowe usługi - przydzielać do nich dostęp twojej grupie lub wstrzymywać działające." />
+                <Hint hint="Zarządzaj usługami przypisanymi do tej grupy. Możesz dodawać nowe usługi - przydzielać do nich dostęp twojej grupie." />
               </>
             }
             loading={loading}
