@@ -1,15 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Tabs from "@/components/utils/Tabs";
-import Table from "@/components/table/Table";
 import InputForm from "@/components/utils/InputForm";
 import { getGroups } from "@/lib/groupsApi";
 import { getCloudAccessesById } from "@/lib/cloudApi";
 import { getResourceTypesByDriverId } from "@/lib/cloudApi";
-import Pagination from "@/components/pagination/Pagination";
 import DataTableView from "@/components/views/DataTableView";
 import AddResourceTypeModal from "@/components/resources/AddResourceTypeModal";
 import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeModal";
+import Hint from "@/components/utils/Hint";
 
 const TABS = [
   { label: "Ustawienia" },
@@ -71,18 +70,13 @@ export default function GroupPage({ params }) {
         .finally(() => setLoading(false));
     }
     if (activeTab === "Typy zasobów") {
-      // getResourceTypesByDriverId(driverName)
-      //   .then((data) => {
-      //     setDriverResourceTypesData(data || []);
-      //   })
-      //   .catch((error) => setError(error.message))
-      //   .finally(() => setLoading(false));
-      setDriverResourceTypesData([
-        { id: "rt1", name: "Maszyna Wirtualna" },
-        { id: "rt2", name: "Baza Danych" },
-        { id: "rt3", name: "Storage" },
-      ]);
-      setLoading(false);
+      getResourceTypesByDriverId({ page, pageSize, driverName })
+        .then((data) => {
+          setDriverResourceTypesData(data.content || []);
+          setTotalPages(data.page.totalPages || 0);
+        })
+        .catch((error) => setError(error.message))
+        .finally(() => setLoading(false));
     }
   }, [activeTab, driverName, page, pageSize]);
 
@@ -131,7 +125,20 @@ export default function GroupPage({ params }) {
   return (
     <div className="min-w-120">
       <div className="flex justify-between items-center">
-        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
+        <div className="flex flex-row items-center">
+          <Tabs
+            tabs={TABS}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+          <div className="mb-4.5">
+            <Hint
+              hint={`Ustawienia – ogólne ustawienia i informacje o sterowniku
+Grupy zajęciowe – lista grup wykorzystujących dany sterownik
+Typy zasobów – dostępne typy zasobów dla danego sterownika`}
+            />
+          </div>
+        </div>
         <AddResourceTypeModal
           isOpen={isOpenAddModal}
           setIsOpen={setIsOpenAddModal}
@@ -171,6 +178,7 @@ export default function GroupPage({ params }) {
                 name="id"
                 type="text"
                 value={driverData.id}
+                hint="ID sterownika chmurowego."
                 disabled
               />
               <InputForm
@@ -178,29 +186,32 @@ export default function GroupPage({ params }) {
                 name="name"
                 type="name"
                 value={driverData.name}
+                hint="Nazwa sterownika chmurowego."
                 disabled
               />
               <InputForm
                 label="Wyczyść"
                 name="clean"
                 value={driverData.clean}
-                disabled
-              />
-              <InputForm
-                label="Wyczyść"
-                name="clean"
-                value={driverData.clean}
+                hint="Harmonogram cyklicznego zadania czyszczenia. 
+          Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron)."
                 disabled
               />
               <InputForm
                 label="Limit kosztów"
                 name="cost"
                 value={driverData.limit}
+                hint="Kwota limitu kosztów.
+            W szczegółach sterownika można ustawić progi powiadomień mailowych, które poinformują o przekroczeniu kosztów.
+            Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
                 disabled
               />
               <InputForm
                 label="Status"
                 name="status"
+                hint="Aktualny status sterownika chmurowego.
+                Aktywny - sterownik jest włączony i działa poprawnie.
+                Nieaktywny - sterownik jest wyłączony lub wystąpiły problemy z jego działaniem."
                 colors={driverData.status ? "text-green" : "text-red"}
                 center
                 value={driverData.status ? "Aktywny" : "Nieaktywny"}
@@ -210,57 +221,41 @@ export default function GroupPage({ params }) {
           </>
         ))}
       {/* Grupy zajęciowe */}
-      {activeTab === "Grupy zajęciowe" &&
-        (loading ? (
-          <div>Ładowanie...</div>
-        ) : (
-          <>
-            {groupsData.length > 0 ? (
-              <>
-                <Table
-                  columns={[
-                    { key: "id", header: "ID" },
-                    { key: "name", header: "Nazwa" },
-                    { key: "lecturers", header: "Prowadzący" },
-                    { key: "cloudAccesses", header: "Usługi" },
-                    { key: "semester", header: "Semestr" },
-                    { key: "endDate", header: "Data Zakończenia" },
-                  ]}
-                  data={tableData}
-                />
-                <Pagination
-                  page={page}
-                  setPage={setPage}
-                  totalPages={totalPages}
-                  pageSize={pageSize}
-                  setPageSize={setPageSize}
-                />
-              </>
-            ) : (
-              <div>Brak grup dla tego sterownika.</div>
-            )}
-          </>
-        ))}
+      {activeTab === "Grupy zajęciowe" && (
+        <DataTableView
+          loading={loading}
+          error={error}
+          data={tableData}
+          columns={[
+            { key: "id", header: "ID" },
+            { key: "name", header: "Nazwa" },
+            { key: "lecturers", header: "Prowadzący" },
+            { key: "cloudAccesses", header: "Usługi" },
+            { key: "semester", header: "Semestr" },
+            { key: "endDate", header: "Data Zakończenia" },
+          ]}
+          page={page}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          totalPages={totalPages}
+        />
+      )}
 
       {/* Typy zasobów */}
-      {activeTab === "Typy zasobów" &&
-        (loading ? (
-          <div>Ładowanie...</div>
-        ) : (
-          <>
-            <DataTableView
-              loading={loading}
-              error={error}
-              data={driverResourceTypesData}
-              columns={columns}
-              page={page}
-              setPage={setPage}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              totalPages={totalPages}
-            />
-          </>
-        ))}
+      {activeTab === "Typy zasobów" && (
+        <DataTableView
+          loading={loading}
+          error={error}
+          data={driverResourceTypesData}
+          columns={columns}
+          page={page}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          totalPages={totalPages}
+        />
+      )}
     </div>
   );
 }

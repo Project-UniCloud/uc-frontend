@@ -25,8 +25,9 @@ export default function Hint({ hint }) {
               backgroundColor: "#f3f4f6",
               color: "#000000",
               whiteSpace: "pre-line",
-              maxWidth: "220px",
+              maxWidth: "350px",
               wordBreak: "break-word",
+              zIndex: 9999,
             }}
           />
         </>

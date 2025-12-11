@@ -126,18 +126,20 @@ export default function GroupPage({ params }) {
             <InputForm
               label="Limit"
               name="limit"
+              hint="Kwota limitu kosztów dla używanego sterownika. Można ją zmienić w szczegółach sterownika.
+                          Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
               value={infoData.limit}
               onChange={handleChange("limit", "Edycja")}
-              disabled={!editing}
-              hint="Limit kosztowy dla danej usługi przydzielonej do tej grupy"
+              disabled={true}
             />
             <InputForm
               label="Czyszczenie"
               name="cron"
               value={infoData.cron}
               onChange={handleChange("cron", "Edycja")}
-              disabled={!editing}
-              hint="Harmonogram czyszczenia zasobu w formacie CRON"
+              disabled={true}
+              hint="Harmonogram cyklicznego zadania czyszczenia. 
+          Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron)."
             />
             <InputForm
               label="Data zakończenia"

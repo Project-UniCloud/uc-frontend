@@ -7,6 +7,7 @@ import AddGroupModal from "@/components/group/AddGroupModal";
 import DataTableView from "@/components/views/DataTableView";
 import { z } from "zod";
 import { Button } from "@/components/utils/Buttons";
+import Hint from "@/components/utils/Hint";
 
 const TABS = [
   { key: "ACTIVE", label: "Aktywne" },
@@ -20,7 +21,17 @@ const columns = [
   { key: "lecturers", header: "Prowadzący" },
   { key: "cloudAccesses", header: "Usługi" },
   { key: "semester", header: "Semestr" },
-  { key: "endDate", header: "Data Zakończenia" },
+  {
+    key: "endDate",
+    header: (
+      <div className="flex items-center justify-center gap-2">
+        <span>Data Zakończenia</span>
+        <span className="font-normal">
+          <Hint hint="Data zakończenia to graniczny termin działania grupy. Po jej przekroczeniu system automatycznie archiwizuje grupę i przypisanych użytkowników. Tę operację możesz wywołać także ręcznie, używając akcji ‘Archiwizuj grupę’ w szczegółach danej grupy." />
+        </span>
+      </div>
+    ),
+  },
 ];
 
 const searchSchema = z
@@ -83,7 +94,16 @@ export default function GroupsPage() {
 
   return (
     <div className="min-w-120">
-      <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
+      <div className="flex flex-row items-center">
+        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
+        <div className="mb-4.5">
+          <Hint
+            hint={`Aktywne – grupy w trakcie zajęć
+Zarchiwizowane – grupy po zakończeniu zajęć
+Nieaktywne – nowo utworzone grupy przed startem zajęć.`}
+          />
+        </div>
+      </div>
 
       <AddGroupModal isOpen={isOpen} setIsOpen={setIsOpen} />
 

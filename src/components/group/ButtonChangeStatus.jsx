@@ -66,18 +66,6 @@ export default function ButtonChangeStatus({
           {isLoading ? "Ładowanie..." : "Aktywuj"}
         </Button>
       )}
-      {groupStatus === "Zarchiwizowana" && (
-        <Button
-          hint={hint}
-          label="Usuń"
-          color={`bg-red ${isLoading && "opacity-50"}`}
-          center
-          disabled
-        >
-          <IoPlayCircleOutline className="text-lg" />
-          Usuń
-        </Button>
-      )}
     </>
   );
 }

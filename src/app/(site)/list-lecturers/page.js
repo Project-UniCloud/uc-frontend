@@ -5,6 +5,7 @@ import DataTableView from "@/components/views/DataTableView";
 import AddLecturerModal from "@/components/lecturer/AddLecturerModal";
 import { Button } from "@/components/utils/Buttons";
 import { FaPlus } from "react-icons/fa";
+import Hint from "@/components/utils/Hint";
 
 const columns = [
   { key: "login", header: "ID/Login" },
@@ -76,14 +77,14 @@ export default function ListLecturersPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+            <Hint hint="Dodaj prowadzących do systemu. Będziesz mógł ich później przydzielić do grup zajęciowych." />
           </>
         }
         loading={loading}
         error={error}
         data={lecturers}
         columns={columns}
-        whereNavigate={"list-lecturers"}
-        idKey={"id"}
+        whereNavigate={""}
         emptyMessage={"Brak prowadzących"}
         page={page}
         setPage={setPage}
