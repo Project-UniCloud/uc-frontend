@@ -36,7 +36,7 @@ export default function DashboardPage() {
 
     getCostPerGroup()
       .then((data) => {
-        setCostPerGroup(objectToArray(data));
+        setCostPerGroup(data);
         setLoading(false);
       })
       .catch((error) => {
@@ -46,7 +46,7 @@ export default function DashboardPage() {
 
     getCostPerResourceType()
       .then((data) => {
-        setCostPerResourceType(objectToArray(data));
+        setCostPerResourceType(data);
         setLoading(false);
       })
       .catch((error) => {
@@ -55,7 +55,7 @@ export default function DashboardPage() {
       });
     getCostInTime()
       .then((data) => {
-        setCostInTime(objectToArray(data));
+        setCostInTime(data);
         setLoading(false);
       })
       .catch((error) => {

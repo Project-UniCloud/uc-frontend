@@ -189,12 +189,6 @@ export default function GroupPage({ params }) {
               disabled={!editing}
               hint="Po przekroczeniu tego progu kosztów, użytkownicy z tej grupy otrzymają powiadomienie e-mailowe."
             />
-
-            <ButtonChangeResourceStatus
-              groupId={groupId}
-              resourceId={resourceId}
-              resourceStatus={infoData.status}
-            />
           </div>
         </>
       )}

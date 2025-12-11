@@ -38,7 +38,7 @@ export default function ResourcePieChart({ data = null }) {
         style={{ aspectRatio: 1.618, maxWidth: 600 }}
       >
         <PieChart width="100%" height="100%">
-          <Pie data={data} dataKey="value" nameKey="name" label>
+          <Pie data={data} dataKey="cost" nameKey="resourceType" label>
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}

@@ -45,7 +45,6 @@ export async function updateResourceGeneralInfoByGroupId(
 
 // TODO CHANGE TO CORRECT PATHS AND NAMES
 export async function deactivationResource(groupId, resourceId) {
-  console.log("Deactivating resource:", groupId, resourceId);
   return await postApi(
     `/groups/${groupId}/cloud-access/${resourceId}/deactivate`,
     "Nieudane dezaktywowanie zasobu"

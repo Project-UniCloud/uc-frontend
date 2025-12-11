@@ -13,24 +13,7 @@ import {
   Cell,
 } from "recharts";
 
-// const data = [
-//   { name: "Bazy Danych", cost: 250 },
-//   { name: "AWS", cost: 500 },
-//   { name: "Big Data", cost: 1000 },
-//   { name: "APO", cost: 100 },
-// ];
-
 export default function CostBarChart({ data = null }) {
-  if (!data || data.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center">
-        <h3 className="text-lg font-semibold mb-4">
-          Porównanie grup zajęciowych
-        </h3>
-        <div className="text-gray-500">Brak danych do wyświetlenia</div>
-      </div>
-    );
-  }
   return (
     <div className="flex flex-col justify-center items-center">
       <h3 className="text-lg font-semibold mb-4">
@@ -43,7 +26,7 @@ export default function CostBarChart({ data = null }) {
           margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="groupUniqueName" />
           <YAxis />
           <Tooltip />
           <Legend />
