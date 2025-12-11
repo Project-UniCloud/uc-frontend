@@ -30,8 +30,8 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
     onError: (error) => {
       setError({
         error: error.message || "Błąd dodawania usługi",
-      })
-        showErrorToast("Błąd dodawania usługi: " + error?.message);
+      });
+      showErrorToast("Błąd dodawania usługi: " + error?.message);
     },
   });
 
@@ -69,7 +69,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
     setLoading(true);
     getCloudResourcesTypes(selectedDriver)
       .then((data) => {
-        setResourcesData(data);
+        setResourcesData(data.content);
       })
       .catch((error) => setError(error.message))
       .finally(() => setLoading(false));
@@ -107,16 +107,18 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
             disabled={loading || !driversData.length}
           >
             <option value="">Wybierz sterownik</option>
-            {driversData.map((driver) => {
-              return (
-                <option
-                  key={driver.cloudConnectorId}
-                  value={driver.cloudConnectorId}
-                >
-                  {driver.cloudConnectorId}
-                </option>
-              );
-            })}
+
+            {driversData.length > 0 &&
+              driversData.map((driver) => {
+                return (
+                  <option
+                    key={driver.cloudConnectorId}
+                    value={driver.cloudConnectorId}
+                  >
+                    {driver.cloudConnectorId}
+                  </option>
+                );
+              })}
           </select>
         </div>
         <div className="flex flex-col">
