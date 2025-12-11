@@ -13,7 +13,6 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
   const [driversData, setDriversData] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState("");
   const [selectedResource, setSelectedResource] = useState("");
-  const [limit, setLimit] = useState("");
   const [loading, setLoading] = useState(true);
 
   const mutation = useMutation({
@@ -24,7 +23,6 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
       setSelectedResource("");
       setResourcesData([]);
       setDriversData([]);
-      setLimit("");
       showSuccessToast("Dostęp do usługi został dodany!");
     },
     onError: (error) => {
@@ -96,13 +94,13 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
       </div>
       <h2 className="text-xl font-semibold mb-10 text-center">Dodaj dostęp</h2>
 
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-col">
+      <div className="flex flex-row m-auto gap-6 max-w-[500px]">
+        <div className="flex flex-col w-full">
           <label className="mb-1 text-sm font-medium">Sterownik</label>
           <select
             required
             value={selectedDriver}
-            className="rounded-md border text-sm w-40 border-gray-300 px-1 py-2 shadow-sm focus:border-black focus:outline-none"
+            className="rounded-md border text-sm w-full border-gray-300 px-1 py-2 shadow-sm focus:border-black focus:outline-none"
             onChange={handleDriverChange}
             disabled={loading || !driversData.length}
           >
@@ -121,7 +119,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
               })}
           </select>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           <label className="mb-1 text-sm font-medium">Usługa</label>
           <select
             required
@@ -131,7 +129,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
             }}
             className={`rounded-md border ${
               !resourcesData.length && "text-gray-300"
-            }  border-gray-300 px-1 text-sm py-2 shadow-sm w-40 focus:border-black focus:outline-none`}
+            }  border-gray-300 px-1 text-sm py-2 shadow-sm w-full focus:border-black focus:outline-none`}
             disabled={!resourcesData.length || loading}
           >
             <option value="">Wybierz usługę</option>
@@ -146,18 +144,6 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
                 );
               })}
           </select>
-        </div>
-
-        <div className="flex flex-col w-40">
-          <label className="mb-1 text-sm font-medium ">Limit</label>
-          <input
-            type="number"
-            required
-            className="rounded-md border text-sm  border-gray-300 px-4 py-2 shadow-sm focus:border-black focus:outline-none"
-            placeholder="Wprowadź limit"
-            value={limit}
-            onChange={(e) => setLimit(e.target.value)}
-          />
         </div>
       </div>
       {error.error && <div className="text-red-600">{error.error}</div>}
@@ -188,7 +174,6 @@ export function AddResourceModal({ isOpen, setIsOpen, groupId }) {
               data: {
                 cloudConnectorId: selectedDriver,
                 cloudResourceType: selectedResource,
-                costLimit: limit,
               },
             });
           }}
