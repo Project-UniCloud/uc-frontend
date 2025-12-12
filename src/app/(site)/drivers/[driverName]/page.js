@@ -107,7 +107,7 @@ export default function GroupPage({ params }) {
       setFormLoading(true);
       try {
         const updated = await updateDriver(driverName, {
-          // cloudConnectorId: driverName,
+          cloudConnectorId: driverName,
           cloudConnectorName: driverData.name,
           costLimit: driverData.limit,
           defaultCronExpression: driverData.clean,
