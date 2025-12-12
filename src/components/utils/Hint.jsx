@@ -28,6 +28,7 @@ export default function Hint({ hint }) {
               maxWidth: "350px",
               wordBreak: "break-word",
               zIndex: 9999,
+              opacity: 1,
             }}
           />
         </>

@@ -77,12 +77,18 @@ export default function GroupsPage() {
       <AddDriverModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <DataTableView
         leftActions={
-          <Button
-            onClick={() => setIsOpen(true)}
-            hint="Tworzy nowe polaczenie do sterownika chmurowego. Czym jest sterownik do chmury mozna przeczytac w dokumentacji."
-          >
-            <FaPlus /> Dodaj sterownik
-          </Button>
+          <>
+            <Button
+              onClick={() => setIsOpen(true)}
+              hint="Tworzy nowe polaczenie do sterownika chmurowego. Czym jest sterownik do chmury mozna przeczytac w dokumentacji."
+            >
+              <FaPlus /> Dodaj sterownik
+            </Button>
+            <Hint
+              hint="Dodanie sterownika chmurowego do systemu umożliwia zarządzanie zasobami chmurowymi poprzez ten sterownik.
+          Można skonfigurować limity kosztów, harmonogramy czyszczenia zasobów oraz przydzielić dostęp do jego zasobów danej grupie zajęciowej oraz znajdującym się w niej studentom oraz prowadzącym."
+            />
+          </>
         }
         loading={loading}
         error={error}

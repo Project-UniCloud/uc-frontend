@@ -102,8 +102,6 @@ export default function GroupPage({ params }) {
   const [isOpenStudent, setIsOpenStudent] = useState(false);
   const [isOpenImport, setIsOpenImport] = useState(false);
   const [isOpenResource, setIsOpenResource] = useState(false);
-  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
-  const [selectedResourceTypeId, setSelectedResourceTypeId] = useState(null);
   const [editing, setEditing] = useState(false);
   const [snapshotGroupData, setSnapshotGroupData] = useState(null);
   const [page, setPage] = useState(0);

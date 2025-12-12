@@ -9,6 +9,9 @@ import DataTableView from "@/components/views/DataTableView";
 import AddResourceTypeModal from "@/components/resources/AddResourceTypeModal";
 import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeModal";
 import Hint from "@/components/utils/Hint";
+import { Button } from "@/components/utils/Buttons";
+import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
+import { updateDriver } from "@/lib/driversApi";
 
 const TABS = [
   { label: "Ustawienia" },
@@ -30,8 +33,10 @@ export default function GroupPage({ params }) {
   const [driverResourceTypesData, setDriverResourceTypesData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [formLoading, setFormLoading] = useState(false);
+  const [snapshotSettingsData, setSnapshotSettingsData] = useState(null);
   const [error, setError] = useState(null);
-  //   const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -82,6 +87,7 @@ export default function GroupPage({ params }) {
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
+    setEditing(false);
     setPage(0);
     setPageSize(10);
   };
@@ -90,37 +96,45 @@ export default function GroupPage({ params }) {
     id: idx + 1,
   }));
 
-  //   const handleChange = (fieldName) => (event) => {
-  //     const newValue = event.target.value;
-  //     setdriverData((prev) => ({ ...prev, [fieldName]: newValue }));
-  //   };
+  const handleChange = (fieldName) => (event) => {
+    const newValue = event.target.value;
+    setdriverData((prev) => ({ ...prev, [fieldName]: newValue }));
+  };
 
-  //   const handleEditClick = async () => {
-  //     if (editing) {
-  //       setError(null);
-  //       setFormLoading(true);
-  //       try {
-  //         const updated = await updateGroup(driverId, {
-  //           name: driverData.name,
-  //           lecturers: driverData.lecturers.map((t) => t.id),
-  //           startDate: formatDateToDDMMYYYY(driverData.startDate),
-  //           endDate: formatDateToDDMMYYYY(driverData.endDate),
-  //           description: driverData.description || "",
-  //         });
-  //         setdriverData((prev) => ({ ...prev, ...updated }));
-  //         showSuccessToast("Grupa została zaktualizowana pomyślnie.");
-  //         setEditing(false);
-  //       } catch (error) {
-  //         setError(error.message);
-  //         showErrorToast("Błąd podczas aktualizacji grupy: " + error.message);
-  //       } finally {
-  //         setFormLoading(false);
-  //       }
-  //     } else {
-  //       setFormLoading(false);
-  //       setEditing(true);
-  //     }
-  //   };
+  const handleEditClick = async () => {
+    if (editing) {
+      setError(null);
+      setFormLoading(true);
+      try {
+        const updated = await updateDriver(driverName, {
+          // cloudConnectorId: driverName,
+          cloudConnectorName: driverData.name,
+          costLimit: driverData.limit,
+          defaultCronExpression: driverData.clean,
+        });
+        setdriverData((prev) => ({ ...prev, ...updated }));
+        showSuccessToast("Sterownik został zaktualizowany pomyślnie.");
+        setSnapshotSettingsData(null);
+        setEditing(false);
+      } catch (error) {
+        setError(error.message);
+        showErrorToast(
+          "Błąd podczas aktualizacji sterownika: " + error.message
+        );
+        if (snapshotSettingsData) {
+          setdriverData((prev) => ({ ...prev, ...snapshotSettingsData }));
+          setSnapshotSettingsData(null);
+        }
+      } finally {
+        setEditing(false);
+        setFormLoading(false);
+      }
+    } else {
+      setSnapshotSettingsData(driverData);
+      setFormLoading(false);
+      setEditing(true);
+    }
+  };
 
   return (
     <div className="min-w-120">
@@ -151,7 +165,7 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
           setSelectedResourceTypeId={setSelectedResourceTypeId}
           cloudConnectorId={driverName}
         />
-        {/* {activeTab === "Ustawienia" && !loading && (
+        {activeTab === "Ustawienia" && !loading && (
           <Button
             color={editing ? "bg-green-500" : "bg-purple"}
             className={formLoading && "cursor-not-allowed opacity-50"}
@@ -160,7 +174,7 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
           >
             {editing ? "Zapisz" : "Edytuj"}
           </Button>
-        )} */}
+        )}
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
       {/* Ustawienia */}
@@ -186,25 +200,28 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
                 name="name"
                 type="name"
                 value={driverData.name}
+                onChange={handleChange("name")}
                 hint="Nazwa sterownika chmurowego."
-                disabled
+                disabled={!editing}
               />
               <InputForm
                 label="Wyczyść"
                 name="clean"
                 value={driverData.clean}
+                onChange={handleChange("clean")}
+                disabled={!editing}
                 hint="Harmonogram cyklicznego zadania czyszczenia. 
           Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron)."
-                disabled
               />
               <InputForm
                 label="Limit kosztów"
                 name="cost"
                 value={driverData.limit}
+                onChange={handleChange("limit")}
                 hint="Kwota limitu kosztów.
             W szczegółach sterownika można ustawić progi powiadomień mailowych, które poinformują o przekroczeniu kosztów.
             Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
-                disabled
+                disabled={!editing}
               />
               <InputForm
                 label="Status"
@@ -234,6 +251,8 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
             { key: "semester", header: "Semestr" },
             { key: "endDate", header: "Data Zakończenia" },
           ]}
+          whereNavigate="../groups"
+          idKey="groupId"
           page={page}
           setPage={setPage}
           pageSize={pageSize}
