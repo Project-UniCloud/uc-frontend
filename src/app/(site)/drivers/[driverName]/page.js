@@ -1,22 +1,21 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Tabs from "@/components/utils/Tabs";
-import Table from "@/components/table/Table";
 import InputForm from "@/components/utils/InputForm";
 import { getGroups } from "@/lib/groupsApi";
 import { getCloudAccessesById } from "@/lib/cloudApi";
 import { getResourceTypesByDriverId } from "@/lib/cloudApi";
-import Pagination from "@/components/pagination/Pagination";
 import DataTableView from "@/components/views/DataTableView";
-import { Button } from "@/components/utils/Buttons";
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import AddResourceTypeModal from "@/components/resources/AddResourceTypeModal";
 import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeModal";
+import Hint from "@/components/utils/Hint";
+import { Button } from "@/components/utils/Buttons";
+import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
+import { updateDriver } from "@/lib/driversApi";
 
 const TABS = [
   { label: "Ustawienia" },
   { label: "Grupy zajęciowe" },
-  { label: "Autoryzacja" },
   { label: "Typy zasobów" },
 ];
 
@@ -34,8 +33,10 @@ export default function GroupPage({ params }) {
   const [driverResourceTypesData, setDriverResourceTypesData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [formLoading, setFormLoading] = useState(false);
+  const [snapshotSettingsData, setSnapshotSettingsData] = useState(null);
   const [error, setError] = useState(null);
-  //   const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -43,25 +44,7 @@ export default function GroupPage({ params }) {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [selectedResourceTypeId, setSelectedResourceTypeId] = useState(null);
 
-  const columns = [
-    { key: "name", header: "Nazwa zasobu" },
-    {
-      key: "actions",
-      header: "Wyczyść",
-      render: (row) => (
-        <button
-          className="text-red hover:text-red-800 text-sm cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOpenDeleteModal(true);
-            setSelectedResourceTypeId(row.name);
-          }}
-        >
-          <FaRegTrashAlt />
-        </button>
-      ),
-    },
-  ];
+  const columns = [{ key: "name", header: "Nazwa zasobu" }];
 
   useEffect(() => {
     setLoading(true);
@@ -91,17 +74,11 @@ export default function GroupPage({ params }) {
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
     }
-    if (activeTab === "Autoryzacja") {
-      // getAuthDriver(driverId)
-      //   .then((data) => setAuthData(data || []))
-      //   .catch((error) => setError(error.message))
-      //   .finally(() => setLoading(false));
-      setLoading(false);
-    }
     if (activeTab === "Typy zasobów") {
-      getResourceTypesByDriverId(driverName)
+      getResourceTypesByDriverId({ page, pageSize, driverName })
         .then((data) => {
-          setDriverResourceTypesData(data || []);
+          setDriverResourceTypesData(data.content || []);
+          setTotalPages(data.page.totalPages || 0);
         })
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
@@ -110,6 +87,7 @@ export default function GroupPage({ params }) {
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
+    setEditing(false);
     setPage(0);
     setPageSize(10);
   };
@@ -118,42 +96,63 @@ export default function GroupPage({ params }) {
     id: idx + 1,
   }));
 
-  //   const handleChange = (fieldName) => (event) => {
-  //     const newValue = event.target.value;
-  //     setdriverData((prev) => ({ ...prev, [fieldName]: newValue }));
-  //   };
+  const handleChange = (fieldName) => (event) => {
+    const newValue = event.target.value;
+    setdriverData((prev) => ({ ...prev, [fieldName]: newValue }));
+  };
 
-  //   const handleEditClick = async () => {
-  //     if (editing) {
-  //       setError(null);
-  //       setFormLoading(true);
-  //       try {
-  //         const updated = await updateGroup(driverId, {
-  //           name: driverData.name,
-  //           lecturers: driverData.lecturers.map((t) => t.id),
-  //           startDate: formatDateToDDMMYYYY(driverData.startDate),
-  //           endDate: formatDateToDDMMYYYY(driverData.endDate),
-  //           description: driverData.description || "",
-  //         });
-  //         setdriverData((prev) => ({ ...prev, ...updated }));
-  //         showSuccessToast("Grupa została zaktualizowana pomyślnie.");
-  //         setEditing(false);
-  //       } catch (error) {
-  //         setError(error.message);
-  //         showErrorToast("Błąd podczas aktualizacji grupy: " + error.message);
-  //       } finally {
-  //         setFormLoading(false);
-  //       }
-  //     } else {
-  //       setFormLoading(false);
-  //       setEditing(true);
-  //     }
-  //   };
+  const handleEditClick = async () => {
+    if (editing) {
+      setError(null);
+      setFormLoading(true);
+      try {
+        const updated = await updateDriver(driverName, {
+          // cloudConnectorId: driverName,
+          cloudConnectorName: driverData.name,
+          costLimit: driverData.limit,
+          defaultCronExpression: driverData.clean,
+        });
+        setdriverData((prev) => ({ ...prev, ...updated }));
+        showSuccessToast("Sterownik został zaktualizowany pomyślnie.");
+        setSnapshotSettingsData(null);
+        setEditing(false);
+      } catch (error) {
+        setError(error.message);
+        showErrorToast(
+          "Błąd podczas aktualizacji sterownika: " + error.message
+        );
+        if (snapshotSettingsData) {
+          setdriverData((prev) => ({ ...prev, ...snapshotSettingsData }));
+          setSnapshotSettingsData(null);
+        }
+      } finally {
+        setEditing(false);
+        setFormLoading(false);
+      }
+    } else {
+      setSnapshotSettingsData(driverData);
+      setFormLoading(false);
+      setEditing(true);
+    }
+  };
 
   return (
     <div className="min-w-120">
       <div className="flex justify-between items-center">
-        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
+        <div className="flex flex-row items-center">
+          <Tabs
+            tabs={TABS}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+          <div className="mb-4.5">
+            <Hint
+              hint={`Ustawienia – ogólne ustawienia i informacje o sterowniku
+Grupy zajęciowe – lista grup wykorzystujących dany sterownik
+Typy zasobów – dostępne typy zasobów dla danego sterownika`}
+            />
+          </div>
+        </div>
         <AddResourceTypeModal
           isOpen={isOpenAddModal}
           setIsOpen={setIsOpenAddModal}
@@ -166,7 +165,7 @@ export default function GroupPage({ params }) {
           setSelectedResourceTypeId={setSelectedResourceTypeId}
           cloudConnectorId={driverName}
         />
-        {/* {activeTab === "Ustawienia" && !loading && (
+        {activeTab === "Ustawienia" && !loading && (
           <Button
             color={editing ? "bg-green-500" : "bg-purple"}
             className={formLoading && "cursor-not-allowed opacity-50"}
@@ -175,7 +174,7 @@ export default function GroupPage({ params }) {
           >
             {editing ? "Zapisz" : "Edytuj"}
           </Button>
-        )} */}
+        )}
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
       {/* Ustawienia */}
@@ -193,6 +192,7 @@ export default function GroupPage({ params }) {
                 name="id"
                 type="text"
                 value={driverData.id}
+                hint="ID sterownika chmurowego."
                 disabled
               />
               <InputForm
@@ -200,29 +200,35 @@ export default function GroupPage({ params }) {
                 name="name"
                 type="name"
                 value={driverData.name}
-                disabled
+                onChange={handleChange("name")}
+                hint="Nazwa sterownika chmurowego."
+                disabled={!editing}
               />
               <InputForm
                 label="Wyczyść"
                 name="clean"
                 value={driverData.clean}
-                disabled
-              />
-              <InputForm
-                label="Wyczyść"
-                name="clean"
-                value={driverData.clean}
-                disabled
+                onChange={handleChange("clean")}
+                disabled={!editing}
+                hint="Harmonogram cyklicznego zadania czyszczenia. 
+          Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron)."
               />
               <InputForm
                 label="Limit kosztów"
                 name="cost"
                 value={driverData.limit}
-                disabled
+                onChange={handleChange("limit")}
+                hint="Kwota limitu kosztów.
+            W szczegółach sterownika można ustawić progi powiadomień mailowych, które poinformują o przekroczeniu kosztów.
+            Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
+                disabled={!editing}
               />
               <InputForm
                 label="Status"
                 name="status"
+                hint="Aktualny status sterownika chmurowego.
+                Aktywny - sterownik jest włączony i działa poprawnie.
+                Nieaktywny - sterownik jest wyłączony lub wystąpiły problemy z jego działaniem."
                 colors={driverData.status ? "text-green" : "text-red"}
                 center
                 value={driverData.status ? "Aktywny" : "Nieaktywny"}
@@ -232,95 +238,43 @@ export default function GroupPage({ params }) {
           </>
         ))}
       {/* Grupy zajęciowe */}
-      {activeTab === "Grupy zajęciowe" &&
-        (loading ? (
-          <div>Ładowanie...</div>
-        ) : (
-          <>
-            {groupsData.length > 0 ? (
-              <>
-                <Table
-                  columns={[
-                    { key: "id", header: "ID" },
-                    { key: "name", header: "Nazwa" },
-                    { key: "lecturers", header: "Prowadzący" },
-                    { key: "cloudAccesses", header: "Usługi" },
-                    { key: "semester", header: "Semestr" },
-                    { key: "endDate", header: "Data Zakończenia" },
-                  ]}
-                  data={tableData}
-                />
-                <Pagination
-                  page={page}
-                  setPage={setPage}
-                  totalPages={totalPages}
-                  pageSize={pageSize}
-                  setPageSize={setPageSize}
-                />
-              </>
-            ) : (
-              <div>Brak grup dla tego sterownika.</div>
-            )}
-          </>
-        ))}
-      {/* Autoryzacja */}
-      {activeTab === "Autoryzacja" &&
-        (loading ? (
-          <div>Ładowanie...</div>
-        ) : (
-          <>
-            <div
-              className="grid lg:max-w-3xl md:max-w-xl max-w-xs m-auto gap-x-15 gap-y-5
-                          grid-cols-1 md:grid-cols-2 md:grid-rows-3"
-            >
-              <InputForm
-                label="Access Token ID"
-                name="accessTokenId"
-                value="34fc8E22-9A3B-4F89-8C3E-1234567890AB"
-                disabled
-              />
-              <InputForm
-                label="Limit kosztów"
-                name="cost"
-                value="3000"
-                disabled
-              />
-              <InputForm
-                label="Access Token"
-                name="accessToken"
-                value="s3cr3tT0k3n_AbCdEfGhIjKlMnOpQrStUvWxYz"
-                disabled
-              />
-            </div>
-          </>
-        ))}
+      {activeTab === "Grupy zajęciowe" && (
+        <DataTableView
+          loading={loading}
+          error={error}
+          data={tableData}
+          columns={[
+            { key: "id", header: "ID" },
+            { key: "name", header: "Nazwa" },
+            { key: "lecturers", header: "Prowadzący" },
+            { key: "cloudAccesses", header: "Usługi" },
+            { key: "semester", header: "Semestr" },
+            { key: "endDate", header: "Data Zakończenia" },
+          ]}
+          whereNavigate="../groups"
+          idKey="groupId"
+          page={page}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          totalPages={totalPages}
+        />
+      )}
+
       {/* Typy zasobów */}
-      {activeTab === "Typy zasobów" &&
-        (loading ? (
-          <div>Ładowanie...</div>
-        ) : (
-          <>
-            <DataTableView
-              leftActions={
-                <Button
-                  hint="Tworzy nowe polaczenie do sterownika chmurowego. Czym jest sterownik do chmury mozna przeczytac w dokumentacji."
-                  onClick={() => setIsOpenAddModal(true)}
-                >
-                  <FaPlus /> Dodaj typ zasobu
-                </Button>
-              }
-              loading={loading}
-              error={error}
-              data={driverResourceTypesData}
-              columns={columns}
-              page={page}
-              setPage={setPage}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              totalPages={totalPages}
-            />
-          </>
-        ))}
+      {activeTab === "Typy zasobów" && (
+        <DataTableView
+          loading={loading}
+          error={error}
+          data={driverResourceTypesData}
+          columns={columns}
+          page={page}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          totalPages={totalPages}
+        />
+      )}
     </div>
   );
 }

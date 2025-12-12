@@ -44,18 +44,12 @@ export default function Sidebar() {
               itemPath="/dashboard"
             />
             <SidebarItem icon={<FiUsers />} label="Grupy" itemPath="/groups" />
-            <SidebarItem
+            {/* <SidebarItem
               icon={<FiBell />}
               label="Powiadomienia"
               itemPath="/notifications"
               disabled
-            />
-            <SidebarItem
-              icon={<FiDollarSign />}
-              label="Finanse"
-              itemPath="/finances"
-              disabled
-            />
+            /> */}
             <SidebarItem
               icon={<PiChalkboardTeacherLight />}
               label="Prowadzący"
@@ -74,12 +68,6 @@ export default function Sidebar() {
             icon={<MdOutlineBugReport />}
             label="Zgłoś błąd"
             itemPath="https://michalluczak.atlassian.net/servicedesk/customer/portals"
-          />
-          <SidebarItem
-            icon={<FiSettings />}
-            label="Ustawienia"
-            itemPath="/settings"
-            disabled
           />
           <SidebarItem
             icon={<FiLogOut />}

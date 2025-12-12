@@ -1,14 +1,13 @@
 import { getApi, postApi } from "./utils/apiClient";
 
 export async function getLecturers({ searchQuery, page = 0, pageSize = 10 }) {
-  const path = `/users/lecturers?page=${page}&pageSize=${pageSize}${
+  const path = `/users/lecturers?pageNumber=${page}&pageSize=${pageSize}${
     searchQuery ? `&lecturerFirstOrLastName=${searchQuery}` : ""
   }`;
   return await getApi(path, "Nieudane pobieranie prowadzących");
 }
 
 export async function addLecturer(lecturerData) {
-  console.log("Adding lecturer:", lecturerData);
   return await postApi(
     "/users/lecturers",
     lecturerData,

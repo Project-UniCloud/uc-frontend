@@ -20,7 +20,6 @@ export default function ButtonChangeResourceStatus({
   const router = useRouter();
   const deactivationMutation = useMutation({
     mutationFn: () => {
-      console.log("Mutating deactivation for:", groupId, resourceId);
       deactivationResource(groupId, resourceId);
     },
     onSuccess: () => {

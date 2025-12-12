@@ -11,19 +11,76 @@ import { getStudentsFromGroup } from "@/lib/studentApi";
 import { FaPlus } from "react-icons/fa";
 import { AddStudentModal } from "@/components/students/AddStudentModal";
 import { ImportStudentsModal } from "@/components/students/ImportStudentsModal";
-import { CiPause1 } from "react-icons/ci";
 import {
   formatDateToYYYYMMDD,
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
-import { getResourcesGroup } from "@/lib/resourceApi";
-import { StopAllModal } from "@/components/resources/StopAllModal";
+import {
+  getResourcesGroup,
+  // getAvailableResourcesForGroup,
+} from "@/lib/groupsApi";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 import Hint from "@/components/utils/Hint";
+// import DeleteResourceModal from "@/components/group/DeleteResourceModal";
 
 const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
+
+const resourcesColumns = [
+  { key: "clientId", header: "ID" },
+  { key: "name", header: "Nazwa" },
+  {
+    key: "limitUsed",
+    header: (
+      <div className="flex items-center justify-center gap-2">
+        <span>Koszt</span>
+        <span>
+          <Hint hint="Wygenerowany koszt przez tą usługę." />
+        </span>
+      </div>
+    ),
+  },
+  {
+    key: "costLimit",
+    header: (
+      <div className="flex items-center justify-center gap-2">
+        <span>Limit Kosztu</span>
+        <span>
+          <Hint
+            hint="Kwota limitu kosztów.
+              W szczegółach sterownika można ustawić progi powiadomień mailowych, które poinformują o przekroczeniu kosztów.
+              Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
+          />
+        </span>
+      </div>
+    ),
+  },
+  { key: "expiresAt", header: "Wygasa" },
+  {
+    key: "cronCleanupSchedule",
+    header: (
+      <div className="flex items-center justify-center gap-2">
+        <span>Wyczyść</span>
+        <span>
+          <Hint
+            hint="Harmonogram cyklicznego zadania czyszczenia. 
+            Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron).
+            Można to zmienić w szczegółach sterownika."
+          />
+        </span>
+      </div>
+    ),
+  },
+  { key: "status", header: "Status" },
+];
+
+const studentsColumns = [
+  { key: "login", header: "ID" },
+  { key: "firstName", header: "Imię" },
+  { key: "lastName", header: "Nazwisko" },
+  { key: "email", header: "Mail" },
+];
 
 export default function GroupPage({ params }) {
   const { groupId } = React.use(params);
@@ -38,13 +95,13 @@ export default function GroupPage({ params }) {
   });
   const [studentsData, setStudentsData] = useState([]);
   const [resourcesData, setResourcesData] = useState([]);
+  // const [availableResourcesData, setAvailableResourcesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isOpenStudent, setIsOpenStudent] = useState(false);
   const [isOpenImport, setIsOpenImport] = useState(false);
   const [isOpenResource, setIsOpenResource] = useState(false);
-  const [isOpenStopAll, setIsOpenStopAll] = useState(false);
   const [editing, setEditing] = useState(false);
   const [snapshotGroupData, setSnapshotGroupData] = useState(null);
   const [page, setPage] = useState(0);
@@ -91,6 +148,15 @@ export default function GroupPage({ params }) {
         .catch((error) => setError(error.message))
         .finally(() => setLoading(false));
     }
+    // if (activeTab === "Zasoby") {
+    //   // getAvailableResourcesForGroup(groupId)
+    //   //   .then((data) => setAvailableResourcesData(data || []))
+    //   //   .catch((error) => setError(error.message))
+    //   //   .finally(() => setLoading(false));
+    //   // Tymczasowe dane statyczne
+    //   setAvailableResourcesData(staticResourceData);
+    //   setLoading(false);
+    // }
   }, [activeTab, groupId, page, pageSize]);
 
   const handleTabChange = (tabKey) => {
@@ -157,7 +223,21 @@ export default function GroupPage({ params }) {
   return (
     <div className="min-w-120">
       <div className="flex justify-between items-center">
-        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
+        <div className="flex flex-row items-center">
+          <Tabs
+            tabs={TABS}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+          <div className="mb-4.5">
+            <Hint
+              hint={`Ogólne – edytuj podstawowe informacje grupy (nazwa, prowadzący, daty, status)
+Studenci – zarządzaj studentami w grupie (dodawaj ręcznie lub importuj z CSV)
+Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otrzymają dostęp do przydzielonych usług)`}
+            />
+          </div>
+        </div>
+
         {activeTab === "Ogólne" && !loading && (
           <Button
             color={editing ? "bg-green-500" : "bg-purple"}
@@ -210,7 +290,7 @@ export default function GroupPage({ params }) {
                 label="Data zakończenia"
                 name="endDate"
                 type="date"
-                hint="Data zakończenia działania danej grupy"
+                hint="Data zakończenia to graniczny termin działania grupy. Po jej przekroczeniu system automatycznie archiwizuje grupę i przypisanych użytkowników. Tę operację możesz wywołać także ręcznie, używając akcji ‘Archiwizuj grupę’ w szczegółach aktywnej grupy."
                 value={groupData.endDate}
                 onChange={handleChange("endDate")}
                 disabled={!editing}
@@ -230,17 +310,18 @@ export default function GroupPage({ params }) {
                 value={groupData.status}
                 disabled
               />
-              <ButtonChangeStatus
-                hint={
-                  groupData.status === "Aktywna"
-                    ? "Zarchiwizuj daną grupę"
-                    : groupData.status === "Nieaktywna"
-                    ? "Aktywuj daną grupę"
-                    : "Usuń daną grupę"
-                }
-                groupId={groupId}
-                groupStatus={groupData.status}
-              />
+              {(groupData.status === "Aktywna" ||
+                groupData.status === "Nieaktywna") && (
+                <ButtonChangeStatus
+                  hint={
+                    groupData.status === "Aktywna"
+                      ? "Archiwizacja grupy: po zakończeniu zajęć grupa przechodzi do archiwum, a dostęp użytkowników jest wyłączany. Operacja nie usuwa danych historycznych."
+                      : "Aktywacja grupy: jeśli grupa ma przydzielone dostępy, zostanie utworzona grupa na AWS, a wskazani prowadzący zostaną przypisani. Po dodaniu studentów system zakłada dla nich konta i przypisuje do grupy z odpowiednimi uprawnieniami."
+                  }
+                  groupId={groupId}
+                  groupStatus={groupData.status}
+                />
+              )}
             </div>
             <div className=" flex flex-col items-center justify-center mt-5">
               <label
@@ -289,20 +370,13 @@ export default function GroupPage({ params }) {
                   <Button onClick={() => setIsOpenImport(true)}>
                     <FaPlus /> Importuj
                   </Button>
-                  <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV." />
+                  <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV. Otrzymają oni dostęp do nadanych zasobów" />
                 </>
               }
               loading={loading}
               error={error}
               data={studentsData}
-              columns={[
-                { key: "login", header: "ID" },
-                { key: "firstName", header: "Imię" },
-                { key: "lastName", header: "Nazwisko" },
-                { key: "email", header: "Mail" },
-              ]}
-              whereNavigate={"students"}
-              idKey={"login"}
+              columns={studentsColumns}
               page={page}
               setPage={setPage}
               pageSize={pageSize}
@@ -312,11 +386,9 @@ export default function GroupPage({ params }) {
             />
           </>
         ))}
-
       {/* Usługi */}
       {activeTab === "Usługi" && (
         <>
-          <StopAllModal isOpen={isOpenStopAll} setIsOpen={setIsOpenStopAll} />
           <AddResourceModal
             isOpen={isOpenResource}
             setIsOpen={setIsOpenResource}
@@ -325,31 +397,23 @@ export default function GroupPage({ params }) {
           <DataTableView
             leftActions={
               <>
-                <Button
+                {/* <Button
                   onClick={() => setIsOpenStopAll(true)}
                   color="bg-orange-200 cursor-not-allowed hover:not-allowed"
                   disabled
                 >
                   <CiPause1 /> Zawieś wszystko
-                </Button>
+                </Button> */}
                 <Button onClick={() => setIsOpenResource(true)}>
                   <FaPlus /> Dodaj usługę
                 </Button>
-                <Hint hint="Zarządzaj usługami przypisanymi do tej grupy. Możesz dodawać nowe usługi - przydzielać do nich dostęp twojej grupie lub wstrzymywać działające." />
+                <Hint hint="Zarządzaj usługami przypisanymi do tej grupy. Możesz dodawać nowe usługi - przydzielać do nich dostęp twojej grupie." />
               </>
             }
             loading={loading}
             error={error}
             data={resourcesData}
-            columns={[
-              { key: "clientId", header: "ID" },
-              { key: "name", header: "Nazwa" },
-              { key: "costLimit", header: "Limit Kosztu" },
-              { key: "limitUsed", header: "Koszt" },
-              { key: "expiresAt", header: "Wygasa" },
-              { key: "cronCleanupSchedule", header: "Wyczyść" },
-              { key: "status", header: "Status" },
-            ]}
+            columns={resourcesColumns}
             whereNavigate={`${groupId}`}
             idKey={"id"}
             page={page}
@@ -361,6 +425,28 @@ export default function GroupPage({ params }) {
           />
         </>
       )}
+      {/* Zasoby
+      {activeTab === "Zasoby" && (
+        <>
+          <DeleteResourceModal
+            isOpen={isOpenDeleteModal}
+            setIsOpen={setIsOpenDeleteModal}
+            groupId={groupId}
+            resourceId={selectedResourceTypeId}
+          />
+          <DataTableView
+            loading={loading}
+            error={error}
+            data={availableResourcesData}
+            columns={columns}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalPages={totalPages}
+          />
+        </>
+      )} */}
     </div>
   );
 }

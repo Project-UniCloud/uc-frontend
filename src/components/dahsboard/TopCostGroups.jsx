@@ -1,6 +1,6 @@
 import Table from "../table/Table";
 
-export default function TopCostGroups() {
+export default function TopCostGroups({ data = [] }) {
   const columns = [
     { key: "id", header: "ID" },
     { key: "name", header: "Nazwa" },
@@ -39,53 +39,53 @@ export default function TopCostGroups() {
     },
   ];
 
-  const data = [
-    {
-      id: 1,
-      name: "AWS",
-      teacher: "dr. Patryk Żywica",
-      services: ["AWS", "Azure"],
-      semester: "2025L",
-      cost: 1050,
-      budgetPercent: 60,
-    },
-    {
-      id: 2,
-      name: "Bazy danych",
-      teacher: "dr. Anna Stachowiak",
-      services: ["Azure - Databricks"],
-      semester: "2025Z",
-      cost: 200,
-      budgetPercent: 10,
-    },
-    {
-      id: 3,
-      name: "Technologie internetowe",
-      teacher: "dr. Wojciech Kowalewski",
-      services: ["Azure"],
-      semester: "2025L",
-      cost: 400,
-      budgetPercent: 35,
-    },
-    {
-      id: 4,
-      name: "Data science",
-      teacher: "dr. Joanna Siwek",
-      services: ["Heroku"],
-      semester: "2024Z",
-      cost: 900,
-      budgetPercent: 50,
-    },
-    {
-      id: 5,
-      name: "Big data",
-      teacher: "dr. Michał Łuczak",
-      services: ["Hetzner"],
-      semester: "2024L",
-      cost: 150,
-      budgetPercent: 8,
-    },
-  ];
+  // const data = [
+  //   {
+  //     id: 1,
+  //     name: "AWS",
+  //     teacher: "dr. Patryk Żywica",
+  //     services: ["AWS", "Azure"],
+  //     semester: "2025L",
+  //     cost: 1050,
+  //     budgetPercent: 60,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Bazy danych",
+  //     teacher: "dr. Anna Stachowiak",
+  //     services: ["Azure - Databricks"],
+  //     semester: "2025Z",
+  //     cost: 200,
+  //     budgetPercent: 10,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Technologie internetowe",
+  //     teacher: "dr. Wojciech Kowalewski",
+  //     services: ["Azure"],
+  //     semester: "2025L",
+  //     cost: 400,
+  //     budgetPercent: 35,
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Data science",
+  //     teacher: "dr. Joanna Siwek",
+  //     services: ["Heroku"],
+  //     semester: "2024Z",
+  //     cost: 900,
+  //     budgetPercent: 50,
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Big data",
+  //     teacher: "dr. Michał Łuczak",
+  //     services: ["Hetzner"],
+  //     semester: "2024L",
+  //     cost: 150,
+  //     budgetPercent: 8,
+  //   },
+  // ];
 
   return (
     <div className="flex flex-col justify-center items-center w-full mt-15 pb-15">

@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getLecturers } from "@/lib/lecturersApi";
-// Table import removed — use DataTableView for presentation
 import DataTableView from "@/components/views/DataTableView";
 import AddLecturerModal from "@/components/lecturer/AddLecturerModal";
 import { Button } from "@/components/utils/Buttons";
 import { FaPlus } from "react-icons/fa";
+import Hint from "@/components/utils/Hint";
 
 const columns = [
   { key: "login", header: "ID/Login" },
@@ -49,7 +49,7 @@ export default function ListLecturersPage() {
   useEffect(() => {
     fetchLecturers();
     // eslint-disable-next-line
-  }, [searchQuery]);
+  }, [searchQuery, page, pageSize]);
 
   return (
     <div className="min-w-120">
@@ -69,7 +69,7 @@ export default function ListLecturersPage() {
             <input
               type="text"
               placeholder="Szukaj prowadzącego"
-              className={`border border-gray-300 rounded-lg px-3 py-1.5 text-md ${
+              className={`border border-gray-300 rounded-lg px-3 py-1.5 mt-1 text-md ${
                 lecturers.length === 0 && searchQuery.length === 0
                   ? "opacity-50 cursor-not-allowed hidden"
                   : ""
@@ -77,14 +77,14 @@ export default function ListLecturersPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+            <Hint hint="Dodaj prowadzących do systemu. Będziesz mógł ich później przydzielić do grup zajęciowych." />
           </>
         }
         loading={loading}
         error={error}
         data={lecturers}
         columns={columns}
-        whereNavigate={"list-lecturers"}
-        idKey={"id"}
+        whereNavigate={""}
         emptyMessage={"Brak prowadzących"}
         page={page}
         setPage={setPage}

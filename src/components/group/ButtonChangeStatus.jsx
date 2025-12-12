@@ -22,7 +22,6 @@ export default function ButtonChangeStatus({
       );
     },
     onError: (error) => {
-      setFormErrors({ error: error.message || "Błąd archiwizacji grupy" });
       showErrorToast("Błąd archiwizacji grupy:" + error?.message);
     },
   });
@@ -34,7 +33,6 @@ export default function ButtonChangeStatus({
       showSuccessToast("Grupa została aktywowana! Jest w zakładce 'Aktywne'.");
     },
     onError: (error) => {
-      setFormErrors({ error: error.message || "Błąd aktywacji grupy" });
       showErrorToast("Błąd aktywacji grupy:" + error?.message);
     },
   });
@@ -66,18 +64,6 @@ export default function ButtonChangeStatus({
         >
           <CiPause1 className="text-lg" />
           {isLoading ? "Ładowanie..." : "Aktywuj"}
-        </Button>
-      )}
-      {groupStatus === "Zarchiwizowana" && (
-        <Button
-          hint={hint}
-          label="Usuń"
-          color={`bg-red ${isLoading && "opacity-50"}`}
-          center
-          disabled
-        >
-          <IoPlayCircleOutline className="text-lg" />
-          Usuń
         </Button>
       )}
     </>
