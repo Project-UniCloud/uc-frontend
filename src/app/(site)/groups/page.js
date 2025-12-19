@@ -19,7 +19,7 @@ const columns = [
   { key: "id", header: "ID" },
   { key: "name", header: "Nazwa" },
   { key: "lecturers", header: "Prowadzący" },
-  { key: "cloudAccesses", header: "Usługi" },
+  { key: "cloudResourceAccesses", header: "Usługi" },
   { key: "semester", header: "Semestr" },
   {
     key: "endDate",
