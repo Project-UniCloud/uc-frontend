@@ -392,6 +392,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
           <AddResourceModal
             isOpen={isOpenResource}
             setIsOpen={setIsOpenResource}
+            groupName={groupData.name}
             groupId={groupId}
           />
           <DataTableView
