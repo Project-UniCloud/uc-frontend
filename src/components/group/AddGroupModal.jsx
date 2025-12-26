@@ -68,7 +68,12 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
             message:
               "Nieprawidłowa nazwa grupy. Dozwolone: litery, cyfry, spacje i myślnik.",
           }),
-        semesterYear: z.string().min(1, "Rok semestru jest wymagany"),
+        semesterYear: z
+          .string()
+          .min(1, "Rok semestru jest wymagany")
+          .regex(/(19|20)\d{2}/, {
+            message: "Rok musi być w przedziale: 1900-2099",
+          }),
         semesterType: z.enum(["Z", "L"], {
           errorMap: () => ({ message: "Nieprawidłowy typ semestru" }),
         }),
@@ -91,12 +96,14 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
       semesterType,
       startDate,
       endDate,
+      lecturers: lecturers.map((t) => t.id),
       description,
     };
 
     const parsed = schema.safeParse(payload);
     if (!parsed.success) {
       const firstError = parsed.error.issues[0]?.message || "Błąd walidacji";
+      console.log("Validation error:", parsed.error.issues);
       setFormErrors({ error: firstError });
       return;
     }
