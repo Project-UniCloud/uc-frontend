@@ -15,15 +15,11 @@ import {
   formatDateToYYYYMMDD,
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
-import {
-  getResourcesGroup,
-  // getAvailableResourcesForGroup,
-} from "@/lib/groupsApi";
+import { getResourcesGroup } from "@/lib/groupsApi";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 import Hint from "@/components/utils/Hint";
-// import DeleteResourceModal from "@/components/group/DeleteResourceModal";
 
 const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
 
@@ -95,7 +91,6 @@ export default function GroupPage({ params }) {
   });
   const [studentsData, setStudentsData] = useState([]);
   const [resourcesData, setResourcesData] = useState([]);
-  // const [availableResourcesData, setAvailableResourcesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -107,6 +102,24 @@ export default function GroupPage({ params }) {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
+
+  // fetch functions
+  const fetchResources = () => {
+    getResourcesGroup(groupId)
+      .then((data) => setResourcesData(data || []))
+      .catch((error) => setError(error.message))
+      .finally(() => setLoading(false));
+  };
+
+  const fetchStudents = () => {
+    getStudentsFromGroup({ groupId, page, pageSize })
+      .then((data) => {
+        setStudentsData(data.content || []);
+        setTotalPages(data.page.totalPages || 0);
+      })
+      .catch((error) => setError(error.message))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -134,29 +147,11 @@ export default function GroupPage({ params }) {
     }
 
     if (activeTab === "Studenci") {
-      getStudentsFromGroup({ groupId, page, pageSize })
-        .then((data) => {
-          setStudentsData(data.content || []);
-          setTotalPages(data.page.totalPages || 0);
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
+      fetchStudents();
     }
     if (activeTab === "Usługi") {
-      getResourcesGroup(groupId)
-        .then((data) => setResourcesData(data || []))
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
+      fetchResources();
     }
-    // if (activeTab === "Zasoby") {
-    //   // getAvailableResourcesForGroup(groupId)
-    //   //   .then((data) => setAvailableResourcesData(data || []))
-    //   //   .catch((error) => setError(error.message))
-    //   //   .finally(() => setLoading(false));
-    //   // Tymczasowe dane statyczne
-    //   setAvailableResourcesData(staticResourceData);
-    //   setLoading(false);
-    // }
   }, [activeTab, groupId, page, pageSize]);
 
   const handleTabChange = (tabKey) => {
@@ -344,48 +339,47 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
           </>
         ))}
       {/* Studenci */}
-      {activeTab === "Studenci" &&
-        (loading ? (
-          <div>Ładowanie...</div>
-        ) : (
-          <>
-            <AddStudentModal
-              isOpen={isOpenStudent}
-              setIsOpen={setIsOpenStudent}
-              groupId={groupId}
-            />
-            {isOpenImport && (
-              <ImportStudentsModal
-                isOpen={isOpenImport}
-                setIsOpen={setIsOpenImport}
-                groupId={groupId}
-              />
-            )}
-            <DataTableView
-              leftActions={
-                <>
-                  <Button onClick={() => setIsOpenStudent(true)}>
-                    <FaPlus /> Dodaj Studenta
-                  </Button>
-                  <Button onClick={() => setIsOpenImport(true)}>
-                    <FaPlus /> Importuj
-                  </Button>
-                  <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV. Otrzymają oni dostęp do nadanych zasobów" />
-                </>
-              }
-              loading={loading}
-              error={error}
-              data={studentsData}
-              columns={studentsColumns}
-              page={page}
-              setPage={setPage}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              totalPages={totalPages}
-              emptyMessage={"Brak studentów w tej grupie."}
-            />
-          </>
-        ))}
+      {activeTab === "Studenci" && (
+        <>
+          <AddStudentModal
+            isOpen={isOpenStudent}
+            setIsOpen={setIsOpenStudent}
+            groupId={groupId}
+            fetch={fetchStudents}
+          />
+
+          <ImportStudentsModal
+            isOpen={isOpenImport}
+            setIsOpen={setIsOpenImport}
+            groupId={groupId}
+            fetch={fetchStudents}
+          />
+
+          <DataTableView
+            leftActions={
+              <>
+                <Button onClick={() => setIsOpenStudent(true)}>
+                  <FaPlus /> Dodaj Studenta
+                </Button>
+                <Button onClick={() => setIsOpenImport(true)}>
+                  <FaPlus /> Importuj
+                </Button>
+                <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV. Otrzymają oni dostęp do nadanych zasobów" />
+              </>
+            }
+            loading={loading}
+            error={error}
+            data={studentsData}
+            columns={studentsColumns}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalPages={totalPages}
+            emptyMessage={"Brak studentów w tej grupie."}
+          />
+        </>
+      )}
       {/* Usługi */}
       {activeTab === "Usługi" && (
         <>
@@ -394,17 +388,11 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
             setIsOpen={setIsOpenResource}
             groupName={groupData.name}
             groupId={groupId}
+            fetch={fetchResources}
           />
           <DataTableView
             leftActions={
               <>
-                {/* <Button
-                  onClick={() => setIsOpenStopAll(true)}
-                  color="bg-orange-200 cursor-not-allowed hover:not-allowed"
-                  disabled
-                >
-                  <CiPause1 /> Zawieś wszystko
-                </Button> */}
                 <Button onClick={() => setIsOpenResource(true)}>
                   <FaPlus /> Dodaj usługę
                 </Button>

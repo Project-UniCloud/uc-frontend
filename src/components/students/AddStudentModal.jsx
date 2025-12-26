@@ -8,7 +8,7 @@ import React from "react";
 import { showErrorToast, showSuccessToast } from "../utils/Toast";
 import { z } from "zod";
 
-export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
+export function AddStudentModal({ isOpen, setIsOpen, groupId, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
@@ -26,6 +26,7 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
     mutationFn: ({ groupId, studentData }) =>
       addStudentToGroup(groupId, studentData),
     onSuccess: () => {
+      fetch();
       formRef.current?.reset();
       setFormErrors({});
       setIsOpen(false);

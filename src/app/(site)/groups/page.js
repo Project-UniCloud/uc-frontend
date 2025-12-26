@@ -53,9 +53,8 @@ export default function GroupsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
+  // fetch functions
+  const fetchGroups = () => {
     getGroups({ status: activeTab, page, pageSize, groupName: search })
       .then((data) => {
         setGroups(data.content);
@@ -63,9 +62,15 @@ export default function GroupsPage() {
         setLoading(false);
       })
       .catch((error) => {
-        setLoading(false);
         setError(error.message);
-      });
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    fetchGroups();
   }, [activeTab, page, pageSize, search]);
 
   const tableData = groups.map((group, idx) => ({
@@ -105,7 +110,11 @@ Nieaktywne – nowo utworzone grupy przed startem zajęć.`}
         </div>
       </div>
 
-      <AddGroupModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AddGroupModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        fetch={fetchGroups}
+      />
 
       <DataTableView
         leftActions={

@@ -51,10 +51,9 @@ export default function GroupsPage() {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
+  // fetch function
 
+  const fetchCloudAccesses = () => {
     getCloudAccesses({ page, pageSize })
       .then((data) => {
         setDrivers(data.content);
@@ -62,9 +61,15 @@ export default function GroupsPage() {
         setLoading(false);
       })
       .catch((error) => {
-        setLoading(false);
         setError(error.message);
-      });
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    fetchCloudAccesses();
   }, [page, pageSize]);
 
   const tableData = drivers.map((driver, idx) => ({
@@ -74,7 +79,11 @@ export default function GroupsPage() {
 
   return (
     <div className="min-w-120">
-      <AddDriverModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AddDriverModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        fetch={fetchCloudAccesses}
+      />
       <DataTableView
         leftActions={
           <>

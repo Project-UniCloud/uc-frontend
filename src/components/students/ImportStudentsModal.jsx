@@ -6,7 +6,7 @@ import { addStudentsToGroup } from "@/lib/studentApi";
 import DragDrop from "../utils/DragDrop";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
-export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
+export function ImportStudentsModal({ isOpen, setIsOpen, groupId, fetch }) {
   const dialogRef = useRef(null);
   const [errors, setErrors] = useState({});
   const [file, setFile] = useState(null);
@@ -14,6 +14,7 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
   const mutation = useMutation({
     mutationFn: ({ groupId, file }) => addStudentsToGroup(groupId, file),
     onSuccess: () => {
+      fetch();
       setFile(null);
       setIsOpen(false);
       setErrors({});

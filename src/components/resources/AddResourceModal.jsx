@@ -7,7 +7,13 @@ import { getCloudAccesses, getCloudResourcesTypes } from "@/lib/cloudApi";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 import { AddResourceConfirmModal } from "./AddResourceConfirmModal";
 
-export function AddResourceModal({ isOpen, setIsOpen, groupName, groupId }) {
+export function AddResourceModal({
+  isOpen,
+  setIsOpen,
+  groupName,
+  groupId,
+  fetch,
+}) {
   const dialogRef = useRef(null);
   const [error, setError] = useState({});
   const [resourcesData, setResourcesData] = useState([]);
@@ -20,6 +26,7 @@ export function AddResourceModal({ isOpen, setIsOpen, groupName, groupId }) {
   const mutation = useMutation({
     mutationFn: ({ groupId, data }) => giveCloudResourceAccess(groupId, data),
     onSuccess: () => {
+      fetch();
       setIsOpen(false);
       setIsOpenConfirm(false);
       setSelectedDriver("");

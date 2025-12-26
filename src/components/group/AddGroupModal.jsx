@@ -9,7 +9,7 @@ import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { formatDateToDDMMYYYY } from "@/lib/utils/formatDate";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
-export default function AddGroupModal({ isOpen, setIsOpen }) {
+export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
@@ -23,6 +23,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
         setLecturers([]),
         formRef.current?.reset();
       showSuccessToast("Grupa dodana! Znajduje się w zakładce 'Nieaktywne");
+      fetch();
     },
     onError: (error) => {
       setFormErrors({ error: error.message || "Błąd dodawania grupy" }),

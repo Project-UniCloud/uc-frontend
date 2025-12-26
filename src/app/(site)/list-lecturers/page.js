@@ -25,16 +25,15 @@ export default function ListLecturersPage() {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
 
+  // fetch function
+
   const fetchLecturers = () => {
-    setLoading(true);
-    setError(null);
     getLecturers({ searchQuery, page, pageSize })
       .then((data) => {
-        // Każdemu wierszowi nadaj 'id' równe 'uuid'
         const content = (data.content || []).map((item) => ({
           ...item,
           id: item.uuid,
-          groupId: item.uuid, // <-- WAŻNE
+          groupId: item.uuid,
         }));
         setLecturers(content);
         setTotalPages(data.page.totalPages);
@@ -47,8 +46,9 @@ export default function ListLecturersPage() {
   };
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     fetchLecturers();
-    // eslint-disable-next-line
   }, [searchQuery, page, pageSize]);
 
   return (
@@ -57,6 +57,7 @@ export default function ListLecturersPage() {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         onLecturerAdded={fetchLecturers}
+        fetch={fetchLecturers}
       />
 
       <DataTableView
