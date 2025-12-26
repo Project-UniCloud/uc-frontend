@@ -8,6 +8,7 @@ import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { formatDateToDDMMYYYY } from "@/lib/utils/formatDate";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
+import { z } from "zod";
 
 export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
   const dialogRef = useRef(null);
@@ -57,6 +58,48 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
     const startDate = formData.get("startDate");
     const endDate = formData.get("endDate");
     const description = formData.get("description");
+
+    const schema = z
+      .object({
+        name: z
+          .string()
+          .min(1, "Nazwa grupy jest wymagana")
+          .regex(/^[\p{L}\-\s\d]+$/u, {
+            message:
+              "Nieprawidłowa nazwa grupy. Dozwolone: litery, cyfry, spacje i myślnik.",
+          }),
+        semesterYear: z.string().min(1, "Rok semestru jest wymagany"),
+        semesterType: z.enum(["Z", "L"], {
+          errorMap: () => ({ message: "Nieprawidłowy typ semestru" }),
+        }),
+        startDate: z.string().min(1, "Data rozpoczęcia jest wymagana"),
+        endDate: z.string().min(1, "Data zakończenia jest wymagana"),
+        lecturers: z
+          .string()
+          .array()
+          .min(1, "Wymagany jest co najmniej jeden prowadzący"),
+        description: z.string().optional(),
+      })
+      .refine((vals) => new Date(vals.startDate) <= new Date(vals.endDate), {
+        message: "Data zakończenia musi być późniejsza niż data rozpoczęcia",
+        path: ["endDate"],
+      });
+
+    const payload = {
+      name,
+      semesterYear,
+      semesterType,
+      startDate,
+      endDate,
+      description,
+    };
+
+    const parsed = schema.safeParse(payload);
+    if (!parsed.success) {
+      const firstError = parsed.error.issues[0]?.message || "Błąd walidacji";
+      setFormErrors({ error: firstError });
+      return;
+    }
 
     const groupData = {
       name,
