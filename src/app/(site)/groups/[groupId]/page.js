@@ -372,6 +372,8 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
             data={studentsData}
             columns={studentsColumns}
             page={page}
+            whereNavigate={`${groupId}/students`}
+            idKey={"uuid"}
             setPage={setPage}
             pageSize={pageSize}
             setPageSize={setPageSize}
@@ -403,7 +405,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
             error={error}
             data={resourcesData}
             columns={resourcesColumns}
-            whereNavigate={`${groupId}`}
+            whereNavigate={`${groupId}/resources`}
             idKey={"id"}
             page={page}
             setPage={setPage}

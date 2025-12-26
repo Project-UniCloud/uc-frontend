@@ -24,16 +24,11 @@ export async function getLecturerById(lecturerId) {
 
 // TODO: Implement these endpoints when backend is ready
 export async function updateLecturer(lecturerId, lecturerData) {
-  console.log("Update lecturer not implemented yet:", lecturerId, lecturerData);
-  return Promise.reject(new Error("Update lecturer not implemented yet"));
-}
-
-export async function deleteLecturer(lecturerId) {
-  // return await postApi(
-  //   `/lecturers/${lecturerId}/delete`,
-  //   "Nieudane usuwanie prowadzącego"
-  // );
-  return Promise.reject(new Error("Delete lecturer not implemented yet"));
+  return await postApi(
+    `/users/lecturers/${lecturerId}/update`,
+    lecturerData,
+    "Nieudane zaktualizowanie prowadzącego"
+  );
 }
 
 export async function archiveLecturer(lecturerId) {

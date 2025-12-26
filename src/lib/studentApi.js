@@ -46,3 +46,21 @@ export async function addStudentsToGroup(groupId, file) {
     throw new Error(error.message);
   }
 }
+
+export async function getStudentById(studentId) {
+  return await getApi(`/users/${studentId}`, "Nieudane pobieranie studenta");
+}
+
+export async function deleteStudent(groupId, studentId) {
+  const path = `/groups/${groupId}/students/${studentId}/delete`;
+  return await postApi(path, {}, "Nieudane usuwanie studenta");
+}
+
+export async function updateStudent(groupId, studentId, studentData) {
+  const path = `/groups/${groupId}/students/${studentId}/update`;
+  return await postApi(
+    path,
+    studentData,
+    "Nieudane aktualizowanie danych studenta"
+  );
+}
