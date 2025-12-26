@@ -85,7 +85,8 @@ export default function ListLecturersPage() {
         error={error}
         data={lecturers}
         columns={columns}
-        whereNavigate={""}
+        whereNavigate="list-lecturers"
+        idKey={"uuid"}
         emptyMessage={"Brak prowadzących"}
         page={page}
         setPage={setPage}

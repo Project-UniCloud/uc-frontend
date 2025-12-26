@@ -7,7 +7,6 @@ import { getCloudAccessesById } from "@/lib/cloudApi";
 import { getResourceTypesByDriverId } from "@/lib/cloudApi";
 import DataTableView from "@/components/views/DataTableView";
 import AddResourceTypeModal from "@/components/resources/AddResourceTypeModal";
-import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeModal";
 import Hint from "@/components/utils/Hint";
 import { Button } from "@/components/utils/Buttons";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
@@ -41,8 +40,6 @@ export default function GroupPage({ params }) {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
-  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
-  const [selectedResourceTypeId, setSelectedResourceTypeId] = useState(null);
 
   const columns = [{ key: "name", header: "Nazwa zasobu" }];
 
@@ -155,13 +152,6 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
         <AddResourceTypeModal
           isOpen={isOpenAddModal}
           setIsOpen={setIsOpenAddModal}
-          cloudConnectorId={driverName}
-        />
-        <DeleteResourceTypeModal
-          isOpen={isOpenDeleteModal}
-          setIsOpen={setIsOpenDeleteModal}
-          resourceTypeId={selectedResourceTypeId}
-          setSelectedResourceTypeId={setSelectedResourceTypeId}
           cloudConnectorId={driverName}
         />
         {activeTab === "Ustawienia" && !loading && (
