@@ -54,6 +54,9 @@ export function useNamePath() {
     case "profile":
       namePath = "Profil";
       break;
+    case "logs":
+      namePath = "Powiadomienia";
+      break;
     default:
       if (isDetailsPath3(parts, "groups", "resources")) {
         namePath = "Informacje o zasobie";
