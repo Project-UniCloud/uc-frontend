@@ -66,7 +66,7 @@ export default function TeacherSearchInput({
               }
               `}
             >
-              <X className="w-4" />
+              {!disabledOnlyList && <X className="w-4" />}
             </button>
           </span>
         ))}
@@ -111,7 +111,7 @@ export default function TeacherSearchInput({
                     }}
                     className="text-red hover:text-red-800 text-sm cursor-pointer"
                   >
-                    <FaRegTrashAlt />
+                    {!disabled && <FaRegTrashAlt />}
                   </button>
                 )}
               </li>

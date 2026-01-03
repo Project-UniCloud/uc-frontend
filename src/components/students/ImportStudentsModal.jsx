@@ -10,6 +10,7 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId, fetch }) {
   const dialogRef = useRef(null);
   const [errors, setErrors] = useState({});
   const [file, setFile] = useState(null);
+  const [dropResetKey, setDropResetKey] = useState(0);
 
   const mutation = useMutation({
     mutationFn: ({ groupId, file }) => addStudentsToGroup(groupId, file),
@@ -33,11 +34,15 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId, fetch }) {
       dialogRef.current?.showModal();
     } else {
       dialogRef.current?.close();
+      setFile(null);
+      setDropResetKey((k) => k + 1);
     }
   }, [isOpen]);
 
   function handleClose() {
     setIsOpen(false);
+    setFile(null);
+    setDropResetKey((k) => k + 1);
   }
 
   return (
@@ -56,7 +61,10 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId, fetch }) {
         </button>
       </div>
       <h2 className="text-xl font-semibold mb-4 text-center">Dodaj plik CSV</h2>
-      <DragDrop onDropFile={(file) => setFile(file)} />
+      <DragDrop
+        key={dropResetKey}
+        onDropFile={(selectedFile) => setFile(selectedFile)}
+      />
 
       {errors.error && <div className="text-red-600">{errors.error}</div>}
 
