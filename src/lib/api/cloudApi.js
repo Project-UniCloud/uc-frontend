@@ -1,4 +1,4 @@
-import { getApi } from "./utils/apiClient";
+import { getApi } from "../utils/apiClient";
 
 export async function getCloudAccesses({ page = 0, pageSize = 10 }) {
   const path = `/cloud/connector?pageNumber=${page}&pageSize=${pageSize}`;

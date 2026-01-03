@@ -1,7 +1,6 @@
 import { CiPause1 } from "react-icons/ci";
-import { IoPlayCircleOutline } from "react-icons/io5";
 import { FiArchive } from "react-icons/fi";
-import { archiveGroup, activateGroup } from "@/lib/groupsApi";
+import { archiveGroup, activateGroup } from "@/lib/api/groupsApi";
 import { Button } from "@/components/utils/Buttons";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";

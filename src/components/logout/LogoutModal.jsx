@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
-import { logoutUser } from "@/lib/authApi";
+import { logoutUser } from "@/lib/api/authApi";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { logout as logoutAction } from "@/store/authSlice";

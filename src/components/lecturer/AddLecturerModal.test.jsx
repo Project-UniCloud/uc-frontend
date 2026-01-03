@@ -6,10 +6,10 @@ import {
   cleanup,
 } from "@testing-library/react";
 import AddLecturerModal from "./AddLecturerModal";
-import { addLecturer } from "@/lib/lecturersApi";
+import { addLecturer } from "@/lib/api/lecturersApi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-jest.mock("@/lib/lecturersApi");
+jest.mock("@/lib/api/lecturersApi");
 
 jest.mock("../utils/Toast", () => ({
   showSuccessToast: jest.fn(),

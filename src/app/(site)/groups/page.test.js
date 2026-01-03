@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import GroupsPage from "./page";
-import { getGroups } from "@/lib/groupsApi";
+import { getGroups } from "@/lib/api/groupsApi";
 
-jest.mock("@/lib/groupsApi");
+jest.mock("@/lib/api/groupsApi");
 
 jest.mock("@/components/utils/Tabs", () => ({
   __esModule: true,

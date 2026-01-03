@@ -1,81 +1,21 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { getLecturerById, updateLecturer } from "@/lib/lecturersApi";
+import React from "react";
 import InputForm from "@/components/utils/InputForm";
 import { Button } from "@/components/utils/Buttons";
-import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
+import { useLecturerDetailPage } from "@/lib/views/list-lecturers/lecturerId/hooks";
 
 export default function LecturerDetailsPage({ params }) {
   const { lecturerId } = React.use(params);
 
-  const [lecturer, setLecturer] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    login: "",
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [formLoading, setFormLoading] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [snapshotLecturer, setSnapshotLecturer] = useState(null);
-
-  useEffect(() => {
-    if (!lecturerId) return;
-    setLoading(true);
-    setError(null);
-    getLecturerById(lecturerId)
-      .then((data) => {
-        setLecturer({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          login: data.login,
-        });
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [lecturerId]);
-
-  const handleChange = (fieldName) => (event) => {
-    const newValue = event.target.value;
-    setStudent((prev) => ({ ...prev, [fieldName]: newValue }));
-  };
-
-  const handleEditClick = async () => {
-    if (editing) {
-      setError(null);
-      setFormLoading(true);
-      try {
-        const updated = await updateLecturer(lecturerId, {
-          firstName: lecturer.firstName,
-          lastName: lecturer.lastName,
-          email: lecturer.email,
-          login: lecturer.login,
-        });
-        setLecturer((prev) => ({ ...prev, ...updated }));
-        showSuccessToast("Prowadzący został zaktualizowany pomyślnie.");
-        setSnapshotLecturer(null);
-        setEditing(false);
-      } catch (error) {
-        setError(error.message);
-        showErrorToast(
-          "Błąd podczas aktualizacji prowadzącego: " + error.message
-        );
-        if (snapshotLecturer) {
-          setLecturer((prev) => ({ ...prev, ...snapshotLecturer }));
-          setSnapshotLecturer(null);
-        }
-      } finally {
-        setEditing(false);
-        setFormLoading(false);
-      }
-    } else {
-      setSnapshotLecturer(lecturer);
-      setFormLoading(false);
-      setEditing(true);
-    }
-  };
+  const {
+    lecturer,
+    loading,
+    error,
+    formLoading,
+    editing,
+    handleChange,
+    handleEditClick,
+  } = useLecturerDetailPage(lecturerId);
 
   return (
     <div className="min-w-120">

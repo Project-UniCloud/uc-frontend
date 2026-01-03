@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ButtonChangeStatus from "./ButtonChangeStatus";
-import { archiveGroup, activateGroup } from "@/lib/groupsApi";
+import { archiveGroup, activateGroup } from "@/lib/api/groupsApi";
 import { useRouter } from "next/navigation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-jest.mock("@/lib/groupsApi");
+jest.mock("@/lib/api/groupsApi");
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),

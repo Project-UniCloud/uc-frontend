@@ -3,7 +3,7 @@ import GroupPage from "./page";
 import {
   getResourceEditInfoByGroupId,
   updateResourceEditInfoByGroupId,
-} from "@/lib/resourceApi";
+} from "@/lib/api/resourceApi";
 import React from "react";
 
 const originalUse = React.use;
@@ -28,7 +28,7 @@ React.use = jest.fn((promise) => {
   return originalUse ? originalUse(promise) : promise;
 });
 
-jest.mock("@/lib/resourceApi");
+jest.mock("@/lib/api/resourceApi");
 
 jest.mock("@/components/utils/Toast", () => ({
   showSuccessToast: jest.fn(),

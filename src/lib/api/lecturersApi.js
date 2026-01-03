@@ -1,4 +1,4 @@
-import { getApi, postApi } from "./utils/apiClient";
+import { getApi, postApi } from "../utils/apiClient";
 
 export async function getLecturers({ searchQuery, page = 0, pageSize = 10 }) {
   const path = `/users/lecturers?pageNumber=${page}&pageSize=${pageSize}${

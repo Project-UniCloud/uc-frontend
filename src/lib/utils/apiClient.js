@@ -1,23 +1,36 @@
 import { getBaseApiUrl } from "./baseUrl";
 
+const isUnauthorized = (status) => status === 401;
+
+const redirectToLogin = () => {
+  if (typeof window !== "undefined") {
+    window.location.href = "/login";
+  }
+};
+
+async function handleError(response, fallbackText) {
+  try {
+    const errorData = await response.json();
+    return errorData.detail || fallbackText;
+  } catch {
+    return fallbackText;
+  }
+}
+
 export async function getApi(path, errorText) {
   try {
     const response = await fetch(`${getBaseApiUrl()}${path}`, {
       credentials: "include",
     });
 
-    if (response.status === 401 || response.status === 403) {
-      window.location.href = "/login";
+    if (isUnauthorized(response.status)) {
+      redirectToLogin();
       throw new Error("unauthorized");
     }
 
     if (!response.ok) {
-      try {
-        const errorData = await response.json();
-        console.log(errorData);
-        errorText = errorData.detail || errorText;
-      } catch {}
-      throw new Error(errorText);
+      const message = await handleError(response, errorText);
+      throw new Error(message);
     }
 
     const data = await response.json();
@@ -38,18 +51,14 @@ export async function postApi(path, body = null, errorText, data = false) {
       body: JSON.stringify(body),
     });
 
-    if (response.status === 401 || response.status === 403) {
-      window.location.href = "/login";
+    if (isUnauthorized(response.status)) {
+      redirectToLogin();
       throw new Error("unauthorized");
     }
 
     if (!response.ok) {
-      try {
-        const errorData = await response.json();
-
-        errorText = errorData.detail || errorText;
-      } catch {}
-      throw new Error(errorText);
+      const message = await handleError(response, errorText);
+      throw new Error(message);
     }
 
     if (data) {
@@ -72,17 +81,14 @@ export async function patchApi(path, body, errorText, data = false) {
       body: JSON.stringify(body),
     });
 
-    if (response.status === 401 || response.status === 403) {
-      window.location.href = "/login";
+    if (isUnauthorized(response.status)) {
+      redirectToLogin();
       throw new Error("unauthorized");
     }
 
     if (!response.ok) {
-      try {
-        const errorData = await response.json();
-        errorText = errorData.detail || errorText;
-      } catch {}
-      throw new Error(errorText);
+      const message = await handleError(response, errorText);
+      throw new Error(message);
     }
 
     if (data) {
@@ -105,17 +111,14 @@ export async function putApi(path, body = null, errorText, data = false) {
       body: JSON.stringify(body),
     });
 
-    if (response.status === 401) {
-      window.location.href = "/login";
+    if (isUnauthorized(response.status)) {
+      redirectToLogin();
       throw new Error("unauthorized");
     }
 
     if (!response.ok) {
-      try {
-        const errorData = await response.json();
-        errorText = errorData.detail || errorText;
-      } catch {}
-      throw new Error(errorText);
+      const message = await handleError(response, errorText);
+      throw new Error(message);
     }
 
     if (data) {
@@ -137,17 +140,14 @@ export async function deleteApi(path, body = null, errorText, data = false) {
       credentials: "include",
       body: JSON.stringify(body),
     });
-    if (response.status === 401) {
-      window.location.href = "/login";
+    if (isUnauthorized(response.status)) {
+      redirectToLogin();
       throw new Error("unauthorized");
     }
 
     if (!response.ok) {
-      try {
-        const errorData = await response.json();
-        errorText = errorData.detail || errorText;
-      } catch {}
-      throw new Error(errorText);
+      const message = await handleError(response, errorText);
+      throw new Error(message);
     }
 
     if (data) {

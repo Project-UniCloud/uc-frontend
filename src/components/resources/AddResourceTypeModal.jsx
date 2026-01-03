@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { addResourceType } from "@/lib/resourceApi";
+import { addResourceType } from "@/lib/api/resourceApi";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";

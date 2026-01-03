@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import GroupPage from "./page";
-import { getGroupById, updateGroup } from "@/lib/groupsApi";
-import { getStudentsFromGroup } from "@/lib/studentApi";
-import { getResourcesGroup } from "@/lib/resourceApi";
+import { getGroupById, updateGroup } from "@/lib/api/groupsApi";
+import { getStudentsFromGroup } from "@/lib/api/studentApi";
+import { getResourcesGroup } from "@/lib/api/resourceApi";
 import React from "react";
 
 const originalUse = React.use;
@@ -27,9 +27,9 @@ React.use = jest.fn((promise) => {
   return originalUse ? originalUse(promise) : promise;
 });
 
-jest.mock("@/lib/groupsApi");
-jest.mock("@/lib/studentApi");
-jest.mock("@/lib/resourceApi");
+jest.mock("@/lib/api/groupsApi");
+jest.mock("@/lib/api/studentApi");
+jest.mock("@/lib/api/resourceApi");
 
 jest.mock("@/components/utils/Toast", () => ({
   showSuccessToast: jest.fn(),

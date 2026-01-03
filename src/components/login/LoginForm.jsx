@@ -1,52 +1,10 @@
 "use client";
 
 import InputForm from "./InputForm";
-import { useState } from "react";
-import { z } from "zod";
-import { useDispatch } from "react-redux";
-import { loginUser } from "@/lib/authApi";
-import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
-import { loginSuccess } from "@/store/authSlice";
-
-const loginSchema = z.object({
-  login: z.string().min(5, { message: "Niepoprawny indeks!" }),
-  password: z.string().min(1, { message: "Hasło jest wymagane!" }),
-});
+import { useLoginForm } from "@/lib/views/auth/hooks";
 
 export default function LoginForm() {
-  const router = useRouter();
-  const dispatch = useDispatch();
-  const [formErrors, setFormErrors] = useState({});
-
-  const mutation = useMutation({
-    mutationFn: (credentials) => loginUser(credentials),
-    onSuccess: (userData) => {
-      dispatch(loginSuccess(userData.role));
-      router.push("/dashboard");
-    },
-    onError: (error) => {
-      setFormErrors({ error: error.message || "Błąd logowania" });
-    },
-  });
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-
-    const result = loginSchema.safeParse({
-      login: formData.get("login"),
-      password: formData.get("password"),
-    });
-
-    if (!result.success) {
-      setFormErrors(result.error.flatten().fieldErrors);
-      return;
-    }
-
-    setFormErrors({});
-    mutation.mutate(result.data);
-  }
+  const { mutation, formErrors, handleSubmit } = useLoginForm();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -68,18 +26,6 @@ export default function LoginForm() {
           required
         />
       </div>
-
-      {/* <div className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          id="remember"
-          name="remember"
-          className="cursor-pointer"
-        />
-        <label htmlFor="remember" className="text-sm text-black">
-          Pamiętaj mnie
-        </label>
-      </div> */}
 
       {formErrors.error && (
         <p className="text-red-400 text-xs">{formErrors.error}</p>

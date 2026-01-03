@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
-import { addStudentToGroup } from "@/lib/studentApi";
+import { addStudentToGroup } from "@/lib/api/studentApi";
 import React from "react";
 import { showErrorToast, showSuccessToast } from "../utils/Toast";
 import { z } from "zod";

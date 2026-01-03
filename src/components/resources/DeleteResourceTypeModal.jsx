@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { deleteResourceType } from "@/lib/resourceApi";
+import { deleteResourceType } from "@/lib/api/resourceApi";
 
 export default function DeleteResourceTypeModal({
   isOpen,

@@ -1,4 +1,4 @@
-import { postApi } from "./utils/apiClient";
+import { postApi } from "../utils/apiClient";
 
 export async function loginUser({ login, password }) {
   return await postApi(

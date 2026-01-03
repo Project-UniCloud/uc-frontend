@@ -1,55 +1,28 @@
 "use client";
-import { useState, useEffect } from "react";
-import { getLecturers } from "@/lib/lecturersApi";
 import DataTableView from "@/components/views/DataTableView";
 import AddLecturerModal from "@/components/lecturer/AddLecturerModal";
 import { Button } from "@/components/utils/Buttons";
 import { FaPlus } from "react-icons/fa";
 import Hint from "@/components/utils/Hint";
-
-const columns = [
-  { key: "login", header: "ID/Login" },
-  { key: "firstName", header: "Imię" },
-  { key: "lastName", header: "Nazwisko" },
-  { key: "email", header: "Mail" },
-];
+import { useListLecturersPage } from "@/lib/views/list-lecturers/hook";
+import { columns } from "@/lib/views/list-lecturers/columns";
 
 export default function ListLecturersPage() {
-  const [lecturers, setLecturers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-
-  // fetch function
-
-  const fetchLecturers = () => {
-    getLecturers({ searchQuery, page, pageSize })
-      .then((data) => {
-        const content = (data.content || []).map((item) => ({
-          ...item,
-          id: item.uuid,
-          groupId: item.uuid,
-        }));
-        setLecturers(content);
-        setTotalPages(data.page.totalPages);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error.message);
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    fetchLecturers();
-  }, [searchQuery, page, pageSize]);
+  const {
+    lecturers,
+    loading,
+    error,
+    isOpen,
+    searchQuery,
+    page,
+    pageSize,
+    totalPages,
+    setIsOpen,
+    setSearchQuery,
+    setPage,
+    setPageSize,
+    fetchLecturers,
+  } = useListLecturersPage();
 
   return (
     <div className="min-w-120">
