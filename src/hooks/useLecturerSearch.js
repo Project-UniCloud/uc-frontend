@@ -1,6 +1,6 @@
 // src/hooks/useLecturerSearch.js
 import { useState, useEffect } from "react";
-import { searchLecturers } from "@/lib/usersApi";
+import { searchLecturers } from "@/lib/api/usersApi";
 
 export function useLecturerSearch(query) {
   const [results, setResults] = useState([]);

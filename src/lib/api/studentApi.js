@@ -1,4 +1,4 @@
-import { getApi, postApi } from "./utils/apiClient";
+import { getApi, postApi } from "../utils/apiClient";
 import { getBaseApiUrl } from "@/lib/utils/baseUrl";
 
 export async function getStudentsFromGroup({

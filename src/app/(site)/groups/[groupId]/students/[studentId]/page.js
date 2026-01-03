@@ -1,87 +1,26 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { getStudentById } from "@/lib/studentApi";
-import { getGroupById } from "@/lib/groupsApi";
+import React from "react";
 import InputForm from "@/components/utils/InputForm";
 import { Button } from "@/components/utils/Buttons";
 import { FaTrash } from "react-icons/fa";
 import DeleteStudentModal from "@/components/students/DeleteStudentModal";
-import { updateStudent } from "@/lib/studentApi";
-import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
+import { useStudentDetailPage } from "@/lib/views/groups/groupId/studentId/hooks";
 
 export default function StudentDetailsPage({ params }) {
   const { groupId, studentId } = React.use(params);
 
-  const [student, setStudent] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    login: "",
-  });
-  const [groupName, setGroupName] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [formLoading, setFormLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [editing, setEditing] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [snapshotStudent, setSnapshotStudent] = useState(null);
-
-  useEffect(() => {
-    if (!studentId || !groupId) return;
-    setLoading(true);
-    setError(null);
-
-    Promise.all([getStudentById(studentId), getGroupById(groupId)])
-      .then(([studentData, groupData]) => {
-        setStudent({
-          firstName: studentData.firstName,
-          lastName: studentData.lastName,
-          email: studentData.email,
-          login: studentData.login,
-        });
-        setGroupName(groupData.name);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [studentId, groupId]);
-
-  const handleChange = (fieldName) => (event) => {
-    const newValue = event.target.value;
-    setStudent((prev) => ({ ...prev, [fieldName]: newValue }));
-  };
-
-  const handleEditClick = async () => {
-    if (editing) {
-      setError(null);
-      setFormLoading(true);
-      try {
-        const updated = await updateStudent(groupId, studentId, {
-          firstName: student.firstName,
-          lastName: student.lastName,
-          email: student.email,
-          login: student.login,
-        });
-        setStudent((prev) => ({ ...prev, ...updated }));
-        showSuccessToast("Student został zaktualizowany pomyślnie.");
-        setSnapshotStudent(null);
-        setEditing(false);
-      } catch (error) {
-        setError(error.message);
-        showErrorToast("Błąd podczas aktualizacji studenta: " + error.message);
-        if (snapshotStudent) {
-          setStudent((prev) => ({ ...prev, ...snapshotStudent }));
-          setSnapshotStudent(null);
-        }
-      } finally {
-        setEditing(false);
-        setFormLoading(false);
-      }
-    } else {
-      setSnapshotStudent(student);
-      setFormLoading(false);
-      setEditing(true);
-    }
-  };
+  const {
+    student,
+    groupName,
+    loading,
+    formLoading,
+    error,
+    editing,
+    isOpen,
+    setIsOpen,
+    handleChange,
+    handleEditClick,
+  } = useStudentDetailPage(studentId, groupId);
 
   return (
     <div className="min-w-120">

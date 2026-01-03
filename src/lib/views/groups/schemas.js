@@ -7,29 +7,33 @@ export const groupSearchSchema = z
     "Dozwolone: litery, cyfry, spacje i myślniki"
   );
 
-export const groupFormSchema = z
+export const addGroupSchema = z
   .object({
     name: z
       .string()
       .min(1, "Nazwa grupy jest wymagana")
-      .regex(
-        /^[\p{L}\-\s\d]+$/u,
-        "Nazwa może zawierać tylko litery, cyfry, spacje i myślniki"
-      ),
-    academicYear: z
+      .regex(/^[\p{L}\-\s\d]+$/u, {
+        message:
+          "Nieprawidłowa nazwa grupy. Dozwolone: litery, cyfry, spacje i myślnik.",
+      }),
+    semesterYear: z
       .string()
-      .regex(
-        /(19|20)\d{2}/,
-        "Rok akademicki musi być w formacie YYYY (1900-2099)"
-      ),
-    semesterType: z.enum(["WINTER", "SUMMER"]),
-    startDate: z.string(),
-    endDate: z.string(),
+      .min(1, "Rok semestru jest wymagany")
+      .regex(/(19|20)\d{2}/, {
+        message: "Rok musi być w przedziale: 1900-2099",
+      }),
+    semesterType: z.enum(["Z", "L"], {
+      errorMap: () => ({ message: "Nieprawidłowy typ semestru" }),
+    }),
+    startDate: z.string().min(1, "Data rozpoczęcia jest wymagana"),
+    endDate: z.string().min(1, "Data zakończenia jest wymagana"),
     lecturers: z
-      .array(z.object({ id: z.string(), name: z.string() }))
-      .min(1, "Co najmniej jeden prowadzący jest wymagany"),
+      .string()
+      .array()
+      .min(1, "Wymagany jest co najmniej jeden prowadzący"),
+    description: z.string().optional(),
   })
-  .refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
-    message: "Data końcowa musi być równa lub późniejsza niż data początkowa",
+  .refine((vals) => new Date(vals.startDate) <= new Date(vals.endDate), {
+    message: "Data zakończenia musi być późniejsza niż data rozpoczęcia",
     path: ["endDate"],
   });

@@ -1,136 +1,41 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Tabs from "@/components/utils/Tabs";
 import InputForm from "@/components/utils/InputForm";
-import { getGroups } from "@/lib/groupsApi";
-import { getCloudAccessesById } from "@/lib/cloudApi";
-import { getResourceTypesByDriverId } from "@/lib/cloudApi";
 import DataTableView from "@/components/views/DataTableView";
 import AddResourceTypeModal from "@/components/resources/AddResourceTypeModal";
 import Hint from "@/components/utils/Hint";
 import { Button } from "@/components/utils/Buttons";
-import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
-import { updateDriver } from "@/lib/driversApi";
-
-const TABS = [
-  { label: "Ustawienia" },
-  { label: "Grupy zajęciowe" },
-  { label: "Typy zasobów" },
-];
+import { useDriverDetailPage } from "@/lib/views/drivers/driverName/hooks";
+import { TABS } from "@/lib/views/drivers/driverName/tabs";
+import {
+  groupsColumns,
+  resourceTypesColumns,
+} from "@/lib/views/drivers/driverName/columns";
 
 export default function GroupPage({ params }) {
   const { driverName } = React.use(params);
 
-  const [activeTab, setActiveTab] = useState("Ustawienia");
-  const [driverData, setdriverData] = useState({
-    clean: "",
-    limit: "",
-    name: "",
-    description: "",
-    status: "",
-  });
-  const [driverResourceTypesData, setDriverResourceTypesData] = useState([]);
-  const [groupsData, setGroupsData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [formLoading, setFormLoading] = useState(false);
-  const [snapshotSettingsData, setSnapshotSettingsData] = useState(null);
-  const [error, setError] = useState(null);
-  const [editing, setEditing] = useState(false);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-  const [isOpenAddModal, setIsOpenAddModal] = useState(false);
-
-  const columns = [{ key: "name", header: "Nazwa zasobu" }];
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-
-    if (activeTab === "Ustawienia") {
-      getCloudAccessesById(driverName)
-        .then((data) => {
-          setdriverData({
-            id: data.cloudConnectorId,
-            name: data.cloudConnectorName,
-            clean: data.defaultCronExpression,
-            limit: data.costLimit,
-            status: data.isActive,
-          });
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-
-    if (activeTab === "Grupy zajęciowe") {
-      getGroups({ page, pageSize, cloudClientId: driverName })
-        .then((data) => {
-          setGroupsData(data.content || []);
-          setTotalPages(data.page.totalPages || 0);
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-    if (activeTab === "Typy zasobów") {
-      getResourceTypesByDriverId({ page, pageSize, driverName })
-        .then((data) => {
-          setDriverResourceTypesData(data.content || []);
-          setTotalPages(data.page.totalPages || 0);
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-  }, [activeTab, driverName, page, pageSize]);
-
-  const handleTabChange = (tabKey) => {
-    setActiveTab(tabKey);
-    setEditing(false);
-    setPage(0);
-    setPageSize(10);
-  };
-  const tableData = groupsData.map((group, idx) => ({
-    ...group,
-    id: idx + 1,
-  }));
-
-  const handleChange = (fieldName) => (event) => {
-    const newValue = event.target.value;
-    setdriverData((prev) => ({ ...prev, [fieldName]: newValue }));
-  };
-
-  const handleEditClick = async () => {
-    if (editing) {
-      setError(null);
-      setFormLoading(true);
-      try {
-        const updated = await updateDriver(driverName, {
-          cloudConnectorName: driverData.name,
-          costLimit: driverData.limit,
-          defaultCronExpression: driverData.clean,
-        });
-        setdriverData((prev) => ({ ...prev, ...updated }));
-        showSuccessToast("Sterownik został zaktualizowany pomyślnie.");
-        setSnapshotSettingsData(null);
-        setEditing(false);
-      } catch (error) {
-        setError(error.message);
-        showErrorToast(
-          "Błąd podczas aktualizacji sterownika: " + error.message
-        );
-        if (snapshotSettingsData) {
-          setdriverData((prev) => ({ ...prev, ...snapshotSettingsData }));
-          setSnapshotSettingsData(null);
-        }
-      } finally {
-        setEditing(false);
-        setFormLoading(false);
-      }
-    } else {
-      setSnapshotSettingsData(driverData);
-      setFormLoading(false);
-      setEditing(true);
-    }
-  };
+  const {
+    activeTab,
+    driverData,
+    driverResourceTypesData,
+    loading,
+    formLoading,
+    error,
+    editing,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    isOpenAddModal,
+    setIsOpenAddModal,
+    handleTabChange,
+    tableData,
+    handleChange,
+    handleEditClick,
+  } = useDriverDetailPage(driverName);
 
   return (
     <div className="min-w-120">
@@ -232,14 +137,7 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
           loading={loading}
           error={error}
           data={tableData}
-          columns={[
-            { key: "id", header: "ID" },
-            { key: "name", header: "Nazwa" },
-            { key: "lecturers", header: "Prowadzący" },
-            { key: "cloudAccesses", header: "Usługi" },
-            { key: "semester", header: "Semestr" },
-            { key: "endDate", header: "Data Zakończenia" },
-          ]}
+          columns={groupsColumns}
           whereNavigate="../groups"
           idKey="groupId"
           page={page}
@@ -256,7 +154,7 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
           loading={loading}
           error={error}
           data={driverResourceTypesData}
-          columns={columns}
+          columns={resourceTypesColumns}
           page={page}
           setPage={setPage}
           pageSize={pageSize}

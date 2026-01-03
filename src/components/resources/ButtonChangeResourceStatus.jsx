@@ -5,7 +5,7 @@ import {
   deleteResource,
   deactivationResource,
   activationResource,
-} from "@/lib/resourceApi";
+} from "@/lib/api/resourceApi";
 import { Button } from "@/components/utils/Buttons";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";

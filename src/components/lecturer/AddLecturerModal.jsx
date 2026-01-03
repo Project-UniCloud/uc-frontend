@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { addLecturer } from "@/lib/lecturersApi";
+import { addLecturer } from "@/lib/api/lecturersApi";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import { FaCheck } from "react-icons/fa";

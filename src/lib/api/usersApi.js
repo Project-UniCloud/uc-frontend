@@ -1,4 +1,4 @@
-import { getApi } from "./utils/apiClient";
+import { getApi } from "../utils/apiClient";
 
 export async function getUser(userId) {
   const path = `/users/${userId}`;

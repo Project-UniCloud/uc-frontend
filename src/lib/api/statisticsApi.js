@@ -1,4 +1,4 @@
-import { getApi } from "./utils/apiClient";
+import { getApi } from "../utils/apiClient";
 
 export async function getOverallStats() {
   const path = `/statistics/costs/overall`;

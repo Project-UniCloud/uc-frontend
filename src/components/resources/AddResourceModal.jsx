@@ -2,8 +2,8 @@ import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
-import { giveCloudResourceAccess } from "@/lib/resourceApi";
-import { getCloudAccesses, getCloudResourcesTypes } from "@/lib/cloudApi";
+import { giveCloudResourceAccess } from "@/lib/api/resourceApi";
+import { getCloudAccesses, getCloudResourcesTypes } from "@/lib/api/cloudApi";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 import { AddResourceConfirmModal } from "./AddResourceConfirmModal";
 

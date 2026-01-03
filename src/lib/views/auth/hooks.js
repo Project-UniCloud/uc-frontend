@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { loginUser } from "@/lib/authApi";
+import { loginUser } from "@/lib/api/authApi";
 import { loginSuccess } from "@/store/authSlice";
 import { loginSchema } from "@/lib/views/auth/schemas";
 

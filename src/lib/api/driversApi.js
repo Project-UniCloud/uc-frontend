@@ -1,4 +1,4 @@
-import { getApi, postApi, putApi } from "./utils/apiClient";
+import { getApi, postApi, putApi } from "../utils/apiClient";
 
 export async function getDrivers({ page = 0, pageSize = 10 }) {
   const path = `/cloud/connector?pageNumber=${page}&pageSize=${pageSize}`;

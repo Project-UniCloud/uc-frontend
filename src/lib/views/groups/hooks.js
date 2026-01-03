@@ -1,43 +1,46 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getGroups } from "@/lib/groupsApi";
+import { useState } from "react";
+import { getGroups } from "@/lib/api/groupsApi";
+import { usePagination, useAsync } from "@/lib/views/shared/hooks";
 import { groupSearchSchema } from "./schemas";
 
 export function useGroupsPage() {
   const [activeTab, setActiveTab] = useState("ACTIVE");
-  const [groups, setGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState("");
 
-  const fetchGroups = () => {
-    setLoading(true);
-    setError(null);
-    getGroups({ status: activeTab, page, pageSize, groupName: search })
-      .then((data) => {
-        setGroups(data.content);
-        setTotalPages(data.page.totalPages);
-      })
-      .catch((error) => {
-        setError(error.message);
-      })
-      .finally(() => setLoading(false));
-  };
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    setTotalPages,
+    resetPagination,
+  } = usePagination();
 
-  useEffect(() => {
-    fetchGroups();
-  }, [activeTab, page, pageSize, search]);
+  const {
+    data: groups = [],
+    loading,
+    error,
+    setError,
+    run: fetchGroups,
+  } = useAsync(
+    () =>
+      getGroups({ status: activeTab, page, pageSize, groupName: search }).then(
+        (data) => {
+          setTotalPages(data.page.totalPages);
+          return data.content;
+        }
+      ),
+    [activeTab, page, pageSize, search, setTotalPages],
+    { initialData: [] }
+  );
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
-    setPage(0);
-    setPageSize(10);
+    resetPagination();
     setSearch("");
   };
 

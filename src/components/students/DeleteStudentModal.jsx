@@ -5,7 +5,7 @@ import { FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
-import { deleteStudent } from "@/lib/studentApi";
+import { deleteStudent } from "@/lib/api/studentApi";
 
 export default function DeleteStudentModal({
   isOpen,

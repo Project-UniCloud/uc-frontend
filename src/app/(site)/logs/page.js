@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import { getLogs } from "@/lib/logsApi"; // temporarily disabled (no backend)
+// import { getLogs } from "@/lib/api/logsApi"; // temporarily disabled (no backend)
 import DataTableView from "@/components/views/DataTableView";
 import Hint from "@/components/utils/Hint";
 

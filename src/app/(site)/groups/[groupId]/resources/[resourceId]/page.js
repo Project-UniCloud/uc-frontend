@@ -1,102 +1,21 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import InputForm from "@/components/utils/InputForm";
 import { Button } from "@/components/utils/Buttons";
-import {
-  getResourceEditInfoByGroupId,
-  updateResourceEditInfoByGroupId,
-} from "@/lib/resourceApi";
-import {
-  formatDateToYYYYMMDD,
-  formatDateToDDMMYYYY,
-} from "@/lib/utils/formatDate";
-import ButtonChangeResourceStatus from "@/components/resources/ButtonChangeResourceStatus";
-import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
+import { useResourceDetailPage } from "@/lib/views/groups/groupId/resourceId/hooks";
 
 export default function GroupPage({ params }) {
   const { groupId, resourceId } = React.use(params);
-  const [infoData, setInfoData] = useState({
-    id: "",
-    limit: "",
-    cron: "",
-    expiresAt: "",
-    status: "",
-    notificationLevel1: "",
-    notificationLevel2: "",
-    notificationLevel3: "",
-  });
-  const [loading, setLoading] = useState(true);
-  const [formLoading, setFormLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [editing, setEditing] = useState(false);
-  const [snapshotInfoData, setSnapshotInfoData] = useState(null);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-
-    getResourceEditInfoByGroupId(groupId, resourceId)
-      .then((data) => {
-        setInfoData({
-          id: data.id,
-          limit: data.limit,
-          cron: data.cron || "",
-          expiresAt: formatDateToYYYYMMDD(data.expiresAt),
-          status: data.status || "",
-          notificationLevel1: data.notificationLevel1 || "",
-          notificationLevel2: data.notificationLevel2 || "",
-          notificationLevel3: data.notificationLevel3 || "",
-        });
-      })
-      .catch((error) => setError(error.message))
-      .finally(() => setLoading(false));
-  }, [groupId, resourceId]);
-
-  const handleChange =
-    (fieldName = activeTab) =>
-    (event) => {
-      const newValue = event.target.value;
-
-      setInfoData((prev) => ({ ...prev, [fieldName]: newValue }));
-    };
-
-  const handleEditClick = async () => {
-    if (editing) {
-      setError(null);
-      setFormLoading(true);
-      try {
-        const updated = await updateResourceEditInfoByGroupId(groupId, {
-          id: infoData.id,
-          limit: infoData.limit,
-          cron: infoData.cron,
-          expiresAt: formatDateToDDMMYYYY(infoData.expiresAt),
-          status: infoData.status,
-          notificationLevel1: infoData.notificationLevel1,
-          notificationLevel2: infoData.notificationLevel2,
-          notificationLevel3: infoData.notificationLevel3,
-        });
-        setInfoData((prev) => ({ ...prev, ...updated }));
-        showSuccessToast("Dane zostały zaktualizowane pomyślnie.");
-        setSnapshotInfoData(null);
-        setEditing(false);
-      } catch (error) {
-        setError(error.message);
-        showErrorToast("Błąd podczas aktualizacji danych: " + error.message);
-        if (snapshotInfoData) {
-          setInfoData((prev) => ({ ...prev, ...snapshotInfoData }));
-          setSnapshotInfoData(null);
-        }
-      } finally {
-        setSnapshotInfoData(null);
-        setFormLoading(false);
-        setEditing(false);
-      }
-    } else {
-      setSnapshotInfoData(infoData);
-      setFormLoading(false);
-      setEditing(true);
-    }
-  };
+  const {
+    infoData,
+    loading,
+    formLoading,
+    error,
+    editing,
+    handleChange,
+    handleEditClick,
+  } = useResourceDetailPage(groupId, resourceId);
 
   return (
     <div className="min-w-120">

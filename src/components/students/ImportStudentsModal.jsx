@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
-import { addStudentsToGroup } from "@/lib/studentApi";
+import { addStudentsToGroup } from "@/lib/api/studentApi";
 import DragDrop from "../utils/DragDrop";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 

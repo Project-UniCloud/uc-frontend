@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AddDriverModal from "./AddDriverModal";
-import { addDriver } from "@/lib/driversApi";
+import { addDriver } from "@/lib/api/driversApi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-jest.mock("@/lib/driversApi");
+jest.mock("@/lib/api/driversApi");
 
 jest.mock("../utils/Toast", () => ({
   showSuccessToast: jest.fn(),

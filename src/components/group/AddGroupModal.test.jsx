@@ -6,10 +6,10 @@ import {
   cleanup,
 } from "@testing-library/react";
 import AddGroupModal from "./AddGroupModal";
-import { addGroup } from "@/lib/groupsApi";
+import { addGroup } from "@/lib/api/groupsApi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-jest.mock("@/lib/groupsApi");
+jest.mock("@/lib/api/groupsApi");
 
 jest.mock("@/lib/utils/formatDate", () => ({
   formatDateToDDMMYYYY: jest.fn((date) => {

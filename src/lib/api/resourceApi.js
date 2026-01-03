@@ -4,7 +4,7 @@ import {
   patchApi,
   putApi,
   deleteApi,
-} from "./utils/apiClient";
+} from "../utils/apiClient";
 
 export async function giveCloudResourceAccess(groupId, data) {
   const path = `/groups/${groupId}/cloud-access`;
