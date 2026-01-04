@@ -96,14 +96,12 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
                 name="name"
                 hint="Nazwa reprezentująca daną grupę"
                 value={groupData.name}
-                onChange={handleChange("name")}
-                disabled={!editing}
+                disabled
               />
               <TeacherSearchInput
                 value={groupData.lecturers}
                 label="Prowadzący"
                 disabled={!editing}
-                disabledOnlyList={!editing}
                 onSelect={handleLecturerAdd}
                 onRemove={handleLecturerRemove}
                 useLecturerSearch={useLecturerSearch}
