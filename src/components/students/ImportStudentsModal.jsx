@@ -66,6 +66,7 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId, fetch }) {
           onClick={handleClose}
           color="bg-white"
           textColor="text-black"
+          disabled={mutation.isPending}
           className={`border border-black ${
             mutation.isPending && "opacity-50"
           }`}

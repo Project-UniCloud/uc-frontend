@@ -176,15 +176,15 @@ describe("MyLineChart", () => {
   test("obsługuje data=null", () => {
     render(<MyLineChart data={null} />);
 
-    const lineChart = screen.getByTestId("line-chart");
-    expect(lineChart).toHaveAttribute("data-length", "0");
+    expect(screen.getByText("Brak danych do wyświetlenia")).toBeInTheDocument();
+    expect(screen.queryByTestId("line-chart")).not.toBeInTheDocument();
   });
 
   test("obsługuje puste dane", () => {
     render(<MyLineChart data={[]} />);
 
-    const lineChart = screen.getByTestId("line-chart");
-    expect(lineChart).toHaveAttribute("data-length", "0");
+    expect(screen.getByText("Brak danych do wyświetlenia")).toBeInTheDocument();
+    expect(screen.queryByTestId("line-chart")).not.toBeInTheDocument();
   });
 
   test("ma poprawne klasy CSS dla kontenera", () => {

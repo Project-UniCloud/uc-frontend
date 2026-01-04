@@ -72,7 +72,6 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
     const parsed = addGroupSchema.safeParse(payload);
     if (!parsed.success) {
       const firstError = parsed.error.issues[0]?.message || "Błąd walidacji";
-      console.log("Validation error:", parsed.error.issues);
       setFormErrors({ error: firstError });
       return;
     }
@@ -116,7 +115,9 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
             onClick={handleClose}
             disabled={mutation.isPending}
           >
-            <X />
+            <span data-testid="x-icon">
+              <X />
+            </span>
           </button>
         </div>
 
@@ -212,6 +213,7 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
             color="bg-white"
             textColor="text-black"
             disabled={mutation.isPending}
+            data-testid="button-Anuluj"
             className={`border border-black ${
               mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
             }`}
@@ -221,6 +223,9 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
           <Button
             type="submit"
             disabled={mutation.isPending}
+            data-testid={`button-${
+              mutation.isPending ? "Wysyłanie..." : "Zatwierdź"
+            }`}
             className={`${
               mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
             }`}

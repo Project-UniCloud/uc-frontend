@@ -17,8 +17,7 @@ export function useLecturerExternalSearch(query) {
 
       externalSearchLecturers(query)
         .then(setResults)
-        .catch((err) => {
-          console.error(err);
+        .catch(() => {
           setResults([]);
         })
         .finally(() => setLoading(false));

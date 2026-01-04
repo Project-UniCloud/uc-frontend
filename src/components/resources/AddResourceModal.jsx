@@ -132,8 +132,11 @@ export function AddResourceModal({
 
         <div className="flex flex-row m-auto gap-6 max-w-[500px]">
           <div className="flex flex-col w-full">
-            <label className="mb-1 text-sm font-medium">Sterownik</label>
+            <label htmlFor="driver-select" className="mb-1 text-sm font-medium">
+              Sterownik
+            </label>
             <select
+              id="driver-select"
               required
               value={selectedDriver}
               className="rounded-md border text-sm w-full border-gray-300 px-1 py-2 shadow-sm focus:border-black focus:outline-none"
@@ -156,8 +159,14 @@ export function AddResourceModal({
             </select>
           </div>
           <div className="flex flex-col w-full">
-            <label className="mb-1 text-sm font-medium">Usługa</label>
+            <label
+              htmlFor="resource-select"
+              className="mb-1 text-sm font-medium"
+            >
+              Usługa
+            </label>
             <select
+              id="resource-select"
               required
               value={selectedResource}
               onChange={(event) => {

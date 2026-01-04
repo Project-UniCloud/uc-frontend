@@ -338,33 +338,35 @@ describe("ButtonChangeStatus", () => {
   });
 
   describe("Zarchiwizowana group", () => {
-    test("renderuje przycisk Usuń dla grupy Zarchiwizowanej", () => {
+    test("nie renderuje przycisku dla grupy Zarchiwizowanej", () => {
       render(
         <ButtonChangeStatus groupId="789" groupStatus="Zarchiwizowana" />,
         { wrapper: createWrapper() }
       );
 
-      expect(screen.getByTestId("button-Usuń")).toBeInTheDocument();
-      expect(screen.getByText("Usuń")).toBeInTheDocument();
+      expect(screen.queryByTestId("button-Archiwizuj")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("button-Aktywuj")).not.toBeInTheDocument();
     });
 
-    test("renderuje ikonę play dla grupy Zarchiwizowanej", () => {
+    test("nie renderuje żadnych ikon dla grupy Zarchiwizowanej", () => {
       render(
         <ButtonChangeStatus groupId="789" groupStatus="Zarchiwizowana" />,
         { wrapper: createWrapper() }
       );
 
-      expect(screen.getByTestId("play-icon")).toBeInTheDocument();
+      expect(screen.queryByTestId("play-icon")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("pause-icon")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("archive-icon")).not.toBeInTheDocument();
     });
 
-    test("przycisk Usuń jest wyłączony dla grupy Zarchiwizowanej", () => {
-      render(
+    test("renderuje pusty komponent dla grupy Zarchiwizowanej", () => {
+      const { container } = render(
         <ButtonChangeStatus groupId="789" groupStatus="Zarchiwizowana" />,
         { wrapper: createWrapper() }
       );
 
-      const deleteButton = screen.getByTestId("button-Usuń");
-      expect(deleteButton).toBeDisabled();
+      const buttons = container.querySelectorAll("button");
+      expect(buttons.length).toBe(0);
     });
 
     test("nie wywołuje API dla grupy Zarchiwizowanej", () => {
@@ -442,7 +444,7 @@ describe("ButtonChangeStatus", () => {
       );
 
       button = container1.querySelector("button");
-      expect(button?.textContent).toContain("Usuń");
+      expect(button).toBeNull();
     });
   });
 });

@@ -24,15 +24,16 @@ export default function DeleteResourceTypeModal({
       return deleteResourceType(data);
     },
     onSuccess: () => {
-      setIsOpen(false), setErrors({}), formRef.current?.reset();
+      setIsOpen(false);
+      setErrors({});
       setSelectedResourceTypeId(null);
       showSuccessToast(
         "Typ zasobu usunięty! Odśwież stronę, aby zobaczyć zmiany."
       );
     },
     onError: (error) => {
-      setErrors({ error: error.message || "Błąd usuwania typu zasobu" }),
-        showErrorToast("Błąd usuwania typu zasobu: " + error?.message);
+      setErrors({ error: error.message || "Błąd usuwania typu zasobu" });
+      showErrorToast("Błąd usuwania typu zasobu: " + error?.message);
       setSelectedResourceTypeId(null);
     },
   });

@@ -7,21 +7,26 @@ export function useLecturerSearch(query) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let active = true;
     if (!query) {
       setResults([]);
       return;
     }
 
     const timeoutId = setTimeout(() => {
+      if (!active) return;
       setLoading(true);
 
       searchLecturers(query)
-        .then(setResults)
-        .catch((err) => {
-          console.error(err);
-          setResults([]);
+        .then((data) => {
+          if (active) setResults(data);
         })
-        .finally(() => setLoading(false));
+        .catch(() => {
+          if (active) setResults([]);
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
     }, 300);
 
     return () => clearTimeout(timeoutId);
