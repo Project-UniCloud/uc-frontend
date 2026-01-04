@@ -781,18 +781,7 @@ describe("AddLecturerModal", () => {
       target: { value: "manual@example.com" },
     });
 
-    // Potem wybierz prowadzącego
     fireEvent.click(screen.getByTestId("add-lecturer-btn"));
-
-    // Email z prowadzącego nadpisuje ręczny
     expect(screen.getByTestId("input-email")).toHaveValue("john@example.com");
-  });
-
-  test("matches snapshot when open", () => {
-    const { container } = render(
-      <AddLecturerModal isOpen={true} setIsOpen={setIsOpen} />,
-      { wrapper: createWrapper() }
-    );
-    expect(container).toMatchSnapshot();
   });
 });

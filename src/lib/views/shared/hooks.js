@@ -40,7 +40,7 @@ export function useAsync(asyncFn, deps = [], options = {}) {
       if (onError) {
         onError(err);
       }
-      throw err;
+      return null;
     } finally {
       setLoading(false);
     }

@@ -68,15 +68,6 @@ jest.mock("@/components/utils/Buttons", () => ({
   ),
 }));
 
-jest.mock("@/components/resources/ButtonChangeResourceStatus", () => ({
-  __esModule: true,
-  default: (props) => (
-    <button data-testid="change-resource-status-btn">
-      Zmień status zasobu
-    </button>
-  ),
-}));
-
 jest.mock("@/lib/utils/formatDate", () => ({
   formatDateToYYYYMMDD: jest.fn((date) => date),
   formatDateToDDMMYYYY: jest.fn((date) => date),
@@ -209,7 +200,10 @@ describe("ResourceEditPage", () => {
     });
 
     const limitInput = screen.getByDisplayValue("100");
-    expect(limitInput).not.toBeDisabled();
+    expect(limitInput).toBeDisabled();
+
+    const notifInput = screen.getByDisplayValue("50");
+    expect(notifInput).not.toBeDisabled();
   });
 
   test("zapisuje zmiany po kliknięciu Zapisz", async () => {
@@ -237,8 +231,8 @@ describe("ResourceEditPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    const limitInput = screen.getByDisplayValue("100");
-    fireEvent.change(limitInput, { target: { value: "200" } });
+    const notif1Input = screen.getByDisplayValue("50");
+    fireEvent.change(notif1Input, { target: { value: "60" } });
 
     const saveBtn = screen.getByText("Zapisz");
     fireEvent.click(saveBtn);
@@ -246,11 +240,11 @@ describe("ResourceEditPage", () => {
     await waitFor(() => {
       expect(updateResourceEditInfoByGroupId).toHaveBeenCalledWith("123", {
         id: "456",
-        limit: "200",
+        limit: "100",
         cron: "0 0 * * *",
         expiresAt: "2024-12-31",
         status: "Active",
-        notificationLevel1: "50",
+        notificationLevel1: "60",
         notificationLevel2: "75",
         notificationLevel3: "90",
       });
@@ -376,15 +370,15 @@ describe("ResourceEditPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    expect(screen.getByDisplayValue("100")).not.toBeDisabled();
-    expect(screen.getByDisplayValue("0 0 * * *")).not.toBeDisabled();
+    expect(screen.getByDisplayValue("100")).toBeDisabled();
+    expect(screen.getByDisplayValue("0 0 * * *")).toBeDisabled();
     expect(screen.getByDisplayValue("2024-12-31")).not.toBeDisabled();
     expect(screen.getByDisplayValue("50")).not.toBeDisabled();
     expect(screen.getByDisplayValue("75")).not.toBeDisabled();
     expect(screen.getByDisplayValue("90")).not.toBeDisabled();
   });
 
-  test("zmienia wartość pola limit podczas edycji", async () => {
+  test("pole limit pozostaje tylko do odczytu podczas edycji", async () => {
     render(<GroupPage params={mockParams} />);
 
     await waitFor(() => {
@@ -399,12 +393,10 @@ describe("ResourceEditPage", () => {
     });
 
     const limitInput = screen.getByDisplayValue("100");
-    fireEvent.change(limitInput, { target: { value: "250" } });
-
-    expect(limitInput.value).toBe("250");
+    expect(limitInput).toBeDisabled();
   });
 
-  test("zmienia wartość pola cron podczas edycji", async () => {
+  test("pole cron pozostaje tylko do odczytu podczas edycji", async () => {
     render(<GroupPage params={mockParams} />);
 
     await waitFor(() => {
@@ -419,9 +411,7 @@ describe("ResourceEditPage", () => {
     });
 
     const cronInput = screen.getByDisplayValue("0 0 * * *");
-    fireEvent.change(cronInput, { target: { value: "0 12 * * *" } });
-
-    expect(cronInput.value).toBe("0 12 * * *");
+    expect(cronInput).toBeDisabled();
   });
 
   test("zmienia wartość daty zakończenia podczas edycji", async () => {
@@ -502,20 +492,6 @@ describe("ResourceEditPage", () => {
     fireEvent.change(notif3Input, { target: { value: "95" } });
 
     expect(notif3Input.value).toBe("95");
-  });
-
-  test("wyświetla przycisk zmiany statusu zasobu", async () => {
-    render(<GroupPage params={mockParams} />);
-
-    await waitFor(() => {
-      expect(getResourceEditInfoByGroupId).toHaveBeenCalled();
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.getByTestId("change-resource-status-btn")
-      ).toBeInTheDocument();
-    });
   });
 
   test("przycisk Zapisz jest disabled podczas ładowania formularza", async () => {
@@ -605,11 +581,8 @@ describe("ResourceEditPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    fireEvent.change(screen.getByDisplayValue("100"), {
-      target: { value: "300" },
-    });
-    fireEvent.change(screen.getByDisplayValue("0 0 * * *"), {
-      target: { value: "0 6 * * *" },
+    fireEvent.change(screen.getByDisplayValue("2024-12-31"), {
+      target: { value: "2025-12-31" },
     });
     fireEvent.change(screen.getByDisplayValue("50"), {
       target: { value: "40" },
@@ -621,9 +594,9 @@ describe("ResourceEditPage", () => {
     await waitFor(() => {
       expect(updateResourceEditInfoByGroupId).toHaveBeenCalledWith("123", {
         id: "456",
-        limit: "300",
-        cron: "0 6 * * *",
-        expiresAt: "2024-12-31",
+        limit: "100",
+        cron: "0 0 * * *",
+        expiresAt: "2025-12-31",
         status: "Active",
         notificationLevel1: "40",
         notificationLevel2: "75",
@@ -695,8 +668,8 @@ describe("ResourceEditPage", () => {
     const editBtn = await screen.findByText("Edytuj");
     fireEvent.click(editBtn);
 
-    const limitInput = screen.getByDisplayValue("100");
-    fireEvent.change(limitInput, { target: { value: "200" } });
+    const notifInput = screen.getByDisplayValue("50");
+    fireEvent.change(notifInput, { target: { value: "60" } });
 
     const saveBtn = screen.getByText("Zapisz");
     fireEvent.click(saveBtn);
@@ -707,11 +680,20 @@ describe("ResourceEditPage", () => {
 
     fireEvent.click(screen.getByText("Edytuj"));
 
-    fireEvent.change(screen.getByDisplayValue("100"), {
-      target: { value: "300" },
+    fireEvent.change(screen.getByDisplayValue("2024-12-31"), {
+      target: { value: "2025-06-30" },
     });
 
-    expect(screen.getByDisplayValue("300")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Zapisz"));
+
+    await waitFor(() => {
+      expect(updateResourceEditInfoByGroupId).toHaveBeenLastCalledWith(
+        "123",
+        expect.objectContaining({
+          expiresAt: "2025-06-30",
+        })
+      );
+    });
   });
 
   test("pola progów powiadomień mają poprawne atrybuty walidacji", async () => {
@@ -860,8 +842,6 @@ describe("ResourceEditPage", () => {
       target: { value: "85" },
     });
 
-    expect(screen.getByDisplayValue("999")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("0 23 * * *")).toBeInTheDocument();
     expect(screen.getByDisplayValue("2025-06-30")).toBeInTheDocument();
     expect(screen.getByDisplayValue("30")).toBeInTheDocument();
     expect(screen.getByDisplayValue("60")).toBeInTheDocument();
@@ -899,8 +879,8 @@ describe("ResourceEditPage", () => {
     const editBtn = await screen.findByText("Edytuj");
     fireEvent.click(editBtn);
 
-    const limitInput = screen.getByDisplayValue("100");
-    fireEvent.change(limitInput, { target: { value: "200" } });
+    const notifInput = screen.getByDisplayValue("50");
+    fireEvent.change(notifInput, { target: { value: "60" } });
 
     const saveBtn = await screen.findByText("Zapisz");
     fireEvent.click(saveBtn);
@@ -910,7 +890,7 @@ describe("ResourceEditPage", () => {
     });
   });
 
-  test("pole limitu akceptuje wartości tekstowe i numeryczne", async () => {
+  test("pole limitu pozostaje zablokowane w edycji", async () => {
     render(<GroupPage params={mockParams} />);
 
     await waitFor(() => {
@@ -925,16 +905,10 @@ describe("ResourceEditPage", () => {
     });
 
     const limitInput = screen.getByLabelText("Limit");
-    expect(limitInput).toHaveAttribute("type", "text");
-
-    fireEvent.change(limitInput, { target: { value: "500" } });
-    expect(limitInput.value).toBe("500");
-
-    fireEvent.change(limitInput, { target: { value: "unlimited" } });
-    expect(limitInput.value).toBe("unlimited");
+    expect(limitInput).toBeDisabled();
   });
 
-  test("pole cron akceptuje wyrażenia cron", async () => {
+  test("pole cron pozostaje zablokowane w edycji", async () => {
     render(<GroupPage params={mockParams} />);
 
     await waitFor(() => {
@@ -949,13 +923,7 @@ describe("ResourceEditPage", () => {
     });
 
     const cronInput = screen.getByLabelText("Czyszczenie");
-    expect(cronInput).toHaveAttribute("type", "text");
-
-    fireEvent.change(cronInput, { target: { value: "*/5 * * * *" } });
-    expect(cronInput.value).toBe("*/5 * * * *");
-
-    fireEvent.change(cronInput, { target: { value: "0 12 * * 1-5" } });
-    expect(cronInput.value).toBe("0 12 * * 1-5");
+    expect(cronInput).toBeDisabled();
   });
 
   test("nie wywołuje API update gdy brak zmian w formularzu", async () => {

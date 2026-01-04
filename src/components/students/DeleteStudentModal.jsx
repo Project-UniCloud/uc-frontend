@@ -23,7 +23,6 @@ export default function DeleteStudentModal({
       showSuccessToast("Student został usunięty!");
     },
     onError: (error) => {
-      console.log(error);
       showErrorToast("Błąd usuwania studenta: " + error?.message);
     },
   });

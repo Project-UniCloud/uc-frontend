@@ -2,10 +2,10 @@ import { render, screen } from "@testing-library/react";
 import PieChart from "./PieChart";
 
 const mockData = [
-  { name: "S3", value: 50 },
-  { name: "RDS", value: 20 },
-  { name: "EC2", value: 20 },
-  { name: "AWS LAMBDA", value: 10 },
+  { name: "S3", resourceType: "S3", cost: 50 },
+  { name: "RDS", resourceType: "RDS", cost: 20 },
+  { name: "EC2", resourceType: "EC2", cost: 20 },
+  { name: "AWS LAMBDA", resourceType: "AWS LAMBDA", cost: 10 },
 ];
 
 jest.mock("recharts", () => {
@@ -90,8 +90,8 @@ describe("PieChart", () => {
 
     const pie = screen.getByTestId("pie");
     expect(pie).toHaveAttribute("data-length", mockData.length.toString());
-    expect(pie).toHaveAttribute("data-data-key", "value");
-    expect(pie).toHaveAttribute("data-name-key", "name");
+    expect(pie).toHaveAttribute("data-data-key", "cost");
+    expect(pie).toHaveAttribute("data-name-key", "resourceType");
     expect(pie).toHaveAttribute("data-has-label", "true");
   });
 
@@ -111,15 +111,15 @@ describe("PieChart", () => {
   test("obsługuje data=null", () => {
     render(<PieChart data={null} />);
 
-    const pie = screen.getByTestId("pie");
-    expect(pie).toHaveAttribute("data-length", "0");
+    expect(screen.getByText("Brak danych do wyświetlenia")).toBeInTheDocument();
+    expect(screen.queryByTestId("pie")).not.toBeInTheDocument();
   });
 
   test("obsługuje puste dane", () => {
     render(<PieChart data={[]} />);
 
-    const pie = screen.getByTestId("pie");
-    expect(pie).toHaveAttribute("data-length", "0");
+    expect(screen.getByText("Brak danych do wyświetlenia")).toBeInTheDocument();
+    expect(screen.queryByTestId("pie")).not.toBeInTheDocument();
   });
 
   test("ma poprawne klasy CSS dla kontenera", () => {
@@ -160,13 +160,13 @@ describe("PieChart", () => {
 
   test("obsługuje dane z większą liczbą elementów niż COLORS", () => {
     const largeMockData = [
-      { name: "S3", value: 30 },
-      { name: "RDS", value: 20 },
-      { name: "EC2", value: 15 },
-      { name: "AWS LAMBDA", value: 10 },
-      { name: "SQS", value: 10 },
-      { name: "SNS", value: 8 },
-      { name: "CloudWatch", value: 7 },
+      { name: "S3", resourceType: "S3", cost: 30 },
+      { name: "RDS", resourceType: "RDS", cost: 20 },
+      { name: "EC2", resourceType: "EC2", cost: 15 },
+      { name: "AWS LAMBDA", resourceType: "AWS LAMBDA", cost: 10 },
+      { name: "SQS", resourceType: "SQS", cost: 10 },
+      { name: "SNS", resourceType: "SNS", cost: 8 },
+      { name: "CloudWatch", resourceType: "CloudWatch", cost: 7 },
     ];
 
     render(<PieChart data={largeMockData} />);

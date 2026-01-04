@@ -31,7 +31,6 @@ export default function Sidebar() {
               width={200}
               height={0}
               className="mb-4 w-auto"
-              priority
             />
           </Link>
 

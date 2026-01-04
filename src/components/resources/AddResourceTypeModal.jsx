@@ -59,6 +59,7 @@ export default function AddResourceTypeModal({
       ref={dialogRef}
       className="rounded-2xl shadow-xl w-full max-w-lg p-0 m-auto"
       onClose={handleClose}
+      aria-labelledby="modal-title"
     >
       <form
         method="dialog"
@@ -67,7 +68,9 @@ export default function AddResourceTypeModal({
         ref={formRef}
       >
         <div className="flex items-start justify-between">
-          <h2 className="text-xl font-semibold mb-6">Dodaj typ zasobu</h2>
+          <h2 id="modal-title" className="text-xl font-semibold mb-6">
+            Dodaj typ zasobu
+          </h2>
           <button
             type="button"
             className={` text-gray-500 hover:text-black cursor-pointer ${

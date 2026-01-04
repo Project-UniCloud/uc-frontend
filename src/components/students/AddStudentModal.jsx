@@ -78,6 +78,7 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId, fetch }) {
       ref={dialogRef}
       className="rounded-2xl shadow-xl w-full max-w-lg p-0 m-auto"
       onClose={handleClose}
+      aria-labelledby="add-student-title"
     >
       <form
         method="dialog"
@@ -94,7 +95,10 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId, fetch }) {
             <X />
           </button>
         </div>
-        <h2 className="text-xl font-semibold mb-4 text-center">
+        <h2
+          className="text-xl font-semibold mb-4 text-center"
+          id="add-student-title"
+        >
           Dodaj studenta
         </h2>
 

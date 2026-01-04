@@ -1,8 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import GroupPage from "./page";
-import { getGroupById, updateGroup } from "@/lib/api/groupsApi";
+import {
+  getGroupById,
+  updateGroup,
+  getResourcesGroup,
+} from "@/lib/api/groupsApi";
 import { getStudentsFromGroup } from "@/lib/api/studentApi";
-import { getResourcesGroup } from "@/lib/api/resourceApi";
 import React from "react";
 
 const originalUse = React.use;
@@ -145,14 +148,6 @@ jest.mock("@/components/resources/AddResourceModal", () => ({
     <div data-testid="add-resource-modal">
       {props.isOpen ? "RESOURCE MODAL OPEN" : "RESOURCE MODAL CLOSED"}
       <span data-testid="modal-groupid">{props.groupId}</span>
-    </div>
-  ),
-}));
-
-jest.mock("@/components/resources/StopAllModal", () => ({
-  StopAllModal: (props) => (
-    <div data-testid="stop-all-modal">
-      {props.isOpen ? "STOP ALL MODAL OPEN" : "STOP ALL MODAL CLOSED"}
     </div>
   ),
 }));
@@ -591,22 +586,6 @@ describe("GroupIdPage", () => {
       expect(
         screen.getByText("Brak studentów w tej grupie.")
       ).toBeInTheDocument();
-    });
-  });
-
-  test("przycisk Zawieś wszystko jest disabled", async () => {
-    render(<GroupPage params={mockParams} />);
-
-    await waitFor(() => {
-      expect(getGroupById).toHaveBeenCalled();
-    });
-
-    const uslugiBtn = screen.getByText("Usługi");
-    fireEvent.click(uslugiBtn);
-
-    await waitFor(() => {
-      const stopAllBtn = screen.getByText("Zawieś wszystko");
-      expect(stopAllBtn).toBeDisabled();
     });
   });
 

@@ -28,8 +28,7 @@ export const addGroupSchema = z
     startDate: z.string().min(1, "Data rozpoczęcia jest wymagana"),
     endDate: z.string().min(1, "Data zakończenia jest wymagana"),
     lecturers: z
-      .string()
-      .array()
+      .array(z.union([z.string(), z.number()]))
       .min(1, "Wymagany jest co najmniej jeden prowadzący"),
     description: z.string().optional(),
   })
