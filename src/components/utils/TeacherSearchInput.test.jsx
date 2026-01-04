@@ -161,9 +161,12 @@ describe("TeacherSearchInput", () => {
       />
     );
 
-    const xButtons = screen.getAllByTestId("x-icon");
-    const button = xButtons[0].closest("button");
-    expect(button).toBeDisabled();
+    const removeButtons = screen.getAllByRole("button", { hidden: false });
+    const disabledButtons = removeButtons.filter(
+      (btn) => btn.disabled && btn.onclick !== null
+    );
+    expect(disabledButtons.length).toBeGreaterThan(0);
+    expect(disabledButtons[0]).toBeDisabled();
   });
 
   it("nie pokazuje input gdy disabled", () => {

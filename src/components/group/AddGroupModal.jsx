@@ -186,6 +186,7 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
           onSelect={handleLecturerAdd}
           onRemove={handleLecturerRemove}
           useLecturerSearch={useLecturerSearch}
+          hint='Wymagany jest co najmniej jeden prowadzący. Prowadzący musi być wcześniej dodany do listy prowadzących w zakładce "Prowadzący".'
         />
         <div>
           <label
