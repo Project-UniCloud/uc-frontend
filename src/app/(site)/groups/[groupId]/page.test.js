@@ -334,7 +334,7 @@ describe("GroupIdPage", () => {
     });
 
     const nameInput = screen.getByDisplayValue("Test Group");
-    expect(nameInput).not.toBeDisabled();
+    expect(nameInput).toBeDisabled();
   });
 
   test("zapisuje zmiany po kliknięciu Zapisz", async () => {
@@ -359,17 +359,17 @@ describe("GroupIdPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    const nameInput = screen.getByDisplayValue("Test Group");
-    fireEvent.change(nameInput, { target: { value: "Updated Group" } });
+    const startDateInput = screen.getByDisplayValue("2024-01-01");
+    fireEvent.change(startDateInput, { target: { value: "2024-02-01" } });
 
     const saveBtn = screen.getByText("Zapisz");
     fireEvent.click(saveBtn);
 
     await waitFor(() => {
       expect(updateGroup).toHaveBeenCalledWith("123", {
-        name: "Updated Group",
+        name: "Test Group",
         lecturers: [1],
-        startDate: "2024-01-01",
+        startDate: "2024-02-01",
         endDate: "2024-12-31",
         description: "Test description",
       });
@@ -631,10 +631,10 @@ describe("GroupIdPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    const nameInput = screen.getByDisplayValue("Test Group");
-    fireEvent.change(nameInput, { target: { value: "Zmieniona nazwa" } });
+    const startDateInput = screen.getByDisplayValue("2024-01-01");
+    fireEvent.change(startDateInput, { target: { value: "2024-05-01" } });
 
-    expect(screen.getByDisplayValue("Zmieniona nazwa")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("2024-05-01")).toBeInTheDocument();
 
     const saveBtn = screen.getByText("Zapisz");
     fireEvent.click(saveBtn);
@@ -644,7 +644,7 @@ describe("GroupIdPage", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue("Test Group")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("2024-01-01")).toBeInTheDocument();
     });
   });
 
@@ -703,7 +703,7 @@ describe("GroupIdPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    expect(screen.getByDisplayValue("Test Group")).not.toBeDisabled();
+    expect(screen.getByDisplayValue("Test Group")).toBeDisabled();
     expect(screen.getByDisplayValue("2024-01-01")).not.toBeDisabled();
     expect(screen.getByDisplayValue("2024-12-31")).not.toBeDisabled();
     expect(screen.getByDisplayValue("Test description")).not.toBeDisabled();

@@ -105,7 +105,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
                 onSelect={handleLecturerAdd}
                 onRemove={handleLecturerRemove}
                 useLecturerSearch={useLecturerSearch}
-                hint="Lista prowadzących przypisanych do danej grupy"
+                hint='Lista prowadzących przypisanych do danej grupy. Aby dodać nowego prowadzącego, musi on być najpierw dodany do listy prowadzących w zakładce "Prowadzący"'
               />
               <InputForm
                 label="Data rozpoczęcia"
