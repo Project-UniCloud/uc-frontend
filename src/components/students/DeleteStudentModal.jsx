@@ -19,8 +19,7 @@ export default function DeleteStudentModal({
   const deleteMutation = useMutation({
     mutationFn: () => deleteStudent(groupId, studentId),
     onSuccess: () => {
-      setIsOpen(false);
-      router.refresh();
+      router.replace(`/groups/${groupId}`);
       showSuccessToast("Student został usunięty!");
     },
     onError: (error) => {
