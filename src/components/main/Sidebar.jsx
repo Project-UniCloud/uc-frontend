@@ -31,7 +31,6 @@ export default function Sidebar() {
               width={200}
               height={0}
               className="mb-4 w-auto"
-              priority
             />
           </Link>
 
@@ -44,12 +43,11 @@ export default function Sidebar() {
               itemPath="/dashboard"
             />
             <SidebarItem icon={<FiUsers />} label="Grupy" itemPath="/groups" />
-            {/* <SidebarItem
+            <SidebarItem
               icon={<FiBell />}
               label="Powiadomienia"
-              itemPath="/notifications"
-              disabled
-            /> */}
+              itemPath="/logs"
+            />
             <SidebarItem
               icon={<PiChalkboardTeacherLight />}
               label="Prowadzący"

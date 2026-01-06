@@ -1,8 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import GroupPage from "./page";
-import { getGroupById, updateGroup } from "@/lib/groupsApi";
-import { getStudentsFromGroup } from "@/lib/studentApi";
-import { getResourcesGroup } from "@/lib/resourceApi";
+import {
+  getGroupById,
+  updateGroup,
+  getResourcesGroup,
+} from "@/lib/api/groupsApi";
+import { getStudentsFromGroup } from "@/lib/api/studentApi";
 import React from "react";
 
 const originalUse = React.use;
@@ -27,9 +30,9 @@ React.use = jest.fn((promise) => {
   return originalUse ? originalUse(promise) : promise;
 });
 
-jest.mock("@/lib/groupsApi");
-jest.mock("@/lib/studentApi");
-jest.mock("@/lib/resourceApi");
+jest.mock("@/lib/api/groupsApi");
+jest.mock("@/lib/api/studentApi");
+jest.mock("@/lib/api/resourceApi");
 
 jest.mock("@/components/utils/Toast", () => ({
   showSuccessToast: jest.fn(),
@@ -145,14 +148,6 @@ jest.mock("@/components/resources/AddResourceModal", () => ({
     <div data-testid="add-resource-modal">
       {props.isOpen ? "RESOURCE MODAL OPEN" : "RESOURCE MODAL CLOSED"}
       <span data-testid="modal-groupid">{props.groupId}</span>
-    </div>
-  ),
-}));
-
-jest.mock("@/components/resources/StopAllModal", () => ({
-  StopAllModal: (props) => (
-    <div data-testid="stop-all-modal">
-      {props.isOpen ? "STOP ALL MODAL OPEN" : "STOP ALL MODAL CLOSED"}
     </div>
   ),
 }));
@@ -339,7 +334,7 @@ describe("GroupIdPage", () => {
     });
 
     const nameInput = screen.getByDisplayValue("Test Group");
-    expect(nameInput).not.toBeDisabled();
+    expect(nameInput).toBeDisabled();
   });
 
   test("zapisuje zmiany po kliknięciu Zapisz", async () => {
@@ -364,17 +359,17 @@ describe("GroupIdPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    const nameInput = screen.getByDisplayValue("Test Group");
-    fireEvent.change(nameInput, { target: { value: "Updated Group" } });
+    const startDateInput = screen.getByDisplayValue("2024-01-01");
+    fireEvent.change(startDateInput, { target: { value: "2024-02-01" } });
 
     const saveBtn = screen.getByText("Zapisz");
     fireEvent.click(saveBtn);
 
     await waitFor(() => {
       expect(updateGroup).toHaveBeenCalledWith("123", {
-        name: "Updated Group",
+        name: "Test Group",
         lecturers: [1],
-        startDate: "2024-01-01",
+        startDate: "2024-02-01",
         endDate: "2024-12-31",
         description: "Test description",
       });
@@ -594,22 +589,6 @@ describe("GroupIdPage", () => {
     });
   });
 
-  test("przycisk Zawieś wszystko jest disabled", async () => {
-    render(<GroupPage params={mockParams} />);
-
-    await waitFor(() => {
-      expect(getGroupById).toHaveBeenCalled();
-    });
-
-    const uslugiBtn = screen.getByText("Usługi");
-    fireEvent.click(uslugiBtn);
-
-    await waitFor(() => {
-      const stopAllBtn = screen.getByText("Zawieś wszystko");
-      expect(stopAllBtn).toBeDisabled();
-    });
-  });
-
   test("wyświetla toast sukcesu po zapisie", async () => {
     const { showSuccessToast } = require("@/components/utils/Toast");
 
@@ -652,10 +631,10 @@ describe("GroupIdPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    const nameInput = screen.getByDisplayValue("Test Group");
-    fireEvent.change(nameInput, { target: { value: "Zmieniona nazwa" } });
+    const startDateInput = screen.getByDisplayValue("2024-01-01");
+    fireEvent.change(startDateInput, { target: { value: "2024-05-01" } });
 
-    expect(screen.getByDisplayValue("Zmieniona nazwa")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("2024-05-01")).toBeInTheDocument();
 
     const saveBtn = screen.getByText("Zapisz");
     fireEvent.click(saveBtn);
@@ -665,7 +644,7 @@ describe("GroupIdPage", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue("Test Group")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("2024-01-01")).toBeInTheDocument();
     });
   });
 
@@ -724,7 +703,7 @@ describe("GroupIdPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    expect(screen.getByDisplayValue("Test Group")).not.toBeDisabled();
+    expect(screen.getByDisplayValue("Test Group")).toBeDisabled();
     expect(screen.getByDisplayValue("2024-01-01")).not.toBeDisabled();
     expect(screen.getByDisplayValue("2024-12-31")).not.toBeDisabled();
     expect(screen.getByDisplayValue("Test description")).not.toBeDisabled();

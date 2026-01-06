@@ -3,12 +3,12 @@ import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
-import { addStudentToGroup } from "@/lib/studentApi";
+import { addStudentToGroup } from "@/lib/api/studentApi";
 import React from "react";
 import { showErrorToast, showSuccessToast } from "../utils/Toast";
 import { z } from "zod";
 
-export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
+export function AddStudentModal({ isOpen, setIsOpen, groupId, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
@@ -26,6 +26,7 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
     mutationFn: ({ groupId, studentData }) =>
       addStudentToGroup(groupId, studentData),
     onSuccess: () => {
+      fetch();
       formRef.current?.reset();
       setFormErrors({});
       setIsOpen(false);
@@ -77,6 +78,7 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
       ref={dialogRef}
       className="rounded-2xl shadow-xl w-full max-w-lg p-0 m-auto"
       onClose={handleClose}
+      aria-labelledby="add-student-title"
     >
       <form
         method="dialog"
@@ -93,7 +95,10 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId }) {
             <X />
           </button>
         </div>
-        <h2 className="text-xl font-semibold mb-4 text-center">
+        <h2
+          className="text-xl font-semibold mb-4 text-center"
+          id="add-student-title"
+        >
           Dodaj studenta
         </h2>
 

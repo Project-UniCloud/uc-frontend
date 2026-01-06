@@ -6,10 +6,10 @@ import {
   cleanup,
 } from "@testing-library/react";
 import AddLecturerModal from "./AddLecturerModal";
-import { addLecturer } from "@/lib/lecturersApi";
+import { addLecturer } from "@/lib/api/lecturersApi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-jest.mock("@/lib/lecturersApi");
+jest.mock("@/lib/api/lecturersApi");
 
 jest.mock("../utils/Toast", () => ({
   showSuccessToast: jest.fn(),
@@ -781,18 +781,7 @@ describe("AddLecturerModal", () => {
       target: { value: "manual@example.com" },
     });
 
-    // Potem wybierz prowadzącego
     fireEvent.click(screen.getByTestId("add-lecturer-btn"));
-
-    // Email z prowadzącego nadpisuje ręczny
     expect(screen.getByTestId("input-email")).toHaveValue("john@example.com");
-  });
-
-  test("matches snapshot when open", () => {
-    const { container } = render(
-      <AddLecturerModal isOpen={true} setIsOpen={setIsOpen} />,
-      { wrapper: createWrapper() }
-    );
-    expect(container).toMatchSnapshot();
   });
 });

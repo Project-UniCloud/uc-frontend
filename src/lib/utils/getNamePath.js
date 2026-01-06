@@ -11,6 +11,17 @@ function isDetailsPath(parts, prefix, step) {
   );
 }
 
+function isDetailsPath3(parts, firstWord, secondWord) {
+  if (parts.length !== 4) return false;
+  const isUuid = (value) => /^[0-9a-fA-F-]{36}$/.test(value);
+  return (
+    parts[0] === firstWord &&
+    isUuid(parts[1]) &&
+    parts[2] === secondWord &&
+    isUuid(parts[3])
+  );
+}
+
 export function useNamePath() {
   const pathname = usePathname();
   const parts = pathname.split("/").filter(Boolean);
@@ -43,12 +54,21 @@ export function useNamePath() {
     case "profile":
       namePath = "Profil";
       break;
+    case "logs":
+      namePath = "Powiadomienia";
+      break;
     default:
+      if (isDetailsPath3(parts, "groups", "resources")) {
+        namePath = "Informacje o zasobie";
+        break;
+      }
+      if (isDetailsPath3(parts, "groups", "students")) {
+        namePath = "Informacje o studencie";
+        break;
+      }
+
       if (isDetailsPath(parts, "groups", 2)) {
         namePath = "Informacje o grupie";
-      }
-      if (isDetailsPath(parts, "groups", 3)) {
-        namePath = "Informacje o zasobie";
       }
       if (parts[parts.length - 2] === "drivers") {
         return "Informacje o sterowniku";

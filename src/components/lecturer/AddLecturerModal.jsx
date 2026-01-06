@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { addLecturer } from "@/lib/lecturersApi";
+import { addLecturer } from "@/lib/api/lecturersApi";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import { FaCheck } from "react-icons/fa";
@@ -9,7 +9,7 @@ import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { useLecturerExternalSearch } from "@/hooks/useLecturerExternalSearch";
 import { showErrorToast, showSuccessToast } from "../utils/Toast";
 
-export default function AddLecturerModal({ isOpen, setIsOpen }) {
+export default function AddLecturerModal({ isOpen, setIsOpen, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
@@ -44,6 +44,7 @@ export default function AddLecturerModal({ isOpen, setIsOpen }) {
       setFormErrors({});
       setIsOpen(false);
       showSuccessToast("Prowadzący został dodany!");
+      fetch();
     },
     onError: (error) => {
       setFormErrors({ error: error.message || "Błąd dodawania prowadzącego" });

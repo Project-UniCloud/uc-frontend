@@ -13,18 +13,6 @@ export default function Navbar({ back }) {
         {back && <FiArrowLeft className="text-lg" />}
         <span>{pageName}</span>
       </div>
-
-      <div className="cursor-pointer">
-        {/* <Link href="/profile"> */}
-        <button
-          type="button"
-          disabled
-          className="cursor-not-allowed bg-transparent border-none p-0"
-        >
-          <FaUserCircle className="text-3xl text-gray-400 cursor-not-allowed" />
-        </button>
-        {/* </Link> */}
-      </div>
     </div>
   );
 }

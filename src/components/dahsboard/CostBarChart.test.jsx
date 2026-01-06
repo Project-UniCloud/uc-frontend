@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import CostBarChart from "./CostBarChart";
 
 const mockData = [
-  { name: "AWS", cost: 500 },
-  { name: "Bazy Danych", cost: 250 },
-  { name: "Big Data", cost: 1000 },
+  { name: "AWS", groupUniqueName: "AWS", cost: 500 },
+  { name: "Bazy Danych", groupUniqueName: "Bazy Danych", cost: 250 },
+  { name: "Big Data", groupUniqueName: "Big Data", cost: 1000 },
 ];
 
 jest.mock("recharts", () => {
@@ -145,11 +145,11 @@ describe("CostBarChart", () => {
     expect(header).toHaveClass("mb-4");
   });
 
-  test("renderuje XAxis z dataKey='name'", () => {
+  test("renderuje XAxis z dataKey='groupUniqueName'", () => {
     render(<CostBarChart data={mockData} />);
 
     const xAxis = screen.getByTestId("x-axis");
-    expect(xAxis).toHaveAttribute("data-key", "name");
+    expect(xAxis).toHaveAttribute("data-key", "groupUniqueName");
   });
 
   test("renderuje wszystkie komponenty recharts", () => {

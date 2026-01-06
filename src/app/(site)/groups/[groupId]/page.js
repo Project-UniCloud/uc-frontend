@@ -1,224 +1,55 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Tabs from "@/components/utils/Tabs";
 import DataTableView from "@/components/views/DataTableView";
 import InputForm from "@/components/utils/InputForm";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { Button } from "@/components/utils/Buttons";
-import { getGroupById, updateGroup } from "@/lib/groupsApi";
-import { getStudentsFromGroup } from "@/lib/studentApi";
 import { FaPlus } from "react-icons/fa";
 import { AddStudentModal } from "@/components/students/AddStudentModal";
 import { ImportStudentsModal } from "@/components/students/ImportStudentsModal";
-import {
-  formatDateToYYYYMMDD,
-  formatDateToDDMMYYYY,
-} from "@/lib/utils/formatDate";
-import {
-  getResourcesGroup,
-  // getAvailableResourcesForGroup,
-} from "@/lib/groupsApi";
 import { AddResourceModal } from "@/components/resources/AddResourceModal";
 import ButtonChangeStatus from "@/components/group/ButtonChangeStatus";
-import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 import Hint from "@/components/utils/Hint";
-// import DeleteResourceModal from "@/components/group/DeleteResourceModal";
-
-const TABS = [{ label: "Ogólne" }, { label: "Studenci" }, { label: "Usługi" }];
-
-const resourcesColumns = [
-  { key: "clientId", header: "ID" },
-  { key: "name", header: "Nazwa" },
-  {
-    key: "limitUsed",
-    header: (
-      <div className="flex items-center justify-center gap-2">
-        <span>Koszt</span>
-        <span>
-          <Hint hint="Wygenerowany koszt przez tą usługę." />
-        </span>
-      </div>
-    ),
-  },
-  {
-    key: "costLimit",
-    header: (
-      <div className="flex items-center justify-center gap-2">
-        <span>Limit Kosztu</span>
-        <span>
-          <Hint
-            hint="Kwota limitu kosztów.
-              W szczegółach sterownika można ustawić progi powiadomień mailowych, które poinformują o przekroczeniu kosztów.
-              Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
-          />
-        </span>
-      </div>
-    ),
-  },
-  { key: "expiresAt", header: "Wygasa" },
-  {
-    key: "cronCleanupSchedule",
-    header: (
-      <div className="flex items-center justify-center gap-2">
-        <span>Wyczyść</span>
-        <span>
-          <Hint
-            hint="Harmonogram cyklicznego zadania czyszczenia. 
-            Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron).
-            Można to zmienić w szczegółach sterownika."
-          />
-        </span>
-      </div>
-    ),
-  },
-  { key: "status", header: "Status" },
-];
-
-const studentsColumns = [
-  { key: "login", header: "ID" },
-  { key: "firstName", header: "Imię" },
-  { key: "lastName", header: "Nazwisko" },
-  { key: "email", header: "Mail" },
-];
+import { useGroupDetailPage } from "@/lib/views/groups/groupId/hooks";
+import { TABS } from "@/lib/views/groups/groupId/tabs";
+import {
+  resourcesColumns,
+  studentsColumns,
+} from "@/lib/views/groups/groupId/columns";
 
 export default function GroupPage({ params }) {
   const { groupId } = React.use(params);
-  const [activeTab, setActiveTab] = useState("Ogólne");
-  const [groupData, setGroupData] = useState({
-    name: "",
-    lecturers: [],
-    startDate: "",
-    endDate: "",
-    description: "",
-    status: "",
-  });
-  const [studentsData, setStudentsData] = useState([]);
-  const [resourcesData, setResourcesData] = useState([]);
-  // const [availableResourcesData, setAvailableResourcesData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [formLoading, setFormLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isOpenStudent, setIsOpenStudent] = useState(false);
-  const [isOpenImport, setIsOpenImport] = useState(false);
-  const [isOpenResource, setIsOpenResource] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [snapshotGroupData, setSnapshotGroupData] = useState(null);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-
-    if (activeTab === "Ogólne") {
-      getGroupById(groupId)
-        .then((data) => {
-          const teachers = data.lecturerFullNames.map((l) => ({
-            id: l.userId,
-            fullName: `${l.firstName} ${l.lastName}`,
-          }));
-
-          setGroupData({
-            name: data.name,
-            lecturers: teachers,
-            startDate: formatDateToYYYYMMDD(data.startDate),
-            endDate: formatDateToYYYYMMDD(data.endDate),
-            description: data.description || "",
-            status: data.status,
-          });
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-
-    if (activeTab === "Studenci") {
-      getStudentsFromGroup({ groupId, page, pageSize })
-        .then((data) => {
-          setStudentsData(data.content || []);
-          setTotalPages(data.page.totalPages || 0);
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-    if (activeTab === "Usługi") {
-      getResourcesGroup(groupId)
-        .then((data) => setResourcesData(data || []))
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-    // if (activeTab === "Zasoby") {
-    //   // getAvailableResourcesForGroup(groupId)
-    //   //   .then((data) => setAvailableResourcesData(data || []))
-    //   //   .catch((error) => setError(error.message))
-    //   //   .finally(() => setLoading(false));
-    //   // Tymczasowe dane statyczne
-    //   setAvailableResourcesData(staticResourceData);
-    //   setLoading(false);
-    // }
-  }, [activeTab, groupId, page, pageSize]);
-
-  const handleTabChange = (tabKey) => {
-    setActiveTab(tabKey);
-    setEditing(false);
-    setPage(0);
-    setPageSize(10);
-  };
-
-  const handleChange = (fieldName) => (event) => {
-    const newValue = event.target.value;
-    setGroupData((prev) => ({ ...prev, [fieldName]: newValue }));
-  };
-
-  const handleEditClick = async () => {
-    if (editing) {
-      setError(null);
-      setFormLoading(true);
-      try {
-        const updated = await updateGroup(groupId, {
-          name: groupData.name,
-          lecturers: groupData.lecturers.map((t) => t.id),
-          startDate: formatDateToDDMMYYYY(groupData.startDate),
-          endDate: formatDateToDDMMYYYY(groupData.endDate),
-          description: groupData.description || "",
-        });
-        setGroupData((prev) => ({ ...prev, ...updated }));
-        showSuccessToast("Grupa została zaktualizowana pomyślnie.");
-        setSnapshotGroupData(null);
-        setEditing(false);
-      } catch (error) {
-        setError(error.message);
-        showErrorToast("Błąd podczas aktualizacji grupy: " + error.message);
-        if (snapshotGroupData) {
-          setGroupData((prev) => ({ ...prev, ...snapshotGroupData }));
-          setSnapshotGroupData(null);
-        }
-      } finally {
-        setEditing(false);
-        setFormLoading(false);
-      }
-    } else {
-      setSnapshotGroupData(groupData);
-      setFormLoading(false);
-      setEditing(true);
-    }
-  };
-
-  const handleLecturerAdd = (t) => {
-    setGroupData((prev) => ({
-      ...prev,
-      lecturers: prev.lecturers.some((x) => x.id === t.id)
-        ? prev.lecturers
-        : [...prev.lecturers, t],
-    }));
-  };
-  const handleLecturerRemove = (id) => {
-    setGroupData((prev) => ({
-      ...prev,
-      lecturers: prev.lecturers.filter((t) => t.id !== id),
-    }));
-  };
+  const {
+    activeTab,
+    groupData,
+    studentsData,
+    resourcesData,
+    loading,
+    formLoading,
+    error,
+    isOpenStudent,
+    isOpenImport,
+    isOpenResource,
+    editing,
+    page,
+    pageSize,
+    totalPages,
+    setIsOpenStudent,
+    setIsOpenImport,
+    setIsOpenResource,
+    setPage,
+    setPageSize,
+    handleTabChange,
+    handleChange,
+    handleEditClick,
+    handleLecturerAdd,
+    handleLecturerRemove,
+    fetchStudents,
+    fetchResources,
+  } = useGroupDetailPage(groupId);
 
   return (
     <div className="min-w-120">
@@ -265,8 +96,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
                 name="name"
                 hint="Nazwa reprezentująca daną grupę"
                 value={groupData.name}
-                onChange={handleChange("name")}
-                disabled={!editing}
+                disabled
               />
               <TeacherSearchInput
                 value={groupData.lecturers}
@@ -275,7 +105,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
                 onSelect={handleLecturerAdd}
                 onRemove={handleLecturerRemove}
                 useLecturerSearch={useLecturerSearch}
-                hint="Lista prowadzących przypisanych do danej grupy"
+                hint='Lista prowadzących przypisanych do danej grupy. Aby dodać nowego prowadzącego, musi on być najpierw dodany do listy prowadzących w zakładce "Prowadzący"'
               />
               <InputForm
                 label="Data rozpoczęcia"
@@ -344,66 +174,62 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
           </>
         ))}
       {/* Studenci */}
-      {activeTab === "Studenci" &&
-        (loading ? (
-          <div>Ładowanie...</div>
-        ) : (
-          <>
-            <AddStudentModal
-              isOpen={isOpenStudent}
-              setIsOpen={setIsOpenStudent}
-              groupId={groupId}
-            />
-            {isOpenImport && (
-              <ImportStudentsModal
-                isOpen={isOpenImport}
-                setIsOpen={setIsOpenImport}
-                groupId={groupId}
-              />
-            )}
-            <DataTableView
-              leftActions={
-                <>
-                  <Button onClick={() => setIsOpenStudent(true)}>
-                    <FaPlus /> Dodaj Studenta
-                  </Button>
-                  <Button onClick={() => setIsOpenImport(true)}>
-                    <FaPlus /> Importuj
-                  </Button>
-                  <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV. Otrzymają oni dostęp do nadanych zasobów" />
-                </>
-              }
-              loading={loading}
-              error={error}
-              data={studentsData}
-              columns={studentsColumns}
-              page={page}
-              setPage={setPage}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              totalPages={totalPages}
-              emptyMessage={"Brak studentów w tej grupie."}
-            />
-          </>
-        ))}
+      {activeTab === "Studenci" && (
+        <>
+          <AddStudentModal
+            isOpen={isOpenStudent}
+            setIsOpen={setIsOpenStudent}
+            groupId={groupId}
+            fetch={fetchStudents}
+          />
+
+          <ImportStudentsModal
+            isOpen={isOpenImport}
+            setIsOpen={setIsOpenImport}
+            groupId={groupId}
+            fetch={fetchStudents}
+          />
+
+          <DataTableView
+            leftActions={
+              <>
+                <Button onClick={() => setIsOpenStudent(true)}>
+                  <FaPlus /> Dodaj Studenta
+                </Button>
+                <Button onClick={() => setIsOpenImport(true)}>
+                  <FaPlus /> Importuj
+                </Button>
+                <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV. Otrzymają oni dostęp do nadanych zasobów" />
+              </>
+            }
+            loading={loading}
+            error={error}
+            data={studentsData}
+            columns={studentsColumns}
+            page={page}
+            whereNavigate={`${groupId}/students`}
+            idKey={"uuid"}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalPages={totalPages}
+            emptyMessage={"Brak studentów w tej grupie."}
+          />
+        </>
+      )}
       {/* Usługi */}
       {activeTab === "Usługi" && (
         <>
           <AddResourceModal
             isOpen={isOpenResource}
             setIsOpen={setIsOpenResource}
+            groupName={groupData.name}
             groupId={groupId}
+            fetch={fetchResources}
           />
           <DataTableView
             leftActions={
               <>
-                {/* <Button
-                  onClick={() => setIsOpenStopAll(true)}
-                  color="bg-orange-200 cursor-not-allowed hover:not-allowed"
-                  disabled
-                >
-                  <CiPause1 /> Zawieś wszystko
-                </Button> */}
                 <Button onClick={() => setIsOpenResource(true)}>
                   <FaPlus /> Dodaj usługę
                 </Button>
@@ -414,7 +240,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
             error={error}
             data={resourcesData}
             columns={resourcesColumns}
-            whereNavigate={`${groupId}`}
+            whereNavigate={`${groupId}/resources`}
             idKey={"id"}
             page={page}
             setPage={setPage}
@@ -425,28 +251,6 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
           />
         </>
       )}
-      {/* Zasoby
-      {activeTab === "Zasoby" && (
-        <>
-          <DeleteResourceModal
-            isOpen={isOpenDeleteModal}
-            setIsOpen={setIsOpenDeleteModal}
-            groupId={groupId}
-            resourceId={selectedResourceTypeId}
-          />
-          <DataTableView
-            loading={loading}
-            error={error}
-            data={availableResourcesData}
-            columns={columns}
-            page={page}
-            setPage={setPage}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            totalPages={totalPages}
-          />
-        </>
-      )} */}
     </div>
   );
 }

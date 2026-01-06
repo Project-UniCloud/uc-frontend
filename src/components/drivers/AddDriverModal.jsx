@@ -1,12 +1,12 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { addDriver } from "@/lib/driversApi";
+import { addDriver } from "@/lib/api/driversApi";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
-export default function AddDriverModal({ isOpen, setIsOpen }) {
+export default function AddDriverModal({ isOpen, setIsOpen, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
@@ -18,6 +18,7 @@ export default function AddDriverModal({ isOpen, setIsOpen }) {
       showSuccessToast(
         "Sterownik dodany! Odśwież stronę, aby zobaczyć zmiany."
       );
+      fetch();
     },
     onError: (error) => {
       setFormErrors({ error: error.message || "Błąd dodawania sterownika" }),

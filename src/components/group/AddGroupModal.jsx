@@ -1,15 +1,16 @@
 import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { addGroup } from "@/lib/groupsApi";
+import { addGroup } from "@/lib/api/groupsApi";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { formatDateToDDMMYYYY } from "@/lib/utils/formatDate";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
+import { addGroupSchema } from "@/lib/views/groups/schemas";
 
-export default function AddGroupModal({ isOpen, setIsOpen }) {
+export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
@@ -23,6 +24,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
         setLecturers([]),
         formRef.current?.reset();
       showSuccessToast("Grupa dodana! Znajduje się w zakładce 'Nieaktywne");
+      fetch();
     },
     onError: (error) => {
       setFormErrors({ error: error.message || "Błąd dodawania grupy" }),
@@ -56,6 +58,23 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
     const startDate = formData.get("startDate");
     const endDate = formData.get("endDate");
     const description = formData.get("description");
+
+    const payload = {
+      name,
+      semesterYear,
+      semesterType,
+      startDate,
+      endDate,
+      lecturers: lecturers.map((t) => t.id),
+      description,
+    };
+
+    const parsed = addGroupSchema.safeParse(payload);
+    if (!parsed.success) {
+      const firstError = parsed.error.issues[0]?.message || "Błąd walidacji";
+      setFormErrors({ error: firstError });
+      return;
+    }
 
     const groupData = {
       name,
@@ -96,7 +115,9 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
             onClick={handleClose}
             disabled={mutation.isPending}
           >
-            <X />
+            <span data-testid="x-icon">
+              <X />
+            </span>
           </button>
         </div>
 
@@ -165,6 +186,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
           onSelect={handleLecturerAdd}
           onRemove={handleLecturerRemove}
           useLecturerSearch={useLecturerSearch}
+          hint='Wymagany jest co najmniej jeden prowadzący. Prowadzący musi być wcześniej dodany do listy prowadzących w zakładce "Prowadzący".'
         />
         <div>
           <label
@@ -192,6 +214,7 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
             color="bg-white"
             textColor="text-black"
             disabled={mutation.isPending}
+            data-testid="button-Anuluj"
             className={`border border-black ${
               mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
             }`}
@@ -201,6 +224,9 @@ export default function AddGroupModal({ isOpen, setIsOpen }) {
           <Button
             type="submit"
             disabled={mutation.isPending}
+            data-testid={`button-${
+              mutation.isPending ? "Wysyłanie..." : "Zatwierdź"
+            }`}
             className={`${
               mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
             }`}

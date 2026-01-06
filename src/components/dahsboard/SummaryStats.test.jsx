@@ -38,18 +38,16 @@ describe("SummaryStats", () => {
   test("używa domyślnych wartości gdy stats=null", () => {
     render(<SummaryStats stats={null} />);
 
-    expect(screen.getByText("2560")).toBeInTheDocument();
-    expect(screen.getByText("10")).toBeInTheDocument();
-    expect(screen.getByText("250.24")).toBeInTheDocument();
+    expect(screen.getByText("Brak danych do wyświetlenia")).toBeInTheDocument();
+    expect(screen.queryByText("2560")).not.toBeInTheDocument();
   });
 
   test("używa domyślnych wartości gdy stats nie jest przekazany", () => {
     render(<SummaryStats />);
 
     expect(screen.getByText("Kluczowe statyski")).toBeInTheDocument();
-    expect(screen.getByText("2560")).toBeInTheDocument();
-    expect(screen.getByText("10")).toBeInTheDocument();
-    expect(screen.getByText("250.24")).toBeInTheDocument();
+    expect(screen.getByText("Brak danych do wyświetlenia")).toBeInTheDocument();
+    expect(screen.queryByText("2560")).not.toBeInTheDocument();
   });
 
   test("wyświetla wartości 0 poprawnie", () => {

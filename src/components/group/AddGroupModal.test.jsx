@@ -6,10 +6,10 @@ import {
   cleanup,
 } from "@testing-library/react";
 import AddGroupModal from "./AddGroupModal";
-import { addGroup } from "@/lib/groupsApi";
+import { addGroup } from "@/lib/api/groupsApi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-jest.mock("@/lib/groupsApi");
+jest.mock("@/lib/api/groupsApi");
 
 jest.mock("@/lib/utils/formatDate", () => ({
   formatDateToDDMMYYYY: jest.fn((date) => {
@@ -144,11 +144,7 @@ jest.mock("@/hooks/useLecturerSearch", () => ({
 }));
 
 jest.mock("lucide-react", () => ({
-  X: () => (
-    <span data-testid="x-icon" aria-hidden="true">
-      X
-    </span>
-  ),
+  X: () => <span aria-hidden="true">X</span>,
 }));
 
 const createWrapper = () => {
@@ -340,6 +336,8 @@ describe("AddGroupModal", () => {
       target: { value: "2024-06-30" },
     });
 
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
+
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);
 
@@ -349,7 +347,7 @@ describe("AddGroupModal", () => {
       expect(addGroup).toHaveBeenCalledWith({
         name: "Test Group",
         semester: "2024Z",
-        lecturers: [],
+        lecturers: ["lecturer-1"],
         startDate: "01.01.2024",
         endDate: "30.06.2024",
         description: "",
@@ -417,6 +415,8 @@ describe("AddGroupModal", () => {
       target: { value: "2024-06-30" },
     });
 
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
+
     const textarea = container.querySelector("textarea[name='description']");
     fireEvent.change(textarea, {
       target: { value: "Test description" },
@@ -429,7 +429,7 @@ describe("AddGroupModal", () => {
       expect(addGroup).toHaveBeenCalledWith({
         name: "Test Group",
         semester: "2024Z",
-        lecturers: [],
+        lecturers: ["lecturer-1"],
         startDate: "01.01.2024",
         endDate: "30.06.2024",
         description: "Test description",
@@ -457,6 +457,8 @@ describe("AddGroupModal", () => {
     fireEvent.change(screen.getByTestId("input-endDate"), {
       target: { value: "2024-06-30" },
     });
+
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
 
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);
@@ -491,6 +493,8 @@ describe("AddGroupModal", () => {
       target: { value: "2024-06-30" },
     });
 
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
+
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);
 
@@ -521,6 +525,8 @@ describe("AddGroupModal", () => {
     fireEvent.change(screen.getByTestId("input-endDate"), {
       target: { value: "2024-06-30" },
     });
+
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
 
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);
@@ -554,6 +560,8 @@ describe("AddGroupModal", () => {
       target: { value: "2024-06-30" },
     });
 
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
+
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);
 
@@ -585,6 +593,8 @@ describe("AddGroupModal", () => {
     fireEvent.change(screen.getByTestId("input-endDate"), {
       target: { value: "2024-06-30" },
     });
+
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
 
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);
@@ -619,6 +629,8 @@ describe("AddGroupModal", () => {
       target: { value: "2024-06-30" },
     });
 
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
+
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);
 
@@ -651,6 +663,8 @@ describe("AddGroupModal", () => {
     fireEvent.change(screen.getByTestId("input-endDate"), {
       target: { value: "2024-06-30" },
     });
+
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
 
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);
@@ -879,6 +893,8 @@ describe("AddGroupModal", () => {
     fireEvent.change(screen.getByTestId("input-endDate"), {
       target: { value: "2024-12-31" },
     });
+
+    fireEvent.click(screen.getByTestId("add-lecturer-btn"));
 
     const submitButton = screen.getByTestId("button-Zatwierdź");
     fireEvent.click(submitButton);

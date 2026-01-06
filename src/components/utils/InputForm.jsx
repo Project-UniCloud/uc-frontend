@@ -18,11 +18,14 @@ export default function InputForm({
 }) {
   const numberAttrs = type === "number" ? { step, min, max } : {};
 
-  const tooltipId = `tooltip-${useId()}`;
+  const id = useId();
+  const tooltipId = `tooltip-${id}`;
   return (
     <div className="mb-4">
       <div className="flex items-center gap-2">
-        <label className="block text-sm font-medium">{label}</label>
+        <label htmlFor={id} className="block text-sm font-medium">
+          {label}
+        </label>
         {hint && (
           <a
             data-tooltip-id={tooltipId}
@@ -51,6 +54,7 @@ export default function InputForm({
       )}
       <div className="relative">
         <input
+          id={id}
           {...numberAttrs}
           name={name}
           type={type}

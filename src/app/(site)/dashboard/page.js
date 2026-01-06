@@ -3,66 +3,25 @@ import MyLineChart from "@/components/dahsboard/LineChart";
 import SummaryStats from "@/components/dahsboard/SummaryStats";
 import PieChart from "@/components/dahsboard/PieChart";
 import CostBarChart from "@/components/dahsboard/CostBarChart";
-import TopCostGroups from "@/components/dahsboard/TopCostGroups";
-import {
-  getOverallStats,
-  getCostInTime,
-  getCostPerResourceType,
-  getCostPerGroup,
-} from "@/lib/statisticsApi";
-import { useEffect, useState } from "react";
-import objectToArray from "@/lib/utils/statsToArray";
+import { useDashboardPage } from "@/lib/views/dashboard/hooks";
 
 export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [overallStats, setOverallStats] = useState(null);
-  const [costPerGroup, setCostPerGroup] = useState([]);
-  const [costPerResourceType, setCostPerResourceType] = useState([]);
-  const [costInTime, setCostInTime] = useState([]);
+  const {
+    loading,
+    error,
+    overallStats,
+    costPerGroup,
+    costPerResourceType,
+    costInTime,
+  } = useDashboardPage();
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getOverallStats()
-      .then((data) => {
-        setOverallStats(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setError(error.message);
-      });
+  if (loading) {
+    return <div>Ładowanie...</div>;
+  }
 
-    getCostPerGroup()
-      .then((data) => {
-        setCostPerGroup(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setError(error.message);
-      });
-
-    getCostPerResourceType()
-      .then((data) => {
-        setCostPerResourceType(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setError(error.message);
-      });
-    getCostInTime()
-      .then((data) => {
-        setCostInTime(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setError(error.message);
-      });
-  }, []);
+  if (error) {
+    return <div className="text-red-600">{error}</div>;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center gap-10 w-full">
@@ -72,8 +31,6 @@ export default function DashboardPage() {
         <CostBarChart data={costPerGroup} />
         <PieChart data={costPerResourceType} />
       </div>
-
-      {/* <TopCostGroups /> */}
     </div>
   );
 }

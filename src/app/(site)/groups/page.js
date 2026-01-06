@@ -1,96 +1,37 @@
 "use client";
-import { useState, useEffect } from "react";
-import { getGroups } from "@/lib/groupsApi";
 import Tabs from "@/components/utils/Tabs";
 import { FaPlus } from "react-icons/fa";
 import AddGroupModal from "@/components/group/AddGroupModal";
 import DataTableView from "@/components/views/DataTableView";
-import { z } from "zod";
 import { Button } from "@/components/utils/Buttons";
 import Hint from "@/components/utils/Hint";
-
-const TABS = [
-  { key: "ACTIVE", label: "Aktywne" },
-  { key: "ARCHIVED", label: "Zarchiwizowane" },
-  { key: "INACTIVE", label: "Nieaktywne" },
-];
-
-const columns = [
-  { key: "id", header: "ID" },
-  { key: "name", header: "Nazwa" },
-  { key: "lecturers", header: "Prowadzący" },
-  { key: "cloudResourceAccesses", header: "Usługi" },
-  { key: "semester", header: "Semestr" },
-  {
-    key: "endDate",
-    header: (
-      <div className="flex items-center justify-center gap-2">
-        <span>Data Zakończenia</span>
-        <span className="font-normal">
-          <Hint hint="Data zakończenia to graniczny termin działania grupy. Po jej przekroczeniu system automatycznie archiwizuje grupę i przypisanych użytkowników. Tę operację możesz wywołać także ręcznie, używając akcji ‘Archiwizuj grupę’ w szczegółach danej grupy." />
-        </span>
-      </div>
-    ),
-  },
-];
-
-const searchSchema = z
-  .string()
-  .regex(
-    /^[\wąćęłńóśźżĄĆĘŁŃÓŚŹŻ\- ]*$/,
-    "Dozwolone: litery, cyfry, spacje i '-'"
-  );
+import { useGroupsPage } from "@/lib/views/groups/hooks";
+import { TABS } from "@/lib/views/groups/tabs";
+import { columns } from "@/lib/views/groups/columns";
 
 export default function GroupsPage() {
-  const [activeTab, setActiveTab] = useState("ACTIVE");
-  const [groups, setGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-  const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getGroups({ status: activeTab, page, pageSize, groupName: search })
-      .then((data) => {
-        setGroups(data.content);
-        setTotalPages(data.page.totalPages);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setError(error.message);
-      });
-  }, [activeTab, page, pageSize, search]);
+  const {
+    activeTab,
+    groups,
+    loading,
+    error,
+    isOpen,
+    page,
+    pageSize,
+    totalPages,
+    search,
+    setPage,
+    setPageSize,
+    setIsOpen,
+    handleTabChange,
+    onSearchChange,
+    fetchGroups,
+  } = useGroupsPage();
 
   const tableData = groups.map((group, idx) => ({
     ...group,
     id: idx + 1,
   }));
-
-  const handleTabChange = (tabKey) => {
-    setActiveTab(tabKey);
-    setPage(0);
-    setPageSize(10);
-    setSearch("");
-  };
-
-  const onSearchChange = (e) => {
-    const value = e.target.value;
-    const result = searchSchema.safeParse(value);
-    if (!result.success) {
-      setError(result.error.errors[0].message);
-      return;
-    }
-    setError("");
-    setSearch(value);
-    setPage(0);
-  };
 
   return (
     <div className="min-w-120">
@@ -105,7 +46,11 @@ Nieaktywne – nowo utworzone grupy przed startem zajęć.`}
         </div>
       </div>
 
-      <AddGroupModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AddGroupModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        fetch={fetchGroups}
+      />
 
       <DataTableView
         leftActions={

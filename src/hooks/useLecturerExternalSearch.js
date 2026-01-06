@@ -1,6 +1,6 @@
 // src/hooks/useLecturerSearch.js
 import { useState, useEffect } from "react";
-import { externalSearchLecturers } from "@/lib/lecturersApi";
+import { externalSearchLecturers } from "@/lib/api/lecturersApi";
 
 export function useLecturerExternalSearch(query) {
   const [results, setResults] = useState([]);
@@ -17,8 +17,7 @@ export function useLecturerExternalSearch(query) {
 
       externalSearchLecturers(query)
         .then(setResults)
-        .catch((err) => {
-          console.error(err);
+        .catch(() => {
           setResults([]);
         })
         .finally(() => setLoading(false));

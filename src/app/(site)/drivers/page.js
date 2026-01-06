@@ -1,80 +1,34 @@
 "use client";
-import { useEffect, useState } from "react";
-import { getCloudAccesses } from "@/lib/cloudApi";
 import DataTableView from "@/components/views/DataTableView";
 import AddDriverModal from "@/components/drivers/AddDriverModal";
 import { Button } from "@/components/utils/Buttons";
 import { FaPlus } from "react-icons/fa";
 import Hint from "@/components/utils/Hint";
-
-const columns = [
-  { key: "cloudConnectorId", header: "ID" },
-  { key: "cloudConnectorName", header: "Nazwa" },
-  {
-    key: "costLimit",
-    header: (
-      <div className="flex items-center justify-center gap-2">
-        <span>Limit Kosztu</span>
-        <span>
-          <Hint
-            hint="Kwota limitu kosztów.
-            W szczegółach sterownika można ustawić progi powiadomień mailowych, które poinformują o przekroczeniu kosztów.
-            Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
-          />
-        </span>
-      </div>
-    ),
-  },
-  {
-    key: "defaultCronExpression",
-    header: (
-      <div className="flex items-center justify-center gap-2">
-        <span>Wyczyść</span>
-        <span>
-          <Hint
-            hint="Harmonogram cyklicznego zadania czyszczenia. 
-          Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron)."
-          />
-        </span>
-      </div>
-    ),
-  },
-];
+import { useDriversPage } from "@/lib/views/drivers/hooks";
+import { columns } from "@/lib/views/drivers/columns";
 
 export default function GroupsPage() {
-  const [drivers, setDrivers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-
-    getCloudAccesses({ page, pageSize })
-      .then((data) => {
-        setDrivers(data.content);
-        setTotalPages(data.page.totalPages);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setError(error.message);
-      });
-  }, [page, pageSize]);
-
-  const tableData = drivers.map((driver, idx) => ({
-    ...driver,
-    id: idx + 1,
-  }));
+  const {
+    loading,
+    error,
+    isOpen,
+    setIsOpen,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    fetchCloudAccesses,
+    tableData,
+  } = useDriversPage();
 
   return (
     <div className="min-w-120">
-      <AddDriverModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AddDriverModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        fetch={fetchCloudAccesses}
+      />
       <DataTableView
         leftActions={
           <>

@@ -20,6 +20,7 @@ export default function Hint({ hint }) {
             border="1px solid gray"
             className="border-radius: 10px"
             id={tooltipId}
+            opacity={1}
             style={{
               borderRadius: 10,
               backgroundColor: "#f3f4f6",
@@ -28,7 +29,6 @@ export default function Hint({ hint }) {
               maxWidth: "350px",
               wordBreak: "break-word",
               zIndex: 9999,
-              opacity: 1,
             }}
           />
         </>

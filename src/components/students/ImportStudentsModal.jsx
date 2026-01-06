@@ -2,18 +2,20 @@ import { useRef, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
-import { addStudentsToGroup } from "@/lib/studentApi";
+import { addStudentsToGroup } from "@/lib/api/studentApi";
 import DragDrop from "../utils/DragDrop";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
 
-export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
+export function ImportStudentsModal({ isOpen, setIsOpen, groupId, fetch }) {
   const dialogRef = useRef(null);
   const [errors, setErrors] = useState({});
   const [file, setFile] = useState(null);
+  const [dropResetKey, setDropResetKey] = useState(0);
 
   const mutation = useMutation({
     mutationFn: ({ groupId, file }) => addStudentsToGroup(groupId, file),
     onSuccess: () => {
+      fetch();
       setFile(null);
       setIsOpen(false);
       setErrors({});
@@ -32,11 +34,15 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
       dialogRef.current?.showModal();
     } else {
       dialogRef.current?.close();
+      setFile(null);
+      setDropResetKey((k) => k + 1);
     }
   }, [isOpen]);
 
   function handleClose() {
     setIsOpen(false);
+    setFile(null);
+    setDropResetKey((k) => k + 1);
   }
 
   return (
@@ -55,7 +61,10 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
         </button>
       </div>
       <h2 className="text-xl font-semibold mb-4 text-center">Dodaj plik CSV</h2>
-      <DragDrop onDropFile={(file) => setFile(file)} />
+      <DragDrop
+        key={dropResetKey}
+        onDropFile={(selectedFile) => setFile(selectedFile)}
+      />
 
       {errors.error && <div className="text-red-600">{errors.error}</div>}
 
@@ -65,6 +74,7 @@ export function ImportStudentsModal({ isOpen, setIsOpen, groupId }) {
           onClick={handleClose}
           color="bg-white"
           textColor="text-black"
+          disabled={mutation.isPending}
           className={`border border-black ${
             mutation.isPending && "opacity-50"
           }`}
