@@ -1,4 +1,4 @@
-import { getApi, postApi } from "../utils/apiClient";
+import {deleteApi, getApi, patchApi, postApi} from "../utils/apiClient";
 import { getBaseApiUrl } from "@/lib/utils/baseUrl";
 
 export async function getStudentsFromGroup({
@@ -52,13 +52,13 @@ export async function getStudentById(studentId) {
 }
 
 export async function deleteStudent(groupId, studentId) {
-  const path = `/groups/${groupId}/students/${studentId}/delete`;
-  return await postApi(path, {}, "Nieudane usuwanie studenta");
+  const path = `/groups/${groupId}/students/${studentId}`;
+  return await deleteApi(path, {}, "Nieudane usuwanie studenta");
 }
 
 export async function updateStudent(groupId, studentId, studentData) {
-  const path = `/groups/${groupId}/students/${studentId}/update`;
-  return await postApi(
+  const path = `/users/${studentId}`;
+  return await patchApi(
     path,
     studentData,
     "Nieudane aktualizowanie danych studenta"

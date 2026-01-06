@@ -18,7 +18,6 @@ export function useStudentDetailPage(studentId, groupId) {
     firstName: "",
     lastName: "",
     email: "",
-    login: "",
   });
   const [groupName, setGroupName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -36,13 +35,12 @@ export function useStudentDetailPage(studentId, groupId) {
           firstName: studentData.firstName,
           lastName: studentData.lastName,
           email: studentData.email,
-          login: studentData.login,
         });
         setGroupName(groupData.name);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [studentId, groupId]);
+  }, [studentId, groupId, setStudent]);
 
   const handleChange = (fieldName) => (event) => {
     const newValue = event.target.value;
@@ -62,7 +60,6 @@ export function useStudentDetailPage(studentId, groupId) {
           firstName: current.firstName,
           lastName: current.lastName,
           email: current.email,
-          login: current.login,
         })
       );
       showSuccessToast("Student został zaktualizowany pomyślnie.");

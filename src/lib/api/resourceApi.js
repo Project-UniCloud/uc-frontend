@@ -58,8 +58,8 @@ export async function activationResource(groupId, resourceId) {
   );
 }
 export async function deleteResource(groupId, resourceId) {
-  return await postApi(
-    `/groups/${groupId}/resources/${resourceId}/delete`,
+  return await deleteApi(
+    `/groups/${groupId}/resources/${resourceId}`,
     "Nieudane usuwanie zasobu"
   );
 }

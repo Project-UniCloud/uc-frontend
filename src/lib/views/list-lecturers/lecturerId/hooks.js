@@ -17,7 +17,6 @@ export function useLecturerDetailPage(lecturerId) {
     firstName: "",
     lastName: "",
     email: "",
-    login: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,12 +31,11 @@ export function useLecturerDetailPage(lecturerId) {
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          login: data.login,
         });
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [lecturerId]);
+  }, [lecturerId, setLecturer]);
 
   const handleChange = (fieldName) => (event) => {
     const newValue = event.target.value;
@@ -57,7 +55,6 @@ export function useLecturerDetailPage(lecturerId) {
           firstName: current.firstName,
           lastName: current.lastName,
           email: current.email,
-          login: current.login,
         })
       );
       showSuccessToast("Prowadzący został zaktualizowany pomyślnie.");

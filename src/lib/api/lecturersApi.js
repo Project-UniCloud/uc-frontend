@@ -1,4 +1,4 @@
-import { getApi, postApi } from "../utils/apiClient";
+import {getApi, patchApi, postApi} from "../utils/apiClient";
 
 export async function getLecturers({ searchQuery, page = 0, pageSize = 10 }) {
   const path = `/users/lecturers?pageNumber=${page}&pageSize=${pageSize}${
@@ -22,10 +22,9 @@ export async function getLecturerById(lecturerId) {
   );
 }
 
-// TODO: Implement these endpoints when backend is ready
 export async function updateLecturer(lecturerId, lecturerData) {
-  return await postApi(
-    `/users/lecturers/${lecturerId}/update`,
+  return await patchApi(
+    `/users/${lecturerId}`,
     lecturerData,
     "Nieudane zaktualizowanie prowadzącego"
   );
