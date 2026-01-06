@@ -3,10 +3,10 @@ name: Build and Push to GHCR
 on:
   push:
     branches:
-      - master
+      - develop
   pull_request:
     branches:
-      - master
+      - develop
 
 jobs:
   build-and-push:
@@ -38,11 +38,14 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
       - name: Push Docker image
+        if: github.event_name == 'push'
         run: docker push ${{ env.IMAGE_NAME }}
+
   deploy:
     name: Deploy (Restart Application)
     runs-on: self-hosted
     needs: build-and-push
+    if: github.event_name == 'push'
     steps:
       - name: Trigger restart webhook
         env:
