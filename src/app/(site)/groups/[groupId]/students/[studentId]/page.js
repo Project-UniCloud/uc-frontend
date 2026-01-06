@@ -78,14 +78,6 @@ export default function StudentDetailsPage({ params }) {
                 onChange={handleChange("email")}
                 hint="Adres e-mail studenta"
               />
-              <InputForm
-                label="Indeks"
-                name="login"
-                value={student.login}
-                disabled={!editing}
-                onChange={handleChange("login")}
-                hint="Indeks studenta"
-              />
               <Button
                 hint="Usuń Studenta z danej grupy zajęciowej."
                 label="Usuń"

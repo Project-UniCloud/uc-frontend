@@ -65,14 +65,6 @@ export default function LecturerDetailsPage({ params }) {
                 onChange={handleChange("email")}
                 hint="Adres e-mail prowadzącego"
               />
-              <InputForm
-                label="Indeks"
-                name="login"
-                value={lecturer.login}
-                disabled={!editing}
-                onChange={handleChange("login")}
-                hint="Indeks prowadzącego"
-              />
             </div>
           </>
         )
