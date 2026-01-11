@@ -17,9 +17,12 @@ import SidebarItem from "./SidebarItem";
 import Link from "next/link";
 import { LogoutModal } from "@/components/logout/LogoutModal";
 import { useState } from "react";
+import { usePermissions } from "@/hooks/usePermissions";
+import { PERMISSIONS } from "@/lib/utils/permissions";
 
 export default function Sidebar() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const { checkAccess } = usePermissions();
   return (
     <>
       <div className="hidden md:w-52 lg:w-60  bg-purple md:flex flex-col justify-between p-4 text-white">
@@ -48,16 +51,20 @@ export default function Sidebar() {
               label="Powiadomienia"
               itemPath="/logs"
             />
-            <SidebarItem
-              icon={<PiChalkboardTeacherLight />}
-              label="Prowadzący"
-              itemPath="/list-lecturers"
-            />
-            <SidebarItem
-              icon={<PiSlidersHorizontalLight />}
-              label="Sterowniki"
-              itemPath="/drivers"
-            />
+            {checkAccess(PERMISSIONS.LECTURERS) && (
+              <SidebarItem
+                icon={<PiChalkboardTeacherLight />}
+                label="Prowadzący"
+                itemPath="/list-lecturers"
+              />
+            )}
+            {checkAccess(PERMISSIONS.DRIVERS) && (
+              <SidebarItem
+                icon={<PiSlidersHorizontalLight />}
+                label="Sterowniki"
+                itemPath="/drivers"
+              />
+            )}
           </nav>
         </div>
 

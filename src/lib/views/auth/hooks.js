@@ -16,7 +16,7 @@ export function useLoginForm() {
   const mutation = useMutation({
     mutationFn: (credentials) => loginUser(credentials),
     onSuccess: (userData) => {
-      dispatch(loginSuccess(userData.role));
+      dispatch(loginSuccess(userData));
       router.push("/dashboard");
     },
     onError: (error) => {

@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 // import { getLogs } from "@/lib/api/logsApi"; // temporarily disabled (no backend)
 import DataTableView from "@/components/views/DataTableView";
 import Hint from "@/components/utils/Hint";
+import { notFound } from "next/navigation";
+import { usePermissions } from "@/hooks/usePermissions";
+import { PERMISSIONS } from "@/lib/utils/permissions";
 
 const columns = [
   { key: "date", header: "Data" },
@@ -87,6 +90,11 @@ const staticLogsData = [
 ];
 
 export default function LogsPage() {
+  const { checkAccess } = usePermissions();
+
+  if (!checkAccess(PERMISSIONS.LECTURERS)) {
+    notFound();
+  }
   const [logsData, setLogsData] = useState(staticLogsData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

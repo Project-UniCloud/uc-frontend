@@ -7,7 +7,9 @@ const authSlice = createSlice({
   },
   reducers: {
     loginSuccess: (state, action) => {
-      state.user = action.payload;
+      state.user = {
+        roles: action.payload.roles || [],
+      };
     },
     logout: (state) => {
       state.user = null;
