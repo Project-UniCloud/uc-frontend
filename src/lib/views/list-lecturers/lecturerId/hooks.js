@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getLecturerById, updateLecturer } from "@/lib/api/lecturersApi";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
-import { useEditableState } from "@/lib/views/shared/hooks";
+import { useEditableState, useAsync } from "@/lib/views/shared/hooks";
 
 export function useLecturerDetailPage(lecturerId) {
   const {
@@ -18,24 +18,19 @@ export function useLecturerDetailPage(lecturerId) {
     lastName: "",
     email: "",
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!lecturerId) return;
-    setLoading(true);
-    setError(null);
-    getLecturerById(lecturerId)
-      .then((data) => {
+  const { loading, error } = useAsync(
+    () =>
+      getLecturerById(lecturerId).then((data) => {
         setLecturer({
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
         });
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [lecturerId, setLecturer]);
+      }),
+    [lecturerId, setLecturer],
+    { immediate: !!lecturerId }
+  );
 
   const handleChange = (fieldName) => (event) => {
     const newValue = event.target.value;
@@ -48,7 +43,6 @@ export function useLecturerDetailPage(lecturerId) {
       return;
     }
 
-    setError(null);
     try {
       await saveWith((current) =>
         updateLecturer(lecturerId, {
@@ -59,7 +53,6 @@ export function useLecturerDetailPage(lecturerId) {
       );
       showSuccessToast("Prowadzący został zaktualizowany pomyślnie.");
     } catch (error) {
-      setError(error.message);
       showErrorToast(
         "Błąd podczas aktualizacji prowadzącego: " + error.message
       );

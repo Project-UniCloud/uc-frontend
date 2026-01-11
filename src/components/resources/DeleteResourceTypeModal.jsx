@@ -3,38 +3,37 @@ import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../utils/Buttons";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { deleteResourceType } from "@/lib/api/resourceApi";
+import { deleteResourcesGroupCloudAccess } from "@/lib/api/resourceApi";
+import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 
 export default function DeleteResourceTypeModal({
   isOpen,
   setIsOpen,
-  resourceTypeId,
-  setSelectedResourceTypeId,
-  cloudConnectorId,
+  groupId,
+  resourceId,
+  resourceGlobalId,
+  onDeleted,
 }) {
   const dialogRef = useRef(null);
   const [errors, setErrors] = useState({});
 
   const mutation = useMutation({
-    mutationFn: ({ resourceTypeId, cloudConnectorId }) => {
-      const data = {
-        cloudConnectorId,
-        resourceType: resourceTypeId,
-      };
-      return deleteResourceType(data);
+    mutationFn: () => {
+      return deleteResourcesGroupCloudAccess(
+        groupId,
+        resourceId,
+        resourceGlobalId
+      );
     },
     onSuccess: () => {
       setIsOpen(false);
       setErrors({});
-      setSelectedResourceTypeId(null);
-      showSuccessToast(
-        "Typ zasobu usunięty! Odśwież stronę, aby zobaczyć zmiany."
-      );
+      showSuccessToast("Zasób został usunięty.");
+      onDeleted?.();
     },
     onError: (error) => {
-      setErrors({ error: error.message || "Błąd usuwania typu zasobu" });
-      showErrorToast("Błąd usuwania typu zasobu: " + error?.message);
-      setSelectedResourceTypeId(null);
+      setErrors({ error: error.message || "Błąd usuwania zasobu" });
+      showErrorToast("Błąd usuwania zasobu: " + error?.message);
     },
   });
 
@@ -49,7 +48,6 @@ export default function DeleteResourceTypeModal({
   function handleClose() {
     setIsOpen(false);
     setErrors({});
-    setSelectedResourceTypeId(null);
   }
 
   return (
@@ -67,11 +65,9 @@ export default function DeleteResourceTypeModal({
           <X />
         </button>
       </div>
-      <h2 className="text-xl font-semibold mb-10 text-center">
-        Usuń typ zasobu
-      </h2>
+      <h2 className="text-xl font-semibold mb-10 text-center">Usuń zasób</h2>
       <p className="text-gray-600 mb-6 text-center text-xl ">
-        Czy jesteś pewny, że chcesz usunąć ten typ zasobu?
+        Czy jesteś pewny, że chcesz usunąć ten zasób?
       </p>
       {errors.error && <div className="text-red-600">{errors.error}</div>}
       <div className="flex justify-end items-center gap-4 pt-10">
@@ -93,9 +89,9 @@ export default function DeleteResourceTypeModal({
           className={`${
             mutation.isPending ? "opacity-50 cursor-not-allowed" : ""
           }`}
-          onClick={() => mutation.mutate({ resourceTypeId, cloudConnectorId })}
+          onClick={() => mutation.mutate()}
         >
-          {mutation.isLoading ? "Usuwanie..." : "Usuń"}
+          {mutation.isPending ? "Usuwanie..." : "Usuń"}
           <FaRegTrashAlt />
         </Button>
       </div>

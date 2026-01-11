@@ -42,14 +42,19 @@ export default function GroupPage({ params }) {
     isOpenImport,
     isOpenResource,
     editing,
-    page,
-    pageSize,
-    totalPages,
+    studentPage,
+    studentPageSize,
+    studentTotalPages,
+    resourcePage,
+    resourcePageSize,
+    resourceTotalPages,
     setIsOpenStudent,
     setIsOpenImport,
     setIsOpenResource,
-    setPage,
-    setPageSize,
+    setStudentPage,
+    setStudentPageSize,
+    setResourcePage,
+    setResourcePageSize,
     handleTabChange,
     handleChange,
     handleEditClick,
@@ -214,13 +219,13 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
             error={error}
             data={studentsData}
             columns={studentsColumns}
-            page={page}
+            page={studentPage}
             whereNavigate={`${groupId}/students`}
             idKey={"uuid"}
-            setPage={setPage}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            totalPages={totalPages}
+            setPage={setStudentPage}
+            pageSize={studentPageSize}
+            setPageSize={setStudentPageSize}
+            totalPages={studentTotalPages}
             emptyMessage={"Brak studentów w tej grupie."}
           />
         </>
@@ -250,11 +255,11 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
             columns={resourcesColumns}
             whereNavigate={`${groupId}/resources`}
             idKey={"id"}
-            page={page}
-            setPage={setPage}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            totalPages={totalPages}
+            page={resourcePage}
+            setPage={setResourcePage}
+            pageSize={resourcePageSize}
+            setPageSize={setResourcePageSize}
+            totalPages={resourceTotalPages}
             emptyMessage={"Brak usług dla tej grupy."}
           />
         </>

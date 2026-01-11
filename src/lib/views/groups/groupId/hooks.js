@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   getGroupById,
   updateGroup,
@@ -12,7 +12,11 @@ import {
   formatDateToDDMMYYYY,
 } from "@/lib/utils/formatDate";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
-import { usePagination, useEditableState } from "@/lib/views/shared/hooks";
+import {
+  usePagination,
+  useEditableState,
+  useAsync,
+} from "@/lib/views/shared/hooks";
 
 export function useGroupDetailPage(groupId) {
   const [activeTab, setActiveTab] = useState("Ogólne");
@@ -34,75 +38,93 @@ export function useGroupDetailPage(groupId) {
   });
   const [studentsData, setStudentsData] = useState([]);
   const [resourcesData, setResourcesData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isOpenStudent, setIsOpenStudent] = useState(false);
   const [isOpenImport, setIsOpenImport] = useState(false);
   const [isOpenResource, setIsOpenResource] = useState(false);
   const {
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    totalPages,
-    setTotalPages,
-    resetPagination,
+    page: studentPage,
+    setPage: setStudentPage,
+    pageSize: studentPageSize,
+    setPageSize: setStudentPageSize,
+    totalPages: studentTotalPages,
+    setTotalPages: setStudentTotalPages,
+    resetPagination: resetStudentPagination,
+  } = usePagination();
+  const {
+    page: resourcePage,
+    setPage: setResourcePage,
+    pageSize: resourcePageSize,
+    setPageSize: setResourcePageSize,
+    totalPages: resourceTotalPages,
+    setTotalPages: setResourceTotalPages,
+    resetPagination: resetResourcePagination,
   } = usePagination();
 
-  const fetchResources = () => {
-    getResourcesGroup(groupId)
-      .then((data) => setResourcesData(data || []))
-      .catch((error) => setError(error.message))
-      .finally(() => setLoading(false));
-  };
-
-  const fetchStudents = () => {
-    getStudentsFromGroup({ groupId, page, pageSize })
-      .then((data) => {
-        setStudentsData(data.content || []);
-        setTotalPages(data.page.totalPages || 0);
-      })
-      .catch((error) => setError(error.message))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-
+  const fetchData = async () => {
     if (activeTab === "Ogólne") {
-      getGroupById(groupId)
-        .then((data) => {
-          const teachers = data.lecturerFullNames.map((l) => ({
-            id: l.userId,
-            fullName: `${l.firstName} ${l.lastName}`,
-          }));
+      const data = await getGroupById(groupId);
+      const teachers = data.lecturerFullNames.map((l) => ({
+        id: l.userId,
+        fullName: `${l.firstName} ${l.lastName}`,
+      }));
+      setGroupData({
+        name: data.name,
+        lecturers: teachers,
+        startDate: formatDateToYYYYMMDD(data.startDate),
+        endDate: formatDateToYYYYMMDD(data.endDate),
+        description: data.description || "",
+        status: data.status,
+      });
+    } else if (activeTab === "Studenci") {
+      const data = await getStudentsFromGroup({
+        groupId,
+        page: studentPage,
+        pageSize: studentPageSize,
+      });
+      setStudentsData(data.content || []);
+      setStudentTotalPages(data.page.totalPages || 0);
+    } else if (activeTab === "Usługi") {
+      const data = await getResourcesGroup(groupId);
+      setResourcesData(data || []);
+    }
+  };
 
-          setGroupData({
-            name: data.name,
-            lecturers: teachers,
-            startDate: formatDateToYYYYMMDD(data.startDate),
-            endDate: formatDateToYYYYMMDD(data.endDate),
-            description: data.description || "",
-            status: data.status,
-          });
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
+  const {
+    loading,
+    error,
+    run: refetch,
+  } = useAsync(fetchData, [
+    activeTab,
+    groupId,
+    studentPage,
+    studentPageSize,
+    setGroupData,
+    setStudentTotalPages,
+  ]);
 
-    if (activeTab === "Studenci") {
-      fetchStudents();
-    }
-    if (activeTab === "Usługi") {
-      fetchResources();
-    }
-  }, [activeTab, groupId, page, pageSize]);
+  const fetchStudents = async () => {
+    const data = await getStudentsFromGroup({
+      groupId,
+      page: studentPage,
+      pageSize: studentPageSize,
+    });
+    setStudentsData(data.content || []);
+    setStudentTotalPages(data.page.totalPages || 0);
+  };
+
+  const fetchResources = async () => {
+    const data = await getResourcesGroup(groupId);
+    setResourcesData(data || []);
+  };
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
     cancelEdit();
-    resetPagination();
+    if (tabKey === "Studenci") {
+      resetStudentPagination();
+    } else if (tabKey === "Usługi") {
+      resetResourcePagination();
+    }
   };
 
   const handleChange = (fieldName) => (event) => {
@@ -116,7 +138,6 @@ export function useGroupDetailPage(groupId) {
       return;
     }
 
-    setError(null);
     try {
       await saveWith((current) =>
         updateGroup(groupId, {
@@ -129,7 +150,6 @@ export function useGroupDetailPage(groupId) {
       );
       showSuccessToast("Grupa została zaktualizowana pomyślnie.");
     } catch (error) {
-      setError(error.message);
       showErrorToast("Błąd podczas aktualizacji grupy: " + error.message);
     }
   };
@@ -162,14 +182,19 @@ export function useGroupDetailPage(groupId) {
     isOpenImport,
     isOpenResource,
     editing,
-    page,
-    pageSize,
-    totalPages,
+    studentPage,
+    studentPageSize,
+    studentTotalPages,
+    resourcePage,
+    resourcePageSize,
+    resourceTotalPages,
     setIsOpenStudent,
     setIsOpenImport,
     setIsOpenResource,
-    setPage,
-    setPageSize,
+    setStudentPage,
+    setStudentPageSize,
+    setResourcePage,
+    setResourcePageSize,
     handleTabChange,
     handleChange,
     handleEditClick,
