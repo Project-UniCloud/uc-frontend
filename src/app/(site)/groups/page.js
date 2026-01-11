@@ -1,4 +1,7 @@
 "use client";
+import { notFound } from "next/navigation";
+import { usePermissions } from "@/hooks/usePermissions";
+import { PERMISSIONS } from "@/lib/utils/permissions";
 import Tabs from "@/components/utils/Tabs";
 import { FaPlus } from "react-icons/fa";
 import AddGroupModal from "@/components/group/AddGroupModal";
@@ -10,6 +13,11 @@ import { TABS } from "@/lib/views/groups/tabs";
 import { columns } from "@/lib/views/groups/columns";
 
 export default function GroupsPage() {
+  const { checkAccess } = usePermissions();
+
+  if (!checkAccess(PERMISSIONS.GROUPS)) {
+    notFound();
+  }
   const {
     activeTab,
     groups,

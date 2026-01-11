@@ -1,31 +1,18 @@
-/**
- * Konfiguracja ról i uprawnień w systemie
- */
-
 export const ROLES = {
-  ADMIN: "admin",
-  LECTURER: "lecturer",
-  STUDENT: "student",
+  ADMIN: "ADMIN",
+  LECTURER: "LECTURER",
+  STUDENT: "STUDENT",
 };
 
-/**
- * Sprawdza czy użytkownik ma dostęp do danej funkcjonalności
- * @param {string} userRole - Rola użytkownika
- * @param {string[]} allowedRoles - Tablica dozwolonych ról
- * @returns {boolean}
- */
-export const hasAccess = (userRole, allowedRoles) => {
-  if (!userRole) return false;
-  return allowedRoles.includes(userRole);
+export const hasAccess = (userRoles, allowedRoles) => {
+  if (!userRoles || userRoles.length === 0) return false;
+  return userRoles.some((role) => allowedRoles.includes(role));
 };
 
-/**
- * Konfiguracja uprawnień do poszczególnych sekcji
- */
 export const PERMISSIONS = {
-  DASHBOARD: [ROLES.ADMIN, ROLES.LECTURER, ROLES.STUDENT],
-  GROUPS: [ROLES.ADMIN, ROLES.LECTURER, ROLES.STUDENT],
-  NOTIFICATIONS: [ROLES.ADMIN, ROLES.LECTURER, ROLES.STUDENT],
-  LECTURERS: [ROLES.ADMIN, ROLES.LECTURER],
+  DASHBOARD: [ROLES.ADMIN, ROLES.LECTURER],
+  GROUPS: [ROLES.ADMIN, ROLES.LECTURER],
+  NOTIFICATIONS: [ROLES.ADMIN, ROLES.LECTURER],
+  LECTURERS: [ROLES.ADMIN],
   DRIVERS: [ROLES.ADMIN],
 };

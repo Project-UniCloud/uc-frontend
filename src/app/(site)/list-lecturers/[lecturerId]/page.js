@@ -1,11 +1,19 @@
 "use client";
 import React from "react";
+import { notFound } from "next/navigation";
+import { usePermissions } from "@/hooks/usePermissions";
+import { PERMISSIONS } from "@/lib/utils/permissions";
 import InputForm from "@/components/utils/InputForm";
 import { Button } from "@/components/utils/Buttons";
 import { useLecturerDetailPage } from "@/lib/views/list-lecturers/lecturerId/hooks";
 
 export default function LecturerDetailsPage({ params }) {
   const { lecturerId } = React.use(params);
+  const { checkAccess } = usePermissions();
+
+  if (!checkAccess(PERMISSIONS.LECTURERS)) {
+    notFound();
+  }
 
   const {
     lecturer,
