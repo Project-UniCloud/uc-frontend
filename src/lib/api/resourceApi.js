@@ -75,3 +75,26 @@ export async function deleteResourceType(data) {
   const path = `/cloud/connector/${cloudConnectorId}/resource-type/${resourceType}`;
   return await deleteApi(path, null, "Nieudane usunięcie typu zasobu");
 }
+
+export async function getResourcesGroupCloudAccess({
+  groupId,
+  resourceId,
+  page = 0,
+  pageSize = 10,
+}) {
+  const path = `/groups/${groupId}/cloud-access/${resourceId}/resources?page=${page}&size=${pageSize}`;
+  return await getApi(path, "Nieudane pobieranie zasobów");
+}
+
+export async function deleteResourcesGroupCloudAccess(
+  groupId,
+  resourceId,
+  resourceGlobalId = null
+) {
+  let path = `/groups/${groupId}/cloud-access/${resourceId}/resources`;
+  if (resourceGlobalId) {
+    const encoded = encodeURIComponent(resourceGlobalId);
+    path += `?resourceGlobalId=${encoded}`;
+  }
+  return await deleteApi(path, null, "Nieudane usuwanie zasobów");
+}

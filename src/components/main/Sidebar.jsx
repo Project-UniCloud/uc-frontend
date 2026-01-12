@@ -16,16 +16,25 @@ import { MdOutlineBugReport } from "react-icons/md";
 import SidebarItem from "./SidebarItem";
 import Link from "next/link";
 import { LogoutModal } from "@/components/logout/LogoutModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePermissions } from "@/hooks/usePermissions";
 import { PERMISSIONS } from "@/lib/utils/permissions";
 
 export default function Sidebar() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { checkAccess } = usePermissions();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <>
-      <div className="hidden md:w-52 lg:w-60  bg-purple md:flex flex-col justify-between p-4 text-white">
+      <div
+        className="hidden md:w-52 lg:w-60  bg-purple md:flex flex-col justify-between p-4 text-white"
+        suppressHydrationWarning
+      >
         <div>
           <Link href="/dashboard">
             <Image
@@ -51,14 +60,14 @@ export default function Sidebar() {
               label="Powiadomienia"
               itemPath="/logs"
             />
-            {checkAccess(PERMISSIONS.LECTURERS) && (
+            {isMounted && checkAccess(PERMISSIONS.LECTURERS) && (
               <SidebarItem
                 icon={<PiChalkboardTeacherLight />}
                 label="Prowadzący"
                 itemPath="/list-lecturers"
               />
             )}
-            {checkAccess(PERMISSIONS.DRIVERS) && (
+            {isMounted && checkAccess(PERMISSIONS.DRIVERS) && (
               <SidebarItem
                 icon={<PiSlidersHorizontalLight />}
                 label="Sterowniki"

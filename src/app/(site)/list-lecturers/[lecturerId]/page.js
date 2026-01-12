@@ -33,7 +33,7 @@ export default function LecturerDetailsPage({ params }) {
             color={editing ? "bg-green-500" : "bg-purple"}
             className={formLoading && "cursor-not-allowed opacity-50"}
             disabled={formLoading}
-            onClick={handleEditClick}
+            onClick={() => handleEditClick()}
           >
             {editing ? "Zapisz" : "Edytuj"}
           </Button>

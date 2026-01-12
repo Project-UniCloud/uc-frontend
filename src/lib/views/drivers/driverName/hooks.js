@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getGroups } from "@/lib/api/groupsApi";
 import {
   getCloudAccessesById,
@@ -6,7 +6,11 @@ import {
 } from "@/lib/api/cloudApi";
 import { updateDriver } from "@/lib/api/driversApi";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
-import { usePagination, useEditableState } from "@/lib/views/shared/hooks";
+import {
+  usePagination,
+  useEditableState,
+  useAsync,
+} from "@/lib/views/shared/hooks";
 
 export function useDriverDetailPage(driverName) {
   const [activeTab, setActiveTab] = useState("Ustawienia");
@@ -27,8 +31,6 @@ export function useDriverDetailPage(driverName) {
   });
   const [driverResourceTypesData, setDriverResourceTypesData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const {
     page,
@@ -40,45 +42,47 @@ export function useDriverDetailPage(driverName) {
     resetPagination,
   } = usePagination();
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-
+  const fetchData = async () => {
     if (activeTab === "Ustawienia") {
-      getCloudAccessesById(driverName)
-        .then((data) => {
-          setDriverData({
-            id: data.cloudConnectorId,
-            name: data.cloudConnectorName,
-            clean: data.defaultCronExpression,
-            limit: data.costLimit,
-            status: data.isActive,
-          });
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
+      const data = await getCloudAccessesById(driverName);
+      setDriverData({
+        id: data.cloudConnectorId,
+        name: data.cloudConnectorName,
+        clean: data.defaultCronExpression,
+        limit: data.costLimit,
+        status: data.isActive,
+      });
+    } else if (activeTab === "Grupy zajęciowe") {
+      const data = await getGroups({
+        page,
+        pageSize,
+        cloudClientId: driverName,
+      });
+      setGroupsData(data.content || []);
+      setTotalPages(data.page.totalPages || 0);
+    } else if (activeTab === "Typy zasobów") {
+      const data = await getResourceTypesByDriverId({
+        page,
+        pageSize,
+        driverName,
+      });
+      setDriverResourceTypesData(data.content || []);
+      setTotalPages(data.page.totalPages || 0);
     }
+  };
 
-    if (activeTab === "Grupy zajęciowe") {
-      getGroups({ page, pageSize, cloudClientId: driverName })
-        .then((data) => {
-          setGroupsData(data.content || []);
-          setTotalPages(data.page.totalPages || 0);
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-
-    if (activeTab === "Typy zasobów") {
-      getResourceTypesByDriverId({ page, pageSize, driverName })
-        .then((data) => {
-          setDriverResourceTypesData(data.content || []);
-          setTotalPages(data.page.totalPages || 0);
-        })
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-  }, [activeTab, driverName, page, pageSize]);
+  const {
+    loading,
+    error,
+    run: refetch,
+  } = useAsync(fetchData, [
+    activeTab,
+    driverName,
+    page,
+    pageSize,
+    setDriverData,
+    setTotalPages,
+  ]);
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
@@ -102,7 +106,6 @@ export function useDriverDetailPage(driverName) {
       return;
     }
 
-    setError(null);
     try {
       await saveWith((current) =>
         updateDriver(driverName, {
@@ -113,7 +116,6 @@ export function useDriverDetailPage(driverName) {
       );
       showSuccessToast("Sterownik został zaktualizowany pomyślnie.");
     } catch (error) {
-      setError(error.message);
       showErrorToast("Błąd podczas aktualizacji sterownika: " + error.message);
     }
   };
@@ -138,5 +140,6 @@ export function useDriverDetailPage(driverName) {
     tableData,
     handleChange,
     handleEditClick,
+    refetch,
   };
 }

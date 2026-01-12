@@ -32,7 +32,10 @@ export default function Table({ columns, data, whereNavigate, idKey }) {
                 key={col.key}
                 className={`p-2 text-center align-middle ${
                   col.key === "status" &&
-                  (row[col.key] == "INACTIVE" || row[col.key] == "FAILED" // CHANGE TO CORRECT
+                  (row[col.key] == "INACTIVE" ||
+                  row[col.key] == "FAILED" ||
+                  row[col.key] == "terminated" ||
+                  row[col.key] == "shutting-down"
                     ? "text-red font-semibold"
                     : "text-green font-semibold")
                 }`}
