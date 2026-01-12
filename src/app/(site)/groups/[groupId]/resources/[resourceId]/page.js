@@ -92,7 +92,7 @@ export default function GroupPage({ params }) {
                           Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
                 value={infoData.limit}
                 onChange={handleChange("limit", "Edycja")}
-                disabled={true}
+                disabled={!editing}
               />
               <InputForm
                 label="Czyszczenie"
