@@ -39,6 +39,7 @@ export function AddResourceModal({
       setError({
         error: error.message || "Błąd dodawania usługi",
       });
+      setIsOpenConfirm(false);
       showErrorToast("Błąd dodawania usługi: " + error?.message);
     },
   });
@@ -64,6 +65,7 @@ export function AddResourceModal({
   useEffect(() => {
     if (!isOpen) return;
 
+    setError({});
     setLoading(true);
     getCloudAccesses(groupId)
       .then((data) => {

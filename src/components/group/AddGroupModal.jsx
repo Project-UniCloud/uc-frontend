@@ -136,7 +136,7 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
             <InputForm
               name="semesterYear"
               placeholder="Rok"
-              label="Semestr*"
+              label="Rok*"
               type="text"
               required
             />
