@@ -115,6 +115,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
                 value={groupData.lecturers}
                 label="Prowadzący"
                 disabled={!editing}
+                disabledOnlyList={!editing}
                 onSelect={handleLecturerAdd}
                 onRemove={handleLecturerRemove}
                 useLecturerSearch={useLecturerSearch}
