@@ -99,7 +99,7 @@ export default function GroupPage({ params }) {
                 name="cron"
                 value={infoData.cron}
                 onChange={handleChange("cron", "Edycja")}
-                disabled={true}
+                disabled={!editing}
                 hint="Harmonogram cyklicznego zadania czyszczenia. 
           Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron)."
               />
