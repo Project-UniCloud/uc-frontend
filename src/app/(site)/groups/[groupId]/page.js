@@ -38,6 +38,7 @@ export default function GroupPage({ params }) {
     loading,
     formLoading,
     error,
+    validationError,
     isOpenStudent,
     isOpenImport,
     isOpenResource,
@@ -62,6 +63,7 @@ export default function GroupPage({ params }) {
     handleLecturerRemove,
     fetchStudents,
     fetchResources,
+    cancelEdit,
   } = useGroupDetailPage(groupId);
 
   return (
@@ -82,18 +84,35 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
           </div>
         </div>
 
-        {activeTab === "Ogólne" && !loading && (
-          <Button
-            color={editing ? "bg-green-500" : "bg-purple"}
-            className={formLoading && "cursor-not-allowed opacity-50"}
-            disabled={formLoading}
-            onClick={handleEditClick}
-          >
-            {editing ? "Zapisz" : "Edytuj"}
-          </Button>
-        )}
+        {activeTab === "Ogólne" &&
+          !loading &&
+          groupData.status !== "Zarchiwizowana" && (
+            <div className="flex gap-2">
+              {editing && (
+                <Button
+                  color="bg-red-500"
+                  className={formLoading && "cursor-not-allowed opacity-50"}
+                  disabled={formLoading}
+                  onClick={cancelEdit}
+                >
+                  Anuluj
+                </Button>
+              )}
+              <Button
+                color={editing ? "bg-green-500" : "bg-purple"}
+                className={formLoading && "cursor-not-allowed opacity-50"}
+                disabled={formLoading}
+                onClick={handleEditClick}
+              >
+                {editing ? "Zapisz" : "Edytuj"}
+              </Button>
+            </div>
+          )}
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
+      {validationError && (
+        <div className="text-red-600 mb-4">{validationError}</div>
+      )}
       {/* Ogólne */}
       {activeTab === "Ogólne" &&
         (loading ? (
@@ -206,15 +225,17 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
 
           <DataTableView
             leftActions={
-              <>
-                <Button onClick={() => setIsOpenStudent(true)}>
-                  <FaPlus /> Dodaj Studenta
-                </Button>
-                <Button onClick={() => setIsOpenImport(true)}>
-                  <FaPlus /> Importuj
-                </Button>
-                <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV. Otrzymają oni dostęp do nadanych zasobów" />
-              </>
+              groupData.status !== "Zarchiwizowana" && (
+                <>
+                  <Button onClick={() => setIsOpenStudent(true)}>
+                    <FaPlus /> Dodaj Studenta
+                  </Button>
+                  <Button onClick={() => setIsOpenImport(true)}>
+                    <FaPlus /> Importuj
+                  </Button>
+                  <Hint hint="Dodaj studentów do grupy zajęciowej. Możesz dodać ich ręcznie lub zaimportować z pliku CSV. Otrzymają oni dostęp do nadanych zasobów" />
+                </>
+              )
             }
             loading={loading}
             error={error}
@@ -243,12 +264,14 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
           />
           <DataTableView
             leftActions={
-              <>
-                <Button onClick={() => setIsOpenResource(true)}>
-                  <FaPlus /> Dodaj usługę
-                </Button>
-                <Hint hint="Zarządzaj usługami przypisanymi do tej grupy. Możesz dodawać nowe usługi - przydzielać do nich dostęp twojej grupie." />
-              </>
+              groupData.status !== "Zarchiwizowana" && (
+                <>
+                  <Button onClick={() => setIsOpenResource(true)}>
+                    <FaPlus /> Dodaj usługę
+                  </Button>
+                  <Hint hint="Zarządzaj usługami przypisanymi do tej grupy. Możesz dodawać nowe usługi - przydzielać do nich dostęp twojej grupie." />
+                </>
+              )
             }
             loading={loading}
             error={error}

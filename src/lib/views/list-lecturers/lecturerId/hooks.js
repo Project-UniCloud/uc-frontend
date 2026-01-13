@@ -12,6 +12,7 @@ export function useLecturerDetailPage(lecturerId) {
     editing,
     formLoading,
     startEdit,
+    cancelEdit,
     saveWith,
   } = useEditableState({
     firstName: "",
@@ -67,5 +68,6 @@ export function useLecturerDetailPage(lecturerId) {
     editing,
     handleChange,
     handleEditClick,
+    cancelEdit,
   };
 }

@@ -28,11 +28,22 @@ export default function StudentDetailsPage({ params }) {
     setIsOpen,
     handleChange,
     handleEditClick,
+    cancelEdit,
   } = useStudentDetailPage(studentId, groupId);
 
   return (
     <div className="min-w-120">
-      <div className="flex justify-end items-center">
+      <div className="flex justify-end items-center gap-2">
+        {!loading && editing && (
+          <Button
+            color="bg-red-500"
+            className={formLoading && "cursor-not-allowed opacity-50"}
+            disabled={formLoading}
+            onClick={cancelEdit}
+          >
+            Anuluj
+          </Button>
+        )}
         {!loading && (
           <Button
             color={editing ? "bg-green-500" : "bg-purple"}

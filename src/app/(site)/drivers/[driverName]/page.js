@@ -43,6 +43,7 @@ export default function GroupPage({ params }) {
     tableData,
     handleChange,
     handleEditClick,
+    cancelEdit,
   } = useDriverDetailPage(driverName);
 
   return (
@@ -68,14 +69,26 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
           cloudConnectorId={driverName}
         />
         {activeTab === "Ustawienia" && !loading && (
-          <Button
-            color={editing ? "bg-green-500" : "bg-purple"}
-            className={formLoading && "cursor-not-allowed opacity-50"}
-            disabled={formLoading}
-            onClick={handleEditClick}
-          >
-            {editing ? "Zapisz" : "Edytuj"}
-          </Button>
+          <div className="flex gap-2">
+            {editing && (
+              <Button
+                color="bg-red-500"
+                className={formLoading && "cursor-not-allowed opacity-50"}
+                disabled={formLoading}
+                onClick={cancelEdit}
+              >
+                Anuluj
+              </Button>
+            )}
+            <Button
+              color={editing ? "bg-green-500" : "bg-purple"}
+              className={formLoading && "cursor-not-allowed opacity-50"}
+              disabled={formLoading}
+              onClick={handleEditClick}
+            >
+              {editing ? "Zapisz" : "Edytuj"}
+            </Button>
+          </div>
         )}
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}

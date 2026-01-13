@@ -13,6 +13,7 @@ export function useStudentDetailPage(studentId, groupId) {
     editing,
     formLoading,
     startEdit,
+    cancelEdit,
     saveWith,
   } = useEditableState({
     firstName: "",
@@ -74,5 +75,6 @@ export function useStudentDetailPage(studentId, groupId) {
     setIsOpen,
     handleChange,
     handleEditClick,
+    cancelEdit,
   };
 }

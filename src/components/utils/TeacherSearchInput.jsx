@@ -135,7 +135,7 @@ export default function TeacherSearchInput({
           }}
           disabled={disabled}
           placeholder="Wyszukaj prowadzącego"
-          className={`w-full border border-gray-300 rounded px-3 py-2 `}
+          className={`w-full border rounded-lg px-3 py-2 font-semibold border-gray-400 text-gray-500`}
         />{" "}
       </div>
 

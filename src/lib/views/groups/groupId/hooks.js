@@ -17,9 +17,11 @@ import {
   useEditableState,
   useAsync,
 } from "@/lib/views/shared/hooks";
+import { groupSchema } from "./schema";
 
 export function useGroupDetailPage(groupId) {
   const [activeTab, setActiveTab] = useState("Ogólne");
+  const [validationError, setValidationError] = useState(null);
   const {
     state: groupData,
     setState: setGroupData,
@@ -119,6 +121,7 @@ export function useGroupDetailPage(groupId) {
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
+    setValidationError(null);
     cancelEdit();
     if (tabKey === "Studenci") {
       resetStudentPagination();
@@ -134,23 +137,35 @@ export function useGroupDetailPage(groupId) {
 
   const handleEditClick = async () => {
     if (!editing) {
+      setValidationError(null);
       startEdit();
       return;
     }
 
     try {
-      await saveWith((current) =>
+      const validated = groupSchema.parse(groupData);
+      setValidationError(null);
+
+      await saveWith(() =>
         updateGroup(groupId, {
-          name: current.name,
-          lecturers: current.lecturers.map((t) => t.id),
-          startDate: formatDateToDDMMYYYY(current.startDate),
-          endDate: formatDateToDDMMYYYY(current.endDate),
-          description: current.description || "",
+          name: validated.name,
+          lecturers: validated.lecturers.map((t) => t.id),
+          startDate: formatDateToDDMMYYYY(validated.startDate),
+          endDate: formatDateToDDMMYYYY(validated.endDate),
+          description: validated.description || "",
         })
       );
       showSuccessToast("Grupa została zaktualizowana pomyślnie.");
     } catch (error) {
-      showErrorToast("Błąd podczas aktualizacji grupy: " + error.message);
+      if (error.name === "ZodError") {
+        const errorMessage = error.errors[0].message;
+        setValidationError(errorMessage);
+        showErrorToast(errorMessage);
+      } else {
+        const errorMessage = error.message;
+        setValidationError(errorMessage);
+        showErrorToast(errorMessage);
+      }
     }
   };
 
@@ -178,6 +193,7 @@ export function useGroupDetailPage(groupId) {
     loading,
     formLoading,
     error,
+    validationError,
     isOpenStudent,
     isOpenImport,
     isOpenResource,
@@ -202,5 +218,6 @@ export function useGroupDetailPage(groupId) {
     handleLecturerRemove,
     fetchStudents,
     fetchResources,
+    cancelEdit,
   };
 }
