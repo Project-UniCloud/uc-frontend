@@ -6,21 +6,12 @@ import { Button } from "../utils/Buttons";
 import { addStudentToGroup } from "@/lib/api/studentApi";
 import React from "react";
 import { showErrorToast, showSuccessToast } from "../utils/Toast";
-import { z } from "zod";
+import { studentSchema } from "@/lib/views/groups/groupId/schemas";
 
 export function AddStudentModal({ isOpen, setIsOpen, groupId, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
-
-  const studentSchema = z.object({
-    firstName: z.string().nonempty("Imię jest wymagane"),
-    lastName: z.string().nonempty("Nazwisko jest wymagane"),
-    login: z
-      .string()
-      .regex(/^s\d{6}$/, 'Indeks musi zaczynać się od "s" i mieć 6 cyfr'),
-    email: z.string().email("Nieprawidłowy format e-maila"),
-  });
 
   const mutation = useMutation({
     mutationFn: ({ groupId, studentData }) =>
@@ -45,6 +36,8 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId, fetch }) {
       dialogRef.current?.showModal();
     } else {
       dialogRef.current?.close();
+      formRef.current?.reset();
+      setFormErrors({});
     }
   }, [isOpen]);
 
@@ -63,10 +56,25 @@ export function AddStudentModal({ isOpen, setIsOpen, groupId, fetch }) {
       email,
     };
 
-    mutation.mutate({
-      groupId,
-      studentData,
-    });
+    try {
+      studentSchema.parse(studentData);
+      setFormErrors({});
+      mutation.mutate({
+        groupId,
+        studentData,
+      });
+    } catch (error) {
+      if (error.name === "ZodError") {
+        setFormErrors({
+          error: error.errors[0].message,
+        });
+        showErrorToast("Błąd walidacji: " + error.errors[0].message);
+      } else {
+        setFormErrors({
+          error: error.message || "Błąd dodawania studenta",
+        });
+      }
+    }
   }
 
   function handleClose() {

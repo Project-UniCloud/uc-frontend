@@ -38,6 +38,10 @@ export function useLecturerDetailPage(lecturerId) {
     setLecturer((prev) => ({ ...prev, [fieldName]: newValue }));
   };
 
+  const handleCancelEdit = () => {
+    cancelEdit();
+  };
+
   const handleEditClick = async () => {
     if (!editing) {
       startEdit();
@@ -68,6 +72,6 @@ export function useLecturerDetailPage(lecturerId) {
     editing,
     handleChange,
     handleEditClick,
-    cancelEdit,
+    handleCancelEdit,
   };
 }

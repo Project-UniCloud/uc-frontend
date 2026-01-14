@@ -17,7 +17,7 @@ import {
   useEditableState,
   useAsync,
 } from "@/lib/views/shared/hooks";
-import { groupSchema } from "./schema";
+import { groupSchema } from "./schemas";
 
 export function useGroupDetailPage(groupId) {
   const [activeTab, setActiveTab] = useState("Ogólne");
@@ -132,6 +132,11 @@ export function useGroupDetailPage(groupId) {
     setResourceTotalPages(data.page.totalPages || 0);
   };
 
+  const handleCancelEdit = () => {
+    setValidationError(null);
+    cancelEdit();
+  };
+
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
     setValidationError(null);
@@ -231,6 +236,6 @@ export function useGroupDetailPage(groupId) {
     handleLecturerRemove,
     fetchStudents,
     fetchResources,
-    cancelEdit,
+    handleCancelEdit,
   };
 }

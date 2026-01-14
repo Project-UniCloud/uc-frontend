@@ -63,7 +63,7 @@ export default function GroupPage({ params }) {
     handleLecturerRemove,
     fetchStudents,
     fetchResources,
-    cancelEdit,
+    handleCancelEdit,
   } = useGroupDetailPage(groupId);
 
   return (
@@ -93,7 +93,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
                   color="bg-red-500"
                   className={formLoading && "cursor-not-allowed opacity-50"}
                   disabled={formLoading}
-                  onClick={cancelEdit}
+                  onClick={handleCancelEdit}
                 >
                   Anuluj
                 </Button>

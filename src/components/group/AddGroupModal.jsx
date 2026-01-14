@@ -8,7 +8,7 @@ import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { useLecturerSearch } from "@/hooks/useLecturerSearch";
 import { formatDateToDDMMYYYY } from "@/lib/utils/formatDate";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
-import { addGroupSchema } from "@/lib/views/groups/schemas";
+import { groupSchema } from "@/lib/views/groups/schemas";
 
 export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
   const dialogRef = useRef(null);
@@ -69,7 +69,7 @@ export default function AddGroupModal({ isOpen, setIsOpen, fetch }) {
       description,
     };
 
-    const parsed = addGroupSchema.safeParse(payload);
+    const parsed = groupSchema.safeParse(payload);
     if (!parsed.success) {
       const firstError = parsed.error.issues[0]?.message || "Błąd walidacji";
       setFormErrors({ error: firstError });

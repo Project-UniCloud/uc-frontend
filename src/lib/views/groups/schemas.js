@@ -7,7 +7,7 @@ export const groupSearchSchema = z
     "Dozwolone: litery, cyfry, spacje i myślniki"
   );
 
-export const addGroupSchema = z
+export const groupSchema = z
   .object({
     name: z
       .string()

@@ -141,6 +141,6 @@ export function useDriverDetailPage(driverName) {
     handleChange,
     handleEditClick,
     refetch,
-    cancelEdit,
+    cancelEdit: () => cancelEdit(),
   };
 }

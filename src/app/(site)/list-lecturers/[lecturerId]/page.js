@@ -23,7 +23,7 @@ export default function LecturerDetailsPage({ params }) {
     editing,
     handleChange,
     handleEditClick,
-    cancelEdit,
+    handleCancelEdit,
   } = useLecturerDetailPage(lecturerId);
 
   return (
@@ -34,7 +34,7 @@ export default function LecturerDetailsPage({ params }) {
             color="bg-red-500"
             className={formLoading && "cursor-not-allowed opacity-50"}
             disabled={formLoading}
-            onClick={cancelEdit}
+            onClick={handleCancelEdit}
           >
             Anuluj
           </Button>

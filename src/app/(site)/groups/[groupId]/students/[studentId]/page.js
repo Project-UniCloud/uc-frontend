@@ -23,12 +23,13 @@ export default function StudentDetailsPage({ params }) {
     loading,
     formLoading,
     error,
+    validationError,
     editing,
     isOpen,
     setIsOpen,
     handleChange,
     handleEditClick,
-    cancelEdit,
+    handleCancelEdit,
   } = useStudentDetailPage(studentId, groupId);
 
   return (
@@ -39,7 +40,7 @@ export default function StudentDetailsPage({ params }) {
             color="bg-red-500"
             className={formLoading && "cursor-not-allowed opacity-50"}
             disabled={formLoading}
-            onClick={cancelEdit}
+            onClick={handleCancelEdit}
           >
             Anuluj
           </Button>
@@ -56,6 +57,9 @@ export default function StudentDetailsPage({ params }) {
         )}
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
+      {validationError && (
+        <div className="text-red-600 mb-4">{validationError}</div>
+      )}
       {loading ? (
         <div>Ładowanie...</div>
       ) : (

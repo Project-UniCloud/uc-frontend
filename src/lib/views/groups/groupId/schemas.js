@@ -24,3 +24,24 @@ export const groupSchema = z
     message: "Data rozpoczęcia nie może być późniejsza niż data zakończenia",
     path: ["startDate"],
   });
+
+export const studentSchema = z.object({
+  firstName: z
+    .string()
+    .min(1, "Imię jest wymagane")
+    .regex(
+      /^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s-]+$/,
+      "Imię może zawierać tylko litery"
+    ),
+  lastName: z
+    .string()
+    .min(1, "Nazwisko jest wymagane")
+    .regex(
+      /^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s-]+$/,
+      "Nazwisko może zawierać tylko litery"
+    ),
+  login: z
+    .string()
+    .regex(/^s\d{6}$/, 'Indeks musi zaczynać się od "s" i mieć 6 cyfr'),
+  email: z.string().email("Nieprawidłowy format e-maila"),
+});

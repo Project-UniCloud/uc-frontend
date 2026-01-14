@@ -142,6 +142,6 @@ export function useResourceDetailPage(groupId, resourceId) {
     setPageSize,
     handleTabChange,
     fetchResources,
-    cancelEdit,
+    cancelEdit: () => cancelEdit(),
   };
 }
