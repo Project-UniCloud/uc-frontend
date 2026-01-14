@@ -16,3 +16,11 @@ export const PERMISSIONS = {
   LECTURERS: [ROLES.ADMIN],
   DRIVERS: [ROLES.ADMIN],
 };
+
+export const ROUTE_PERMISSIONS = {
+  "/dashboard": PERMISSIONS.DASHBOARD,
+  "/groups": PERMISSIONS.GROUPS,
+  "/logs": PERMISSIONS.NOTIFICATIONS,
+  "/list-lecturers": PERMISSIONS.LECTURERS,
+  "/drivers": PERMISSIONS.DRIVERS,
+};

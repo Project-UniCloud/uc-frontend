@@ -1,7 +1,4 @@
 "use client";
-import { notFound } from "next/navigation";
-import { usePermissions } from "@/hooks/usePermissions";
-import { PERMISSIONS } from "@/lib/utils/permissions";
 import DataTableView from "@/components/views/DataTableView";
 import AddDriverModal from "@/components/drivers/AddDriverModal";
 import { Button } from "@/components/utils/Buttons";
@@ -11,11 +8,6 @@ import { useDriversPage } from "@/lib/views/drivers/hooks";
 import { columns } from "@/lib/views/drivers/columns";
 
 export default function GroupsPage() {
-  const { checkAccess } = usePermissions();
-
-  if (!checkAccess(PERMISSIONS.DRIVERS)) {
-    notFound();
-  }
   const {
     loading,
     error,

@@ -1,8 +1,5 @@
 "use client";
 import React from "react";
-import { notFound } from "next/navigation";
-import { usePermissions } from "@/hooks/usePermissions";
-import { PERMISSIONS } from "@/lib/utils/permissions";
 import InputForm from "@/components/utils/InputForm";
 import { Button } from "@/components/utils/Buttons";
 import { FaTrash } from "react-icons/fa";
@@ -11,11 +8,6 @@ import { useStudentDetailPage } from "@/lib/views/groups/groupId/studentId/hooks
 
 export default function StudentDetailsPage({ params }) {
   const { groupId, studentId } = React.use(params);
-  const { checkAccess } = usePermissions();
-
-  if (!checkAccess(PERMISSIONS.GROUPS)) {
-    notFound();
-  }
 
   const {
     student,

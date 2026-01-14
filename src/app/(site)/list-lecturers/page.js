@@ -1,7 +1,4 @@
 "use client";
-import { notFound } from "next/navigation";
-import { usePermissions } from "@/hooks/usePermissions";
-import { PERMISSIONS } from "@/lib/utils/permissions";
 import DataTableView from "@/components/views/DataTableView";
 import AddLecturerModal from "@/components/lecturer/AddLecturerModal";
 import { Button } from "@/components/utils/Buttons";
@@ -11,11 +8,6 @@ import { useListLecturersPage } from "@/lib/views/list-lecturers/hook";
 import { columns } from "@/lib/views/list-lecturers/columns";
 
 export default function ListLecturersPage() {
-  const { checkAccess } = usePermissions();
-
-  if (!checkAccess(PERMISSIONS.LECTURERS)) {
-    notFound();
-  }
   const {
     lecturers,
     loading,

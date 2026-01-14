@@ -1,8 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { notFound } from "next/navigation";
-import { usePermissions } from "@/hooks/usePermissions";
-import { PERMISSIONS } from "@/lib/utils/permissions";
 import InputForm from "@/components/utils/InputForm";
 import { Button } from "@/components/utils/Buttons";
 import { useResourceDetailPage } from "@/lib/views/groups/groupId/resourceId/hooks";
@@ -14,13 +11,8 @@ import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeMo
 
 export default function GroupPage({ params }) {
   const { groupId, resourceId } = React.use(params);
-  const { checkAccess } = usePermissions();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
-
-  if (!checkAccess(PERMISSIONS.GROUPS)) {
-    notFound();
-  }
 
   const {
     activeTab,

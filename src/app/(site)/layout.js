@@ -1,11 +1,15 @@
 import Sidebar from "@/components/main/Sidebar";
 import Navbar from "@/components/main/Navbar";
 import { ToastContainer, Bounce } from "react-toastify";
+import { headers } from "next/headers";
 
-export default function MainLayout({ children }) {
+export default async function MainLayout({ children }) {
+  const headerList = await headers();
+  const userRole = headerList.get("x-user-role") || "";
+
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar />
+      <Sidebar userRole={userRole} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />
         <main className="p-6 flex-1 overflow-auto mt-1">

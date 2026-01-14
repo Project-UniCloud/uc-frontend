@@ -1,8 +1,5 @@
 "use client";
 import React from "react";
-import { notFound } from "next/navigation";
-import { usePermissions } from "@/hooks/usePermissions";
-import { PERMISSIONS } from "@/lib/utils/permissions";
 import Tabs from "@/components/utils/Tabs";
 import DataTableView from "@/components/views/DataTableView";
 import InputForm from "@/components/utils/InputForm";
@@ -24,11 +21,6 @@ import {
 
 export default function GroupPage({ params }) {
   const { groupId } = React.use(params);
-  const { checkAccess } = usePermissions();
-
-  if (!checkAccess(PERMISSIONS.GROUPS)) {
-    notFound();
-  }
 
   const {
     activeTab,

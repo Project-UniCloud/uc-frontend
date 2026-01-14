@@ -20,10 +20,10 @@ import { useState, useEffect } from "react";
 import { usePermissions } from "@/hooks/usePermissions";
 import { PERMISSIONS } from "@/lib/utils/permissions";
 
-export default function Sidebar() {
+export default function Sidebar({ userRole }) {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const { checkAccess } = usePermissions();
+  const { checkAccess } = usePermissions(userRole);
 
   useEffect(() => {
     setIsMounted(true);

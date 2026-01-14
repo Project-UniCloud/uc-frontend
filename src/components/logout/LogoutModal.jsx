@@ -16,8 +16,6 @@ export function LogoutModal({ isOpen, setIsOpen }) {
   const mutation = useMutation({
     mutationFn: () => logoutUser(),
     onSuccess: () => {
-      // Usuń role z localStorage
-      localStorage.removeItem("userRoles");
       dispatch(logoutAction());
       setIsOpen(false);
       router.push("/login");

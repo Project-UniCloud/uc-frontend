@@ -90,11 +90,6 @@ const staticLogsData = [
 ];
 
 export default function LogsPage() {
-  const { checkAccess } = usePermissions();
-
-  if (!checkAccess(PERMISSIONS.LECTURERS)) {
-    notFound();
-  }
   const [logsData, setLogsData] = useState(staticLogsData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

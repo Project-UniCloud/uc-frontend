@@ -1,7 +1,4 @@
 "use client";
-import { notFound } from "next/navigation";
-import { usePermissions } from "@/hooks/usePermissions";
-import { PERMISSIONS } from "@/lib/utils/permissions";
 import MyLineChart from "@/components/dahsboard/LineChart";
 import SummaryStats from "@/components/dahsboard/SummaryStats";
 import PieChart from "@/components/dahsboard/PieChart";
@@ -9,11 +6,6 @@ import CostBarChart from "@/components/dahsboard/CostBarChart";
 import { useDashboardPage } from "@/lib/views/dashboard/hooks";
 
 export default function DashboardPage() {
-  const { checkAccess } = usePermissions();
-
-  if (!checkAccess(PERMISSIONS.DASHBOARD)) {
-    notFound();
-  }
   const {
     loading,
     error,

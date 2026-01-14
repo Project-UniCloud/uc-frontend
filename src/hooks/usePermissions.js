@@ -1,43 +1,20 @@
 "use client";
 import { useSelector } from "react-redux";
 import { hasAccess } from "@/lib/utils/permissions";
-import { useState, useEffect } from "react";
 
-export const usePermissions = () => {
+export const usePermissions = (initialRoleFromProp) => {
   const user = useSelector((state) => state.auth.user);
-  const reduxRoles = user?.roles || [];
-  const [localRoles, setLocalRoles] = useState(() => {
-    // LOCAL STORAGE TO CHANGE
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("userRoles");
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch (error) {
-          console.error("Error parsing stored roles:", error);
-          return [];
-        }
-      }
-    }
-    return [];
-  });
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("userRoles");
-      if (stored) {
-        try {
-          setLocalRoles(JSON.parse(stored));
-        } catch (error) {
-          console.error("Error parsing stored roles:", error);
-        }
-      }
-    }
-  }, []);
+  let rawRoles = initialRoleFromProp || user?.roles?.[0] || "";
 
-  const userRoles = reduxRoles.length > 0 ? reduxRoles : localRoles;
+  const userRoles = rawRoles.includes("-")
+    ? rawRoles.split("-")
+    : rawRoles
+    ? [rawRoles]
+    : [];
 
   const checkAccess = (allowedRoles) => {
+    if (userRoles.length === 0) return false;
     return hasAccess(userRoles, allowedRoles);
   };
 
@@ -45,8 +22,8 @@ export const usePermissions = () => {
     userRoles,
     user,
     checkAccess,
-    isAdmin: userRoles?.includes("ADMIN") || false,
-    isLecturer: userRoles?.includes("LECTURER") || false,
-    isStudent: userRoles?.includes("STUDENT") || false,
+    isAdmin: userRoles.includes("ADMIN"),
+    isStudent: userRoles.includes("STUDENT"),
+    isLecturer: userRoles.includes("LECTURER"),
   };
 };

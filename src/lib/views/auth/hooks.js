@@ -16,10 +16,6 @@ export function useLoginForm() {
   const mutation = useMutation({
     mutationFn: (credentials) => loginUser(credentials),
     onSuccess: (userData) => {
-      // Zapisz role do localStorage
-      if (userData.roles && userData.roles.length > 0) {
-        localStorage.setItem("userRoles", JSON.stringify(userData.roles));
-      }
       dispatch(loginSuccess(userData));
       router.push("/dashboard");
     },
