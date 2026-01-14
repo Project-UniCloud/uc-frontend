@@ -16,9 +16,11 @@ import {
   usePagination,
   useAsync,
 } from "@/lib/views/shared/hooks";
+import { resourceEditSchema } from "./schemas";
 
 export function useResourceDetailPage(groupId, resourceId) {
   const [activeTab, setActiveTab] = useState("Info");
+  const [validationError, setValidationError] = useState(null);
   const {
     state: infoData,
     setState: setInfoData,
@@ -92,7 +94,13 @@ export function useResourceDetailPage(groupId, resourceId) {
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
     cancelEdit();
+    setValidationError(null);
     resetPagination();
+  };
+
+  const handleCancelEdit = () => {
+    setValidationError(null);
+    cancelEdit();
   };
 
   const handleChange = (fieldName) => (event) => {
@@ -107,6 +115,16 @@ export function useResourceDetailPage(groupId, resourceId) {
     }
 
     try {
+      setValidationError(null);
+      const dataToValidate = {
+        limit: infoData.limit,
+        cron: infoData.cron,
+        expiresAt: infoData.expiresAt,
+        notificationLevel1: infoData.notificationLevel1,
+        notificationLevel2: infoData.notificationLevel2,
+        notificationLevel3: infoData.notificationLevel3,
+      };
+      resourceEditSchema.parse(dataToValidate);
       await saveWith((current) =>
         updateResourceEditInfoByGroupId(groupId, {
           id: current.id,
@@ -121,7 +139,11 @@ export function useResourceDetailPage(groupId, resourceId) {
       );
       showSuccessToast("Dane zostały zaktualizowane pomyślnie.");
     } catch (error) {
-      showErrorToast("Błąd podczas aktualizacji danych: " + error.message);
+      if (error.name === "ZodError") {
+        setValidationError(error.errors[0]?.message || "Błąd walidacji");
+      } else {
+        showErrorToast("Błąd podczas aktualizacji danych: " + error.message);
+      }
     }
   };
 
@@ -132,6 +154,7 @@ export function useResourceDetailPage(groupId, resourceId) {
     loading,
     formLoading,
     error,
+    validationError,
     editing,
     page,
     pageSize,
@@ -143,5 +166,6 @@ export function useResourceDetailPage(groupId, resourceId) {
     handleTabChange,
     fetchResources,
     cancelEdit: () => cancelEdit(),
+    handleCancelEdit,
   };
 }

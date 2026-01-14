@@ -1,7 +1,6 @@
 import Hint from "@/components/utils/Hint";
 
 export const columns = [
-  { key: "id", header: "ID" },
   { key: "name", header: "Nazwa" },
   { key: "lecturers", header: "Prowadzący" },
   { key: "cloudResourceAccesses", header: "Usługi" },

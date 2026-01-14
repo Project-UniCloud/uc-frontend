@@ -29,6 +29,7 @@ export default function GroupPage({ params }) {
     loading,
     formLoading,
     error,
+    validationError,
     editing,
     page,
     pageSize,
@@ -39,7 +40,7 @@ export default function GroupPage({ params }) {
     setPageSize,
     handleTabChange,
     fetchResources,
-    cancelEdit,
+    handleCancelEdit,
   } = useResourceDetailPage(groupId, resourceId);
 
   const handleDeleteClick = ({ groupId, resourceId, resourceGlobalId }) => {
@@ -71,7 +72,7 @@ export default function GroupPage({ params }) {
                 color="bg-red-500"
                 className={formLoading && "cursor-not-allowed opacity-50"}
                 disabled={formLoading}
-                onClick={cancelEdit}
+                onClick={handleCancelEdit}
               >
                 Anuluj
               </Button>
@@ -88,6 +89,9 @@ export default function GroupPage({ params }) {
         )}
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
+      {validationError && (
+        <div className="text-red-600 mb-4">{validationError}</div>
+      )}
       {/* Informacje */}
       {activeTab === "Info" &&
         (loading ? (

@@ -1,5 +1,4 @@
 export const groupsColumns = [
-  { key: "id", header: "ID" },
   { key: "name", header: "Nazwa" },
   { key: "lecturers", header: "Prowadzący" },
   { key: "cloudAccesses", header: "Usługi" },
