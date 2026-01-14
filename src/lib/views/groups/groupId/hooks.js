@@ -67,6 +67,8 @@ export function useGroupDetailPage(groupId) {
       const data = await getGroupById(groupId);
       const teachers = data.lecturerFullNames.map((l) => ({
         id: l.userId,
+        firstName: l.firstName,
+        lastName: l.lastName,
         fullName: `${l.firstName} ${l.lastName}`,
       }));
       setGroupData({

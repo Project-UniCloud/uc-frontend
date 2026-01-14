@@ -99,7 +99,7 @@ export default function TeacherSearchInput({
                 className="flex justify-between py-1"
               >
                 <span>
-                  {teacher.firstName} {teacher.lastName} ({teacher.login})
+                  {teacher.firstName} {teacher.lastName}
                 </span>
                 {!disabled && (
                   <button
@@ -150,7 +150,7 @@ export default function TeacherSearchInput({
               }}
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
             >
-              {lect.firstName} {lect.lastName} ({lect.login})
+              {lect.firstName} {lect.lastName}
             </li>
           ))}
         </ul>
