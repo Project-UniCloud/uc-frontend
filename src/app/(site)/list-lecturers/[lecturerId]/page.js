@@ -19,6 +19,7 @@ export default function LecturerDetailsPage({ params }) {
     lecturer,
     loading,
     error,
+    validationError,
     formLoading,
     editing,
     handleChange,
@@ -51,6 +52,9 @@ export default function LecturerDetailsPage({ params }) {
         )}
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
+      {validationError && (
+        <div className="text-red-600 mb-4">{validationError}</div>
+      )}
       {loading ? (
         <div>Ładowanie...</div>
       ) : (

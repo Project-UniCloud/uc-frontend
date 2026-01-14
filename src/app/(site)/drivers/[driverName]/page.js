@@ -31,6 +31,7 @@ export default function GroupPage({ params }) {
     loading,
     formLoading,
     error,
+    validationError,
     editing,
     page,
     setPage,
@@ -43,7 +44,7 @@ export default function GroupPage({ params }) {
     tableData,
     handleChange,
     handleEditClick,
-    cancelEdit,
+    handleCancelEdit,
   } = useDriverDetailPage(driverName);
 
   return (
@@ -75,7 +76,7 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
                 color="bg-red-500"
                 className={formLoading && "cursor-not-allowed opacity-50"}
                 disabled={formLoading}
-                onClick={cancelEdit}
+                onClick={handleCancelEdit}
               >
                 Anuluj
               </Button>
@@ -92,6 +93,9 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
         )}
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
+      {validationError && (
+        <div className="text-red-600 mb-4">{validationError}</div>
+      )}
       {/* Ustawienia */}
       {activeTab === "Ustawienia" &&
         (loading ? (
@@ -137,17 +141,6 @@ Typy zasobów – dostępne typy zasobów dla danego sterownika`}
             W szczegółach sterownika można ustawić progi powiadomień mailowych, które poinformują o przekroczeniu kosztów.
             Po przekroczeniu limitu kosztów system automatycznie wyłączy zasoby powiązane z danym sterownikiem."
                 disabled={!editing}
-              />
-              <InputForm
-                label="Status"
-                name="status"
-                hint="Aktualny status sterownika chmurowego.
-                Aktywny - sterownik jest włączony i działa poprawnie.
-                Nieaktywny - sterownik jest wyłączony lub wystąpiły problemy z jego działaniem."
-                colors={driverData.status ? "text-green" : "text-red"}
-                center
-                value={driverData.status ? "Aktywny" : "Nieaktywny"}
-                disabled
               />
             </div>
           </>

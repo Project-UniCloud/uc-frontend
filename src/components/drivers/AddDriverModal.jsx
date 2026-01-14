@@ -5,16 +5,21 @@ import { addDriver } from "@/lib/api/driversApi";
 import InputForm from "../utils/InputForm";
 import { Button } from "../utils/Buttons";
 import { showSuccessToast, showErrorToast } from "../utils/Toast";
+import { addDriverSchema } from "@/lib/views/drivers/schemas";
 
 export default function AddDriverModal({ isOpen, setIsOpen, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
+  const [validationError, setValidationError] = useState(null);
 
   const mutation = useMutation({
     mutationFn: (driverData) => addDriver(driverData),
     onSuccess: () => {
-      setIsOpen(false), setFormErrors({}), formRef.current?.reset();
+      setIsOpen(false),
+        setFormErrors({}),
+        setValidationError(null),
+        formRef.current?.reset();
       showSuccessToast(
         "Sterownik dodany! Odśwież stronę, aby zobaczyć zmiany."
       );
@@ -31,11 +36,15 @@ export default function AddDriverModal({ isOpen, setIsOpen, fetch }) {
       dialogRef.current?.showModal();
     } else {
       dialogRef.current?.close();
+      formRef.current?.reset();
+      setFormErrors({});
+      setValidationError(null);
     }
   }, [isOpen]);
 
   function handleSubmit(e) {
     e.preventDefault();
+    setValidationError(null);
     const formData = new FormData(e.target);
     const cloudConnectorId = formData.get("cloudConnectorId");
     const host = formData.get("host");
@@ -44,21 +53,38 @@ export default function AddDriverModal({ isOpen, setIsOpen, fetch }) {
     const cronExpression = formData.get("cronExpression");
     const name = formData.get("name");
 
-    const driverData = {
-      cloudConnectorId,
-      host,
-      port,
-      defaultCostLimit,
-      cronExpression,
-      name,
-    };
+    try {
+      addDriverSchema.parse({
+        cloudConnectorId,
+        host,
+        port,
+        defaultCostLimit,
+        cronExpression,
+        name,
+      });
 
-    mutation.mutate(driverData);
+      const driverData = {
+        cloudConnectorId,
+        host,
+        port,
+        defaultCostLimit,
+        cronExpression,
+        name,
+      };
+
+      mutation.mutate(driverData);
+    } catch (error) {
+      if (error.name === "ZodError") {
+        setValidationError(error.errors[0]?.message || "Błąd walidacji");
+      }
+    }
   }
 
   function handleClose() {
     setIsOpen(false);
-    setFormErrors({}), formRef.current?.reset();
+    setFormErrors({});
+    setValidationError(null);
+    formRef.current?.reset();
   }
 
   return (
@@ -134,6 +160,9 @@ export default function AddDriverModal({ isOpen, setIsOpen, fetch }) {
 
         {formErrors.error && (
           <div className="text-red-600">{formErrors.error}</div>
+        )}
+        {validationError && (
+          <div className="text-red-600">{validationError}</div>
         )}
 
         <div className="flex justify-end gap-4 pt-4">

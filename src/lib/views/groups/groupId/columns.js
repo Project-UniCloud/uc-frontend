@@ -8,7 +8,7 @@ export const resourcesColumns = [
     header: (
       <div className="flex items-center justify-center gap-2">
         <span>Koszt</span>
-        <span>
+        <span className="font-normal">
           <Hint hint="Wygenerowany koszt przez tą usługę." />
         </span>
       </div>
@@ -19,7 +19,7 @@ export const resourcesColumns = [
     header: (
       <div className="flex items-center justify-center gap-2">
         <span>Limit Kosztu</span>
-        <span>
+        <span className="font-normal">
           <Hint
             hint="Kwota limitu kosztów.
               W szczegółach sterownika można ustawić progi powiadomień mailowych, które poinformują o przekroczeniu kosztów.
@@ -35,7 +35,7 @@ export const resourcesColumns = [
     header: (
       <div className="flex items-center justify-center gap-2">
         <span>Wyczyść</span>
-        <span>
+        <span className="font-normal">
           <Hint
             hint="Harmonogram cyklicznego zadania czyszczenia. 
             Określa, jak często system automatycznie czyści zasoby (np. codziennie o północy) zgodnie z ustawieniami (cron).
@@ -45,7 +45,6 @@ export const resourcesColumns = [
       </div>
     ),
   },
-  { key: "status", header: "Status" },
 ];
 
 export const studentsColumns = [

@@ -4,8 +4,10 @@ import { useState } from "react";
 import { getLecturerById, updateLecturer } from "@/lib/api/lecturersApi";
 import { showSuccessToast, showErrorToast } from "@/components/utils/Toast";
 import { useEditableState, useAsync } from "@/lib/views/shared/hooks";
+import { editLecturerSchema } from "./schemas";
 
 export function useLecturerDetailPage(lecturerId) {
+  const [validationError, setValidationError] = useState(null);
   const {
     state: lecturer,
     setState: setLecturer,
@@ -39,6 +41,7 @@ export function useLecturerDetailPage(lecturerId) {
   };
 
   const handleCancelEdit = () => {
+    setValidationError(null);
     cancelEdit();
   };
 
@@ -49,6 +52,13 @@ export function useLecturerDetailPage(lecturerId) {
     }
 
     try {
+      setValidationError(null);
+      const dataToValidate = {
+        firstName: lecturer.firstName,
+        lastName: lecturer.lastName,
+        email: lecturer.email,
+      };
+      editLecturerSchema.parse(dataToValidate);
       await saveWith((current) =>
         updateLecturer(lecturerId, {
           firstName: current.firstName,
@@ -58,9 +68,13 @@ export function useLecturerDetailPage(lecturerId) {
       );
       showSuccessToast("Prowadzący został zaktualizowany pomyślnie.");
     } catch (error) {
-      showErrorToast(
-        "Błąd podczas aktualizacji prowadzącego: " + error.message
-      );
+      if (error.name === "ZodError") {
+        setValidationError(error.errors[0]?.message || "Błąd walidacji");
+      } else {
+        showErrorToast(
+          "Błąd podczas aktualizacji prowadzącego: " + error.message
+        );
+      }
     }
   };
 
@@ -68,6 +82,7 @@ export function useLecturerDetailPage(lecturerId) {
     lecturer,
     loading,
     error,
+    validationError,
     formLoading,
     editing,
     handleChange,

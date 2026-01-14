@@ -11,9 +11,11 @@ import {
   useEditableState,
   useAsync,
 } from "@/lib/views/shared/hooks";
+import { editDriverSchema } from "./schemas";
 
 export function useDriverDetailPage(driverName) {
   const [activeTab, setActiveTab] = useState("Ustawienia");
+  const [validationError, setValidationError] = useState(null);
   const {
     state: driverData,
     setState: setDriverData,
@@ -74,6 +76,7 @@ export function useDriverDetailPage(driverName) {
   const {
     loading,
     error,
+    setError,
     run: refetch,
   } = useAsync(fetchData, [
     activeTab,
@@ -87,6 +90,8 @@ export function useDriverDetailPage(driverName) {
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
     cancelEdit();
+    setValidationError(null);
+    setError(null);
     resetPagination();
   };
 
@@ -106,6 +111,23 @@ export function useDriverDetailPage(driverName) {
       return;
     }
 
+    setValidationError(null);
+    setError(null);
+
+    try {
+      const dataToValidate = {
+        name: driverData.name,
+        limit: driverData.limit,
+        clean: driverData.clean,
+      };
+      editDriverSchema.parse(dataToValidate);
+    } catch (error) {
+      if (error.name === "ZodError") {
+        setValidationError(error.errors[0]?.message || "Błąd walidacji");
+        return;
+      }
+    }
+
     try {
       await saveWith((current) =>
         updateDriver(driverName, {
@@ -116,8 +138,16 @@ export function useDriverDetailPage(driverName) {
       );
       showSuccessToast("Sterownik został zaktualizowany pomyślnie.");
     } catch (error) {
-      showErrorToast("Błąd podczas aktualizacji sterownika: " + error.message);
+      const errorMessage = error.message || "Nieznany błąd";
+      setError("Błąd podczas aktualizacji sterownika: " + errorMessage);
+      showErrorToast("Błąd podczas aktualizacji sterownika: " + errorMessage);
     }
+  };
+
+  const handleCancelEdit = () => {
+    setValidationError(null);
+    setError(null);
+    cancelEdit();
   };
 
   return {
@@ -128,6 +158,7 @@ export function useDriverDetailPage(driverName) {
     loading,
     formLoading,
     error,
+    validationError,
     editing,
     page,
     setPage,
@@ -142,5 +173,6 @@ export function useDriverDetailPage(driverName) {
     handleEditClick,
     refetch,
     cancelEdit: () => cancelEdit(),
+    handleCancelEdit,
   };
 }

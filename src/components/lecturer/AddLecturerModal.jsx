@@ -8,11 +8,13 @@ import { FaCheck } from "react-icons/fa";
 import TeacherSearchInput from "@/components/utils/TeacherSearchInput";
 import { useLecturerExternalSearch } from "@/hooks/useLecturerExternalSearch";
 import { showErrorToast, showSuccessToast } from "../utils/Toast";
+import { addLecturerSchema } from "@/lib/views/list-lecturers/schemas";
 
 export default function AddLecturerModal({ isOpen, setIsOpen, fetch }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
   const [formErrors, setFormErrors] = useState({});
+  const [validationError, setValidationError] = useState(null);
   const [lecturers, setLecturers] = useState([]);
   const [formValues, setFormValues] = useState({
     firstName: "",
@@ -42,6 +44,7 @@ export default function AddLecturerModal({ isOpen, setIsOpen, fetch }) {
         email: "",
       });
       setFormErrors({});
+      setValidationError(null);
       setIsOpen(false);
       showSuccessToast("Prowadzący został dodany!");
       fetch();
@@ -55,25 +58,51 @@ export default function AddLecturerModal({ isOpen, setIsOpen, fetch }) {
   useEffect(() => {
     if (isOpen) {
       dialogRef.current?.showModal();
-    } else dialogRef.current?.close();
+    } else {
+      dialogRef.current?.close();
+      formRef.current?.reset();
+      setFormErrors({});
+      setValidationError(null);
+      setLecturers([]);
+      setFormValues({
+        firstName: "",
+        lastName: "",
+        login: "",
+        email: "",
+      });
+    }
   }, [isOpen]);
 
   function handleSubmit(e) {
     e.preventDefault();
+    setValidationError(null);
     const formData = new FormData(e.target);
     const login = formValues.login || formData.get("login");
     const firstName = formValues.firstName || formData.get("firstName");
     const lastName = formValues.lastName || formData.get("lastName");
     const email = formValues.email || formData.get("email");
 
-    const lecturerData = {
-      userIndexNumber: login,
-      firstName,
-      lastName,
-      email,
-    };
+    try {
+      addLecturerSchema.parse({
+        firstName,
+        lastName,
+        login,
+        email,
+      });
 
-    mutation.mutate(lecturerData);
+      const lecturerData = {
+        userIndexNumber: login,
+        firstName,
+        lastName,
+        email,
+      };
+
+      mutation.mutate(lecturerData);
+    } catch (error) {
+      if (error.name === "ZodError") {
+        setValidationError(error.errors[0]?.message || "Błąd walidacji");
+      }
+    }
   }
 
   function handleClose() {
@@ -144,6 +173,7 @@ export default function AddLecturerModal({ isOpen, setIsOpen, fetch }) {
 
         <div className="grid grid-cols-2 gap-4">
           <TeacherSearchInput
+            key={isOpen}
             value={lecturers}
             disabled={lecturers.length >= 1}
             disabledOnlyList={false}
@@ -163,6 +193,9 @@ export default function AddLecturerModal({ isOpen, setIsOpen, fetch }) {
 
         {formErrors.error && (
           <div className="text-red-600">{formErrors.error}</div>
+        )}
+        {validationError && (
+          <div className="text-red-600">{validationError}</div>
         )}
 
         <div className="flex justify-end items-center gap-4 pt-10">
