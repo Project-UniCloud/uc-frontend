@@ -41,8 +41,8 @@ export async function activateGroup(groupId) {
   );
 }
 
-export async function getResourcesGroup(groupId) {
-  const path = `/groups/${groupId}/cloud-access`;
+export async function getResourcesGroup(groupId, page = 0, pageSize = 10) {
+  const path = `/groups/${groupId}/cloud-access?page=${page}&size=${pageSize}`;
   return await getApi(path, "Nieudane pobieranie usług");
 }
 

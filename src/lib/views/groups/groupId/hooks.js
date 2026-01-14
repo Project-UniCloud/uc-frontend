@@ -86,8 +86,13 @@ export function useGroupDetailPage(groupId) {
       setStudentsData(data.content || []);
       setStudentTotalPages(data.page.totalPages || 0);
     } else if (activeTab === "Usługi") {
-      const data = await getResourcesGroup(groupId);
-      setResourcesData(data || []);
+      const data = await getResourcesGroup(
+        groupId,
+        resourcePage,
+        resourcePageSize
+      );
+      setResourcesData(data.content || []);
+      setResourceTotalPages(data.page.totalPages || 0);
     }
   };
 
@@ -100,8 +105,11 @@ export function useGroupDetailPage(groupId) {
     groupId,
     studentPage,
     studentPageSize,
+    resourcePage,
+    resourcePageSize,
     setGroupData,
     setStudentTotalPages,
+    setResourceTotalPages,
   ]);
 
   const fetchStudents = async () => {
@@ -115,8 +123,13 @@ export function useGroupDetailPage(groupId) {
   };
 
   const fetchResources = async () => {
-    const data = await getResourcesGroup(groupId);
-    setResourcesData(data || []);
+    const data = await getResourcesGroup(
+      groupId,
+      resourcePage,
+      resourcePageSize
+    );
+    setResourcesData(data.content || []);
+    setResourceTotalPages(data.page.totalPages || 0);
   };
 
   const handleTabChange = (tabKey) => {
