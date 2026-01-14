@@ -1,16 +1,15 @@
 "use client";
-import { useSelector } from "react-redux";
 import { hasAccess } from "@/lib/utils/permissions";
+import { useRoles } from "@/contexts/RolesContext";
 
-export const usePermissions = (initialRoleFromProp) => {
-  const user = useSelector((state) => state.auth.user);
+export const usePermissions = (rolesFromProp) => {
+  const rolesFromContext = useRoles();
+  const rolesStr = rolesFromProp || rolesFromContext;
 
-  let rawRoles = initialRoleFromProp || user?.roles?.[0] || "";
-
-  const userRoles = rawRoles.includes("-")
-    ? rawRoles.split("-")
-    : rawRoles
-    ? [rawRoles]
+  const userRoles = rolesStr
+    ? rolesStr.includes("-")
+      ? rolesStr.split("-")
+      : [rolesStr]
     : [];
 
   const checkAccess = (allowedRoles) => {
@@ -18,12 +17,12 @@ export const usePermissions = (initialRoleFromProp) => {
     return hasAccess(userRoles, allowedRoles);
   };
 
-  return {
+  const permissions = {
     userRoles,
-    user,
     checkAccess,
     isAdmin: userRoles.includes("ADMIN"),
     isStudent: userRoles.includes("STUDENT"),
     isLecturer: userRoles.includes("LECTURER"),
   };
+  return permissions;
 };

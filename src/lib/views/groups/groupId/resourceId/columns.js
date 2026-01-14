@@ -5,6 +5,7 @@ export const getColumns = ({
   resourceId,
   onDeleted,
   onDeleteClick,
+  canDelete = false,
 }) => {
   const columns = [
     { key: "createdBy", header: "Utworzone przez" },
@@ -16,38 +17,40 @@ export const getColumns = ({
     { key: "status", header: "Status" },
   ];
 
-  columns.push({
-    key: "delete",
-    header: "Akcje",
-    render: (row) => {
-      const isTerminatedOrShuttingDown =
-        row.status === "terminated" || row.status === "shutting-down";
+  if (canDelete) {
+    columns.push({
+      key: "delete",
+      header: "Akcje",
+      render: (row) => {
+        const isTerminatedOrShuttingDown =
+          row.status === "terminated" || row.status === "shutting-down";
 
-      return (
-        <button
-          onClick={(e) => {
-            if (!isTerminatedOrShuttingDown) {
-              e.stopPropagation();
-              onDeleteClick?.({
-                groupId,
-                resourceId,
-                resourceGlobalId: row.resourceGlobalId,
-              });
-            }
-          }}
-          disabled={isTerminatedOrShuttingDown}
-          className={`${
-            isTerminatedOrShuttingDown
-              ? "text-gray-400 cursor-not-allowed"
-              : "text-red-600 hover:text-red-800 cursor-pointer"
-          }`}
-          aria-label="Usuń"
-        >
-          <FaTrash />
-        </button>
-      );
-    },
-  });
+        return (
+          <button
+            onClick={(e) => {
+              if (!isTerminatedOrShuttingDown) {
+                e.stopPropagation();
+                onDeleteClick?.({
+                  groupId,
+                  resourceId,
+                  resourceGlobalId: row.resourceGlobalId,
+                });
+              }
+            }}
+            disabled={isTerminatedOrShuttingDown}
+            className={`${
+              isTerminatedOrShuttingDown
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-red-600 hover:text-red-800 cursor-pointer"
+            }`}
+            aria-label="Usuń"
+          >
+            <FaTrash />
+          </button>
+        );
+      },
+    });
+  }
 
   return columns;
 };

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
 import { ROUTE_PERMISSIONS, hasAccess } from "@/lib/utils/permissions";
 
 const PUBLIC_PATHS = ["/login", "/_next", "/favicon.ico"];

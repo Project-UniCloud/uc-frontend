@@ -8,6 +8,7 @@ import Hint from "@/components/utils/Hint";
 import { useGroupsPage } from "@/lib/views/groups/hooks";
 import { TABS } from "@/lib/views/groups/tabs";
 import { columns } from "@/lib/views/groups/columns";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function GroupsPage() {
   const {
@@ -27,6 +28,8 @@ export default function GroupsPage() {
     onSearchChange,
     fetchGroups,
   } = useGroupsPage();
+
+  const { isAdmin } = usePermissions();
 
   const tableData = groups.map((group, idx) => ({
     ...group,
@@ -55,7 +58,7 @@ Nieaktywne – nowo utworzone grupy przed startem zajęć.`}
       <DataTableView
         leftActions={
           <>
-            {activeTab === "ACTIVE" && (
+            {activeTab === "ACTIVE" && isAdmin && (
               <Button
                 onClick={() => setIsOpen(true)}
                 hint="Tworzenie nowej grupy zajęciowej. Podanym prowadzącym przydzielany jest dostęp, dostaną oni maila z loginem i hasłem"

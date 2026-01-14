@@ -18,9 +18,11 @@ import {
   resourcesColumns,
   studentsColumns,
 } from "@/lib/views/groups/groupId/columns";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function GroupPage({ params }) {
   const { groupId } = React.use(params);
+  const { isAdmin, isLecturer } = usePermissions();
 
   const {
     activeTab,
@@ -80,7 +82,7 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
           !loading &&
           groupData.status !== "Zarchiwizowana" && (
             <div className="flex gap-2">
-              {editing && (
+              {editing && isAdmin && (
                 <Button
                   color="bg-red-500"
                   className={formLoading && "cursor-not-allowed opacity-50"}
@@ -90,14 +92,16 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
                   Anuluj
                 </Button>
               )}
-              <Button
-                color={editing ? "bg-green-500" : "bg-purple"}
-                className={formLoading && "cursor-not-allowed opacity-50"}
-                disabled={formLoading}
-                onClick={handleEditClick}
-              >
-                {editing ? "Zapisz" : "Edytuj"}
-              </Button>
+              {isAdmin && (
+                <Button
+                  color={editing ? "bg-green-500" : "bg-purple"}
+                  className={formLoading && "cursor-not-allowed opacity-50"}
+                  disabled={formLoading}
+                  onClick={handleEditClick}
+                >
+                  {editing ? "Zapisz" : "Edytuj"}
+                </Button>
+              )}
             </div>
           )}
       </div>
@@ -201,23 +205,28 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
       {/* Studenci */}
       {activeTab === "Studenci" && (
         <>
-          <AddStudentModal
-            isOpen={isOpenStudent}
-            setIsOpen={setIsOpenStudent}
-            groupId={groupId}
-            fetch={fetchStudents}
-          />
+          {(isAdmin || isLecturer) && (
+            <>
+              <AddStudentModal
+                isOpen={isOpenStudent}
+                setIsOpen={setIsOpenStudent}
+                groupId={groupId}
+                fetch={fetchStudents}
+              />
 
-          <ImportStudentsModal
-            isOpen={isOpenImport}
-            setIsOpen={setIsOpenImport}
-            groupId={groupId}
-            fetch={fetchStudents}
-          />
+              <ImportStudentsModal
+                isOpen={isOpenImport}
+                setIsOpen={setIsOpenImport}
+                groupId={groupId}
+                fetch={fetchStudents}
+              />
+            </>
+          )}
 
           <DataTableView
             leftActions={
-              groupData.status !== "Zarchiwizowana" && (
+              groupData.status !== "Zarchiwizowana" &&
+              (isAdmin || isLecturer) && (
                 <>
                   <Button onClick={() => setIsOpenStudent(true)}>
                     <FaPlus /> Dodaj Studenta
@@ -247,16 +256,19 @@ Usługi – przydzielaj dostępy do usług dla grupy (prowadzący i studenci otr
       {/* Usługi */}
       {activeTab === "Usługi" && (
         <>
-          <AddResourceModal
-            isOpen={isOpenResource}
-            setIsOpen={setIsOpenResource}
-            groupName={groupData.name}
-            groupId={groupId}
-            fetch={fetchResources}
-          />
+          {isAdmin && (
+            <AddResourceModal
+              isOpen={isOpenResource}
+              setIsOpen={setIsOpenResource}
+              groupName={groupData.name}
+              groupId={groupId}
+              fetch={fetchResources}
+            />
+          )}
           <DataTableView
             leftActions={
-              groupData.status !== "Zarchiwizowana" && (
+              groupData.status !== "Zarchiwizowana" &&
+              isAdmin && (
                 <>
                   <Button onClick={() => setIsOpenResource(true)}>
                     <FaPlus /> Dodaj usługę

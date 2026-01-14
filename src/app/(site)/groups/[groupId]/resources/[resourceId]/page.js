@@ -8,9 +8,11 @@ import { getColumns } from "@/lib/views/groups/groupId/resourceId/columns";
 import Tabs from "@/components/utils/Tabs";
 import { TABS } from "@/lib/views/groups/groupId/resourceId/tabs";
 import DeleteResourceTypeModal from "@/components/resources/DeleteResourceTypeModal";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function GroupPage({ params }) {
   const { groupId, resourceId } = React.use(params);
+  const { isAdmin, isLecturer } = usePermissions();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
 
@@ -44,6 +46,7 @@ export default function GroupPage({ params }) {
     groupId,
     resourceId,
     onDeleteClick: handleDeleteClick,
+    canDelete: isAdmin || isLecturer,
   });
 
   return (
@@ -57,7 +60,7 @@ export default function GroupPage({ params }) {
           />
         </div>
 
-        {activeTab === "Info" && !loading && (
+        {activeTab === "Info" && !loading && isAdmin && (
           <div className="flex gap-2">
             {editing && (
               <Button
@@ -166,14 +169,16 @@ export default function GroupPage({ params }) {
       {/* Zasoby */}
       {activeTab === "Resources" && (
         <>
-          <DeleteResourceTypeModal
-            isOpen={isDeleteModalOpen}
-            setIsOpen={setIsDeleteModalOpen}
-            groupId={selectedResource?.groupId}
-            resourceId={selectedResource?.resourceId}
-            resourceGlobalId={selectedResource?.resourceGlobalId}
-            onDeleted={fetchResources}
-          />
+          {(isAdmin || isLecturer) && (
+            <DeleteResourceTypeModal
+              isOpen={isDeleteModalOpen}
+              setIsOpen={setIsDeleteModalOpen}
+              groupId={selectedResource?.groupId}
+              resourceId={selectedResource?.resourceId}
+              resourceGlobalId={selectedResource?.resourceGlobalId}
+              onDeleted={fetchResources}
+            />
+          )}
           <DataTableView
             loading={loading}
             error={error}

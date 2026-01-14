@@ -1,9 +1,8 @@
 export const dynamic = "force-dynamic";
 import "./globals.css";
-import StoreProvider from "@/providers/ReduxProvider";
 import ReactQueryProvider from "@/providers/QueryProvider";
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   const backendUrl = process.env.BACKEND_API_URL || "http://localhost:8080/api";
 
   return (
@@ -15,9 +14,7 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        <ReactQueryProvider>
-          <StoreProvider>{children}</StoreProvider>
-        </ReactQueryProvider>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>
   );
