@@ -23,13 +23,25 @@ describe("useGroupDetailPage", () => {
     jest.clearAllMocks();
     groupsApi.getGroupById.mockResolvedValue({
       name: "Group 1",
-      lecturerFullNames: [{ userId: 1, firstName: "John", lastName: "Doe" }],
-      startDate: "2024-01-01",
-      endDate: "2024-12-31",
+      lecturerFullNames: [
+        {
+          userId: 1,
+          firstName: "John",
+          lastName: "Doe",
+          login: "jdoe",
+          email: "jdoe@example.com",
+        },
+      ],
+      // API returns DD-MM-YYYY, hook converts to YYYY-MM-DD
+      startDate: "01-01-2024",
+      endDate: "31-12-2024",
       description: "Test group",
       status: "ACTIVE",
     });
-    groupsApi.getResourcesGroup.mockResolvedValue([]);
+    groupsApi.getResourcesGroup.mockResolvedValue({
+      content: [],
+      page: { totalPages: 0 },
+    });
     studentApi.getStudentsFromGroup.mockResolvedValue({
       content: [],
       page: { totalPages: 0 },
@@ -61,7 +73,12 @@ describe("useGroupDetailPage", () => {
     });
 
     expect(result.current.groupData.lecturers).toEqual([
-      { id: 1, fullName: "John Doe" },
+      {
+        id: 1,
+        firstName: "John",
+        lastName: "Doe",
+        fullName: "John Doe",
+      },
     ]);
   });
 
@@ -83,14 +100,14 @@ describe("useGroupDetailPage", () => {
     });
 
     act(() => {
-      result.current.setPage(2);
+      result.current.setStudentPage(2);
     });
 
     act(() => {
       result.current.handleTabChange("Studenci");
     });
 
-    expect(result.current.page).toBe(0);
+    expect(result.current.studentPage).toBe(0);
   });
 
   test("handleTabChange anuluje edycję", async () => {
@@ -198,8 +215,9 @@ describe("useGroupDetailPage", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.error).toBeDefined();
-      expect(Toast.showErrorToast).toHaveBeenCalled();
+      expect(result.current.error).toBe(null);
+      expect(result.current.validationError).toBe("Update failed");
+      expect(Toast.showErrorToast).toHaveBeenCalledWith("Update failed");
     });
   });
 
@@ -344,7 +362,10 @@ describe("useGroupDetailPage", () => {
 
   test("ładuje usługi dla tab Usługi", async () => {
     const mockResources = [{ id: 1, name: "Resource 1" }];
-    groupsApi.getResourcesGroup.mockResolvedValue(mockResources);
+    groupsApi.getResourcesGroup.mockResolvedValue({
+      content: mockResources,
+      page: { totalPages: 1 },
+    });
 
     const { result } = renderHook(() => useGroupDetailPage(mockGroupId));
 

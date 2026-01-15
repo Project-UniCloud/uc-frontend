@@ -66,11 +66,11 @@ describe("getNamePath", () => {
     expect(result).toBe("Profil");
   });
 
-  test("zwraca Powiadomienia dla /logs", () => {
+  test("zwraca Logi dla /logs", () => {
     usePathname.mockReturnValue("/logs");
     const { useNamePath: hook } = require("./getNamePath");
     const result = hook();
-    expect(result).toBe("Powiadomienia");
+    expect(result).toBe("Logi");
   });
 
   test("zwraca Informacje o grupie dla /groups/[uuid]", () => {

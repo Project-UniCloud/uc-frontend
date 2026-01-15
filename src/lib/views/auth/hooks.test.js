@@ -1,19 +1,13 @@
 import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useLoginForm } from "@/lib/views/auth/hooks";
-import * as authSlice from "@/store/authSlice";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
 
 jest.mock("@/lib/api/authApi");
-jest.mock("@/store/authSlice");
 jest.mock("next/navigation");
-jest.mock("react-redux");
 
 describe("useLoginForm", () => {
   const mockPush = jest.fn();
-  const mockDispatch = jest.fn();
-  const mockLoginSuccess = jest.fn();
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
@@ -37,8 +31,6 @@ describe("useLoginForm", () => {
     jest.clearAllMocks();
     queryClient.clear();
     useRouter.mockReturnValue({ push: mockPush });
-    useDispatch.mockReturnValue(mockDispatch);
-    authSlice.loginSuccess.mockReturnValue(mockLoginSuccess);
   });
 
   test("inicjalizuje z pustymi błędami", () => {
@@ -77,19 +69,9 @@ describe("useLoginForm", () => {
     expect(typeof result.current.mutation.mutate).toBe("function");
   });
 
-  test("loginSuccess action jest dostępna", () => {
-    renderHook(() => useLoginForm(), { wrapper });
-    expect(authSlice.loginSuccess).toBeDefined();
-  });
-
   test("push function jest dostępna w router", () => {
     renderHook(() => useLoginForm(), { wrapper });
     expect(mockPush).toBeDefined();
-  });
-
-  test("dispatch jest dostępna w hook", () => {
-    renderHook(() => useLoginForm(), { wrapper });
-    expect(mockDispatch).toBeDefined();
   });
 
   test("mutation.mutate przyjmuje credentials", () => {

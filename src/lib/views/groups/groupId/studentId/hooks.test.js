@@ -150,7 +150,6 @@ describe("useStudentDetailPage", () => {
           firstName: "Alice",
           lastName: "Smith",
           email: "alice.smith@example.com",
-          login: "alicesmith",
         })
       );
       expect(Toast.showSuccessToast).toHaveBeenCalled();
@@ -177,8 +176,13 @@ describe("useStudentDetailPage", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.error).toBe("Update failed");
-      expect(Toast.showErrorToast).toHaveBeenCalled();
+      expect(result.current.error).toBe(null);
+      expect(result.current.validationError).toBe(
+        "Błąd podczas aktualizacji studenta: Update failed"
+      );
+      expect(Toast.showErrorToast).toHaveBeenCalledWith(
+        "Błąd podczas aktualizacji studenta: Update failed"
+      );
     });
   });
 

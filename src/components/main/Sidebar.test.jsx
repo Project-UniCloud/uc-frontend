@@ -1,6 +1,12 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import Sidebar from "./Sidebar";
 
+jest.mock("@/hooks/usePermissions", () => ({
+  usePermissions: jest.fn(() => ({
+    checkAccess: () => true,
+  })),
+}));
+
 jest.mock("next/image", () => ({
   __esModule: true,
   default: (props) => <img {...props} />,
@@ -57,13 +63,13 @@ describe("Sidebar", () => {
     expect(img).toHaveAttribute("src", "/logo_nobg.png");
   });
 
-  test("renderuje wszystkie elementy nawigacji z poprawnymi ścieżkami", () => {
+  test("renderuje wszystkie elementy nawigacji z poprawnymi ścieżkami", async () => {
     render(<Sidebar />);
 
     const menuItems = [
       { label: "Przegląd", path: "/dashboard" },
       { label: "Grupy", path: "/groups" },
-      { label: "Powiadomienia", path: "/logs" },
+      { label: "Logi", path: "/logs" },
       { label: "Prowadzący", path: "/list-lecturers" },
       { label: "Sterowniki", path: "/drivers" },
       {
@@ -71,6 +77,9 @@ describe("Sidebar", () => {
         path: "https://michalluczak.atlassian.net/servicedesk/customer/portals",
       },
     ];
+
+    // menu items are rendered only after mount (useEffect)
+    await screen.findByTestId("item-Przegląd");
 
     menuItems.forEach(({ label, path }) => {
       const item = screen.getByTestId(`item-${label}`);

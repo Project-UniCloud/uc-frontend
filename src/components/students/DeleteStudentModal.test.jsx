@@ -17,6 +17,7 @@ jest.mock("react-icons/fa", () => ({
 }));
 
 const mockPush = jest.fn();
+const mockReplace = jest.fn();
 const mockShowSuccessToast = jest.fn();
 const mockShowErrorToast = jest.fn();
 
@@ -51,6 +52,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   useRouter.mockReturnValue({
     push: mockPush,
+    replace: mockReplace,
   });
 
   HTMLDialogElement.prototype.showModal = jest.fn(function () {
@@ -329,7 +331,7 @@ describe("DeleteStudentModal", () => {
 
     onSuccessCallback();
 
-    expect(mockPush).toHaveBeenCalledWith("/groups/group-456/students");
+    expect(mockReplace).toHaveBeenCalledWith("/groups/group-456");
   });
 
   it("pokazuje error toast gdy usuwanie się nie powiedzie", () => {

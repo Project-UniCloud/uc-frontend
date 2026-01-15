@@ -34,6 +34,16 @@ jest.mock("@/lib/api/groupsApi");
 jest.mock("@/lib/api/studentApi");
 jest.mock("@/lib/api/resourceApi");
 
+jest.mock("@/hooks/usePermissions", () => ({
+  usePermissions: jest.fn(() => ({
+    userRoles: ["ADMIN"],
+    checkAccess: () => true,
+    isAdmin: true,
+    isStudent: false,
+    isLecturer: false,
+  })),
+}));
+
 jest.mock("@/components/utils/Toast", () => ({
   showSuccessToast: jest.fn(),
   showErrorToast: jest.fn(),
@@ -206,14 +216,17 @@ describe("GroupIdPage", () => {
       page: { totalPages: 1 },
     });
 
-    getResourcesGroup.mockResolvedValue([
-      {
-        id: 1,
-        clientId: "res-1",
-        name: "Resource 1",
-        status: "Active",
-      },
-    ]);
+    getResourcesGroup.mockResolvedValue({
+      content: [
+        {
+          id: 1,
+          clientId: "res-1",
+          name: "Resource 1",
+          status: "Active",
+        },
+      ],
+      page: { totalPages: 1 },
+    });
   });
 
   afterEach(() => {
@@ -470,7 +483,7 @@ describe("GroupIdPage", () => {
     fireEvent.click(uslugiBtn);
 
     await waitFor(() => {
-      expect(getResourcesGroup).toHaveBeenCalledWith("123");
+      expect(getResourcesGroup).toHaveBeenCalledWith("123", 0, 10);
     });
 
     expect(screen.getByTestId("table-view")).toBeInTheDocument();
@@ -518,7 +531,7 @@ describe("GroupIdPage", () => {
     fireEvent.click(uslugiBtn);
 
     await waitFor(() => {
-      expect(getResourcesGroup).toHaveBeenCalledWith("123");
+      expect(getResourcesGroup).toHaveBeenCalledWith("123", 0, 10);
     });
 
     fireEvent.click(studenciBtn);
@@ -666,7 +679,7 @@ describe("GroupIdPage", () => {
 
     await waitFor(() => {
       expect(showErrorToast).toHaveBeenCalledWith(
-        expect.stringContaining("Błąd podczas aktualizacji grupy")
+        expect.stringContaining("Błąd zapisu")
       );
     });
   });
@@ -789,7 +802,10 @@ describe("GroupIdPage", () => {
   });
 
   test("wyświetla komunikat o braku usług", async () => {
-    getResourcesGroup.mockResolvedValueOnce([]);
+    getResourcesGroup.mockResolvedValueOnce({
+      content: [],
+      page: { totalPages: 0 },
+    });
 
     render(<GroupPage params={mockParams} />);
 

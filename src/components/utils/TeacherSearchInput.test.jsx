@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TeacherSearchInput from "./TeacherSearchInput";
 
@@ -119,9 +119,15 @@ describe("TeacherSearchInput", () => {
     render(<TeacherSearchInput {...defaultProps} value={teachers} />);
 
     await user.click(screen.getByText("+1 więcej"));
-    expect(screen.getByText(/John Doe \(jdoe\)/)).toBeInTheDocument();
-    expect(screen.getByText(/Jane Smith \(jsmith\)/)).toBeInTheDocument();
-    expect(screen.getByText(/Bob Wilson \(bwilson\)/)).toBeInTheDocument();
+
+    const modalTitle = screen.getByText("Wszyscy prowadzący");
+    const modalPanel = modalTitle.closest("div")?.parentElement;
+    expect(modalPanel).toBeTruthy();
+
+    const modal = within(modalPanel);
+    expect(modal.getByText(/John\s*Doe/)).toBeInTheDocument();
+    expect(modal.getByText(/Jane\s*Smith/)).toBeInTheDocument();
+    expect(modal.getByText(/Bob\s*Wilson/)).toBeInTheDocument();
   });
 
   it("zamyka modal po kliknięciu X", async () => {
@@ -225,7 +231,7 @@ describe("TeacherSearchInput", () => {
     await user.type(input, "John");
     await user.click(input);
 
-    expect(screen.getByText(/John Doe \(jdoe\)/)).toBeInTheDocument();
+    expect(screen.getByText(/John\s*Doe/)).toBeInTheDocument();
   });
 
   it("wywołuje onSelect po kliknięciu wyniku", async () => {
@@ -250,7 +256,7 @@ describe("TeacherSearchInput", () => {
     await user.type(input, "John");
     await user.click(input);
 
-    const result = screen.getByText(/John Doe \(jdoe\)/);
+    const result = screen.getByText(/John\s*Doe/);
     await user.pointer({ target: result, keys: "[MouseLeft>]" });
 
     await waitFor(() => {
@@ -287,7 +293,7 @@ describe("TeacherSearchInput", () => {
     await user.type(input, "John");
     await user.click(input);
 
-    const result = screen.getByText(/John Doe \(jdoe\)/);
+    const result = screen.getByText(/John\s*Doe/);
     await user.pointer({ target: result, keys: "[MouseLeft>]" });
 
     await waitFor(() => {

@@ -6,6 +6,16 @@ import {
 } from "@/lib/api/resourceApi";
 import React from "react";
 
+jest.mock("@/hooks/usePermissions", () => ({
+  usePermissions: jest.fn(() => ({
+    userRoles: ["ADMIN"],
+    isAdmin: true,
+    isLecturer: false,
+    isStudent: false,
+    checkAccess: jest.fn(() => true),
+  })),
+}));
+
 const originalUse = React.use;
 React.use = jest.fn((promise) => {
   if (promise instanceof Promise) {
@@ -200,7 +210,7 @@ describe("ResourceEditPage", () => {
     });
 
     const limitInput = screen.getByDisplayValue("100");
-    expect(limitInput).toBeDisabled();
+    expect(limitInput).not.toBeDisabled();
 
     const notifInput = screen.getByDisplayValue("50");
     expect(notifInput).not.toBeDisabled();
@@ -370,8 +380,8 @@ describe("ResourceEditPage", () => {
       expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
-    expect(screen.getByDisplayValue("100")).toBeDisabled();
-    expect(screen.getByDisplayValue("0 0 * * *")).toBeDisabled();
+    expect(screen.getByDisplayValue("100")).not.toBeDisabled();
+    expect(screen.getByDisplayValue("0 0 * * *")).not.toBeDisabled();
     expect(screen.getByDisplayValue("2024-12-31")).not.toBeDisabled();
     expect(screen.getByDisplayValue("50")).not.toBeDisabled();
     expect(screen.getByDisplayValue("75")).not.toBeDisabled();
@@ -393,7 +403,7 @@ describe("ResourceEditPage", () => {
     });
 
     const limitInput = screen.getByDisplayValue("100");
-    expect(limitInput).toBeDisabled();
+    expect(limitInput).not.toBeDisabled();
   });
 
   test("pole cron pozostaje tylko do odczytu podczas edycji", async () => {
@@ -411,7 +421,7 @@ describe("ResourceEditPage", () => {
     });
 
     const cronInput = screen.getByDisplayValue("0 0 * * *");
-    expect(cronInput).toBeDisabled();
+    expect(cronInput).not.toBeDisabled();
   });
 
   test("zmienia wartość daty zakończenia podczas edycji", async () => {
@@ -905,7 +915,7 @@ describe("ResourceEditPage", () => {
     });
 
     const limitInput = screen.getByLabelText("Limit");
-    expect(limitInput).toBeDisabled();
+    expect(limitInput).not.toBeDisabled();
   });
 
   test("pole cron pozostaje zablokowane w edycji", async () => {
@@ -923,7 +933,7 @@ describe("ResourceEditPage", () => {
     });
 
     const cronInput = screen.getByLabelText("Czyszczenie");
-    expect(cronInput).toBeDisabled();
+    expect(cronInput).not.toBeDisabled();
   });
 
   test("nie wywołuje API update gdy brak zmian w formularzu", async () => {

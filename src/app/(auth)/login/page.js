@@ -9,8 +9,9 @@ export default function LoginPage() {
           src="/wmi.png"
           alt="Building"
           fill
-          objectFit="cover"
           className="rounded-xl"
+          style={{ objectFit: "cover" }}
+          sizes="(min-width: 768px) 50vw, 0vw"
           priority
         />
       </div>
@@ -22,6 +23,7 @@ export default function LoginPage() {
             alt="Unicloud Logo"
             fill
             className="object-contain"
+            sizes="(min-width: 768px) 50vw, 100vw"
             priority
           />
         </div>

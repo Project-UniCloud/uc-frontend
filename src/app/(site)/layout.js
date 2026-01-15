@@ -14,7 +14,7 @@ export default async function MainLayout({ children }) {
         <Sidebar userRole={userRole} />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Navbar />
-          <main className="p-6 flex-1 overflow-auto mt-1">
+          <main className="p-6 pb-24 md:pb-6 flex-1 overflow-auto mt-1">
             <ToastContainer
               position="top-right"
               autoClose={5000}

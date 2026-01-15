@@ -4,8 +4,19 @@ import SummaryStats from "@/components/dahsboard/SummaryStats";
 import PieChart from "@/components/dahsboard/PieChart";
 import CostBarChart from "@/components/dahsboard/CostBarChart";
 import { useDashboardPage } from "@/lib/views/dashboard/hooks";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function DashboardPage() {
+  const { isAdmin, isLecturer } = usePermissions();
+
+  if (!isAdmin && !isLecturer) {
+    return (
+      <div>
+        Jako Student nie masz wystarczających uprawnień aby korzystać z systemu
+        Unicloud.
+      </div>
+    );
+  }
   const {
     loading,
     error,

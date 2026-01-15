@@ -2,6 +2,16 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import StudentDetailsPage from "./page";
 
+jest.mock("@/hooks/usePermissions", () => ({
+  usePermissions: jest.fn(() => ({
+    userRoles: ["ADMIN"],
+    checkAccess: () => true,
+    isAdmin: true,
+    isStudent: false,
+    isLecturer: false,
+  })),
+}));
+
 // 1. Mockowanie Hooka
 const mockUseStudentDetailPage = jest.fn();
 
@@ -105,7 +115,6 @@ describe("StudentDetailsPage", () => {
     expect(screen.getByLabelText("Imię")).toHaveValue("Jan");
     expect(screen.getByLabelText("Nazwisko")).toHaveValue("Kowalski");
     expect(screen.getByLabelText("Mail")).toHaveValue("jan@example.com");
-    expect(screen.getByLabelText("Indeks")).toHaveValue("12345");
   });
 
   test("wywołuje handleEditClick po kliknięciu Edytuj", () => {

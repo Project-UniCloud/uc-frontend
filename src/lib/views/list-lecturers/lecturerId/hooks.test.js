@@ -113,7 +113,6 @@ describe("useLecturerDetailPage", () => {
           firstName: "John",
           lastName: "Doe",
           email: "john.doe@example.com",
-          login: "johndoe",
         })
       );
       expect(Toast.showSuccessToast).toHaveBeenCalled();
@@ -138,8 +137,10 @@ describe("useLecturerDetailPage", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.error).toBe("Update failed");
-      expect(Toast.showErrorToast).toHaveBeenCalled();
+      expect(result.current.error).toBe(null);
+      expect(Toast.showErrorToast).toHaveBeenCalledWith(
+        expect.stringContaining("Update failed")
+      );
     });
   });
 

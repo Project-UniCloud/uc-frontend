@@ -2,17 +2,12 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { LogoutModal } from "./LogoutModal";
 import { logoutUser } from "@/lib/api/authApi";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 jest.mock("@/lib/api/authApi");
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
-}));
-
-jest.mock("react-redux", () => ({
-  useDispatch: jest.fn(),
 }));
 
 jest.mock("../utils/Buttons", () => ({
@@ -50,13 +45,11 @@ const renderWithProviders = (ui) => {
 };
 
 describe("LogoutModal", () => {
-  let mockPush, mockDispatch;
+  let mockPush;
 
   beforeEach(() => {
     mockPush = jest.fn();
-    mockDispatch = jest.fn();
     useRouter.mockReturnValue({ push: mockPush });
-    useDispatch.mockReturnValue(mockDispatch);
     logoutUser.mockResolvedValue({ success: true });
 
     HTMLDialogElement.prototype.showModal = jest.fn();
@@ -106,7 +99,7 @@ describe("LogoutModal", () => {
     expect(mockSetIsOpen).toHaveBeenCalledWith(false);
   });
 
-  test("proces wylogowania: API -> Redux -> Redirect", async () => {
+  test("proces wylogowania: API -> Close -> Redirect", async () => {
     const mockSetIsOpen = jest.fn();
     renderWithProviders(
       <LogoutModal isOpen={true} setIsOpen={mockSetIsOpen} />
@@ -116,7 +109,6 @@ describe("LogoutModal", () => {
 
     await waitFor(() => {
       expect(logoutUser).toHaveBeenCalled();
-      expect(mockDispatch).toHaveBeenCalled();
       expect(mockSetIsOpen).toHaveBeenCalledWith(false);
       expect(mockPush).toHaveBeenCalledWith("/login");
     });

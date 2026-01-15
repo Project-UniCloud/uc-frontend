@@ -175,8 +175,10 @@ describe("useResourceDetailPage", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.error).toBe("Update failed");
-      expect(Toast.showErrorToast).toHaveBeenCalled();
+      expect(result.current.error).toBe(null);
+      expect(Toast.showErrorToast).toHaveBeenCalledWith(
+        expect.stringContaining("Update failed")
+      );
     });
   });
 

@@ -10,13 +10,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// const data = [
-//   { name: "S3", value: 50 },
-//   { name: "RDS", value: 20 },
-//   { name: "EC2", value: 20 },
-//   { name: "AWS LAMBDA", value: 10 },
-// ];
-
 const COLORS = ["#8b5cf6", "#6b2135", "#4f46e5", "#93c5fd"];
 
 export default function ResourcePieChart({ data = null }) {

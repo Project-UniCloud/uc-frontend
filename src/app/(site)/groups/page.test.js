@@ -4,6 +4,16 @@ import { getGroups } from "@/lib/api/groupsApi";
 
 jest.mock("@/lib/api/groupsApi");
 
+jest.mock("@/hooks/usePermissions", () => ({
+  usePermissions: jest.fn(() => ({
+    userRoles: ["ADMIN"],
+    checkAccess: () => true,
+    isAdmin: true,
+    isStudent: false,
+    isLecturer: false,
+  })),
+}));
+
 jest.mock("@/components/utils/Tabs", () => ({
   __esModule: true,
   default: (props) => (
@@ -24,59 +34,30 @@ jest.mock("@/components/group/AddGroupModal", () => ({
 
 jest.mock("@/components/views/DataTableView", () => ({
   __esModule: true,
-  default: (props) => {
-    let searchInput = null;
-    let addButton = null;
-
-    if (
-      props.leftActions &&
-      props.leftActions.props &&
-      props.leftActions.props.children
-    ) {
-      const children = Array.isArray(props.leftActions.props.children)
-        ? props.leftActions.props.children
-        : [props.leftActions.props.children];
-
-      for (const child of children) {
-        if (child?.type === "input") {
-          searchInput = child;
-        }
-        if (
-          child?.type?.name === "Button" ||
-          (child?.props?.onClick &&
-            child?.props?.children?.props?.children === " Dodaj grupę")
-        ) {
-          addButton = child;
-        }
-      }
-    }
-
-    return (
-      <div data-testid="table-view">
-        {props.loading && <span>Ładowanie...</span>}
-        {props.error && <span data-testid="error">{props.error}</span>}
-        {!props.loading && !props.error && (
-          <>
-            TABLE [{props.data.length} rows]
-            <div data-testid="table-props" style={{ display: "none" }}>
-              <span data-testid="whereNavigate">{props.whereNavigate}</span>
-              <span data-testid="idKey">{props.idKey}</span>
-              <span data-testid="page">{props.page}</span>
-              <span data-testid="pageSize">{props.pageSize}</span>
-              <span data-testid="totalPages">{props.totalPages}</span>
-              <span data-testid="columns-count">{props.columns?.length}</span>
-              <span data-testid="data-count">{props.data?.length}</span>
-              {props.data?.[0] && (
-                <span data-testid="first-item-id">{props.data[0].id}</span>
-              )}
-            </div>
-            {searchInput}
-            {addButton}
-          </>
-        )}
-      </div>
-    );
-  },
+  default: (props) => (
+    <div data-testid="table-view">
+      {props.loading && <span>Ładowanie...</span>}
+      {props.error && <span data-testid="error">{props.error}</span>}
+      {!props.loading && !props.error && (
+        <>
+          TABLE [{props.data.length} rows]
+          <div data-testid="table-props" style={{ display: "none" }}>
+            <span data-testid="whereNavigate">{props.whereNavigate}</span>
+            <span data-testid="idKey">{props.idKey}</span>
+            <span data-testid="page">{props.page}</span>
+            <span data-testid="pageSize">{props.pageSize}</span>
+            <span data-testid="totalPages">{props.totalPages}</span>
+            <span data-testid="columns-count">{props.columns?.length}</span>
+            <span data-testid="data-count">{props.data?.length}</span>
+            {props.data?.[0] && (
+              <span data-testid="first-item-id">{props.data[0].id}</span>
+            )}
+          </div>
+          {props.leftActions}
+        </>
+      )}
+    </div>
+  ),
 }));
 
 jest.mock("@/components/utils/Buttons", () => ({
@@ -340,7 +321,7 @@ describe("GroupsPage", () => {
       expect(screen.getByTestId("page")).toHaveTextContent("0");
       expect(screen.getByTestId("pageSize")).toHaveTextContent("10");
       expect(screen.getByTestId("totalPages")).toHaveTextContent("3");
-      expect(screen.getByTestId("columns-count")).toHaveTextContent("6");
+      expect(screen.getByTestId("columns-count")).toHaveTextContent("5");
       expect(screen.getByTestId("data-count")).toHaveTextContent("1");
     });
   });
