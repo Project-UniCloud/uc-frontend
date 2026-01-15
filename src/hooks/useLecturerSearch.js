@@ -1,4 +1,3 @@
-// src/hooks/useLecturerSearch.js
 import { useState, useEffect } from "react";
 import { searchLecturers } from "@/lib/api/usersApi";
 

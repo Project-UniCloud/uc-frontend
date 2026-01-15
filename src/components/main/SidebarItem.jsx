@@ -37,7 +37,6 @@ export default function SidebarItem({
 
   if (!itemPath) return content;
 
-  // link zewnętrzny
   if (itemPath.startsWith("http")) {
     return (
       <a href={itemPath} target="_blank" rel="noopener noreferrer">
@@ -46,6 +45,5 @@ export default function SidebarItem({
     );
   }
 
-  // link wewnętrzny Next.js
   return <Link href={itemPath}>{content}</Link>;
 }

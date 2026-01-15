@@ -2,7 +2,6 @@ import { getBaseApiUrl } from "./baseUrl";
 
 const isUnauthorized = (status) => status === 401;
 
-// Prevent multiple rapid redirects to the login page which may cause loops
 let _loginRedirectInProgress = false;
 let _lastLoginRedirectTs = 0;
 const redirectToLogin = () => {
@@ -10,7 +9,7 @@ const redirectToLogin = () => {
 
   const isAlreadyOnLogin = window.location.pathname === "/login";
   const now = Date.now();
-  const recentlyRedirected = now - _lastLoginRedirectTs < 2000; // 2s guard
+  const recentlyRedirected = now - _lastLoginRedirectTs < 2000;
 
   if (_loginRedirectInProgress || isAlreadyOnLogin || recentlyRedirected) {
     return;
@@ -18,7 +17,6 @@ const redirectToLogin = () => {
 
   _loginRedirectInProgress = true;
   _lastLoginRedirectTs = now;
-  // Use replace to avoid stacking history entries and potential back/forward loops
   window.location.replace("/login");
 };
 

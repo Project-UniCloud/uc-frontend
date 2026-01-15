@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 
 function isDetailsPath(parts, prefix, step) {
-  // Sprawdza czy ścieżka to /prefix/:id gdzie :id to UUID v4
   if (parts.length !== step) return false;
   return (
     parts[parts.length - step] === prefix &&
@@ -55,7 +54,7 @@ export function useNamePath() {
       namePath = "Profil";
       break;
     case "logs":
-      namePath = "Powiadomienia";
+      namePath = "Logi";
       break;
     default:
       if (isDetailsPath3(parts, "groups", "resources")) {

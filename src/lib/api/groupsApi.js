@@ -47,6 +47,6 @@ export async function getResourcesGroup(groupId, page = 0, pageSize = 10) {
 }
 
 export async function getAvailableResourcesForGroup(groupId) {
-  const path = `/groups/${groupId}/available-cloud-resources`; //CHANGE TO CORRECT PATH
+  const path = `/groups/${groupId}/available-cloud-resources`;
   return await getApi(path, "Nieudane pobieranie dostępnych usług");
 }

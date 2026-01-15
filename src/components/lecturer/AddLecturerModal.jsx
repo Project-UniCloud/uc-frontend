@@ -23,15 +23,6 @@ export default function AddLecturerModal({ isOpen, setIsOpen, fetch }) {
     email: "",
   });
 
-  // const lecturerSchema = z.object({
-  //   firstName: z.string().nonempty("Imię jest wymagane"),
-  //   lastName: z.string().nonempty("Nazwisko jest wymagane"),
-  //   login: z
-  //     .string()
-  //     .regex(/^s\d{6}$/, 'Indeks musi zaczynać się od "s" i mieć 6 cyfr'),
-  //   email: z.string().email("Nieprawidłowy format e-maila"),
-  // });
-
   const mutation = useMutation({
     mutationFn: (lecturerData) => addLecturer(lecturerData),
     onSuccess: () => {

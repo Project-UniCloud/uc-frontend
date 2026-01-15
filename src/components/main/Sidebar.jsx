@@ -55,11 +55,7 @@ export default function Sidebar({ userRole }) {
               itemPath="/dashboard"
             />
             <SidebarItem icon={<FiUsers />} label="Grupy" itemPath="/groups" />
-            <SidebarItem
-              icon={<FiBell />}
-              label="Powiadomienia"
-              itemPath="/logs"
-            />
+            <SidebarItem icon={<FiBell />} label="Logi" itemPath="/logs" />
             {isMounted && checkAccess(PERMISSIONS.LECTURERS) && (
               <SidebarItem
                 icon={<PiChalkboardTeacherLight />}
