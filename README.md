@@ -1,71 +1,71 @@
 # Unicloud – Frontend (uc-frontend)
 
-Frontend aplikacji **Unicloud** – panel webowy oparty o **Next.js (App Router)**. Projekt renderuje UI (logowanie, dashboard, grupy, logi itd.) i komunikuje się z backendem przez HTTP (z użyciem cookies/credentials).
+Frontend for the **Unicloud** application — a web panel built with **Next.js (App Router)**. The project renders the UI (login, dashboard, groups, logs, etc.) and communicates with the backend via HTTP (using cookies/credentials).
 
 ## Tech stack
 
 - **Next.js 15** (App Router)
 - **React 19**
-- **Tailwind CSS v4** (przez `@tailwindcss/postcss`)
-- **@tanstack/react-query** – cache/fetching i mutacje w UI
-- **Jest + Testing Library** – testy jednostkowe komponentów
+- **Tailwind CSS v4** (via `@tailwindcss/postcss`)
+- **@tanstack/react-query** — caching/fetching and UI mutations
+- **Jest + Testing Library** — component unit tests
 
-Zależności pomocnicze: `react-hook-form`, `zod`, `react-toastify`, `recharts`, `react-dnd`, `axios` (w zależności od modułu).
+Additional libraries: `react-hook-form`, `zod`, `react-toastify`, `recharts`, `react-dnd`, `axios` (depending on the module).
 
-## Jak to działa (architektura)
+## Architecture
 
 ### Routing (App Router)
 
-Kod stron jest w `src/app/` i korzysta z **route groups**:
+Page routes live in `src/app/` and use **route groups**:
 
-- `src/app/(auth)/...` – ścieżki związane z logowaniem (np. `/login`)
-- `src/app/(site)/...` – właściwa aplikacja po zalogowaniu (dashboard, grupy, logi itd.)
+- `src/app/(auth)/...` — authentication routes (e.g. `/login`)
+- `src/app/(site)/...` — the main app after login (dashboard, groups, logs, etc.)
 
-Główne layouty:
+Main layouts:
 
-- `src/app/layout.js` – Root layout, podpina globalne style i `ReactQueryProvider`
-- `src/app/(site)/layout.js` – layout aplikacji (Sidebar + Navbar + Toasty) oraz kontekst ról
+- `src/app/layout.js` — Root layout; registers global styles and `ReactQueryProvider`
+- `src/app/(site)/layout.js` — app layout (Sidebar + Navbar + Toasts) and roles context
 
-### Auth i role
+### Auth and roles
 
-Autoryzacja bazuje na cookies ustawianych przez backend:
+Authorization is based on cookies set by the backend:
 
-- `jwt` – token sesyjny
-- `roles` – role użytkownika (format: pojedyncza rola lub kilka ról rozdzielonych myślnikiem, np. `ADMIN-LECTURER`)
+- `jwt` — session token
+- `roles` — user roles (format: a single role or multiple roles separated by a dash, e.g. `ADMIN-LECTURER`)
 
-Obsługa ról:
+Role handling:
 
 1. `src/middleware.js`:
-   - sprawdza, czy użytkownik jest zalogowany i dokonuje odpowiedniego redirect: `/login` lub `/dashboard`
-   - ogranicza dostęp do wybranych tras na podstawie `src/lib/utils/permissions.js`
+   - checks whether the user is logged in and redirects to `/login` or `/dashboard`
+   - restricts access to specific routes based on `src/lib/utils/permissions.js`
 2. `src/app/(site)/layout.js`:
-   - odczytuje `x-user-role` przez `next/headers`
-   - przekazuje role do `RolesProvider`
+   - reads `x-user-role` via `next/headers`
+   - passes roles into `RolesProvider`
 3. UI:
-   - `src/hooks/usePermissions.js` udostępnia `isAdmin/isLecturer/isStudent` oraz `checkAccess(...)` do warunkowego renderowania.
+   - `src/hooks/usePermissions.js` exposes `isAdmin/isLecturer/isStudent` and `checkAccess(...)` for conditional rendering.
 
-### Warstwa API
+### API layer
 
-Standardowe wywołania HTTP realizuje `src/lib/utils/apiClient.js` (wrapper na `fetch`):
+HTTP calls are handled by `src/lib/utils/apiClient.js` (a `fetch` wrapper):
 
-- wysyła `credentials: "include"` (cookies do backendu)
-- na `401` przekierowuje na `/login`
-- wystawia helpery: `getApi`, `postApi`, `patchApi`, `putApi`, `deleteApi`
+- sends `credentials: "include"` (cookies to the backend)
+- redirects to `/login` on `401`
+- exposes helpers: `getApi`, `postApi`, `patchApi`, `putApi`, `deleteApi`
 
-Endpointy są pogrupowane w `src/lib/api/*Api.js` (np. `groupsApi.js`, `logsApi.js`)
+Endpoints are grouped in `src/lib/api/*Api.js` (e.g. `groupsApi.js`, `logsApi.js`).
 
-### Logika widoków
+### View logic
 
-Dostępna w `src/lib/views/**`. Jest pogrupowana według obszaru aplikacji i routingu (np. logika związana z grupami znajduje się w `src/lib/views/groups/**`, a elementy dla logów w `src/lib/views/logs/**`).
+Located in `src/lib/views/**`. It is organized by app area and routing (e.g. group-related logic is in `src/lib/views/groups/**`, logs-related logic in `src/lib/views/logs/**`).
 
-Najczęściej spotkasz tam:
+Most common files there:
 
-- columns.js - definicja kolumn do tabel
-- hooks.js - obsługa wszystkich akcji w widoku tj. edycja danych, obsługa zapytań asynchronicznych.
-- schemas.js - definicja schematów do walidacji
-- tabs.js - definicja dostępnych zakładek
+- `columns.js` — table column definitions
+- `hooks.js` — view-level logic (async queries, mutations, editing flows)
+- `schemas.js` — validation schemas
+- `tabs.js` — tab definitions
 
-## Struktura katalogów
+## Folder structure
 
 ```
 uc-frontend/
@@ -77,46 +77,46 @@ uc-frontend/
 ├── jest.config.js
 ├── jest.setup.js
 ├── jsconfig.json
-├── public/                          # Statyczne assety (np. logo)
+├── public/                          # Static assets (e.g. logo)
 └── src/
-    ├── middleware.js                # Auth/roles + ochrona tras + wstrzyknięcie nagłówka
+    ├── middleware.js                # Auth/roles + route protection + header injection
     ├── app/                         # Next.js App Router
-    │   ├── (auth)/                  # Route group: logowanie
+    │   ├── (auth)/                  # Route group: authentication
     │   │   ├── login/               # /login
     │   │   │   └── page.js
     │   │   └── layout.js
-    │   ├── (site)/                  # Route group: aplikacja po zalogowaniu
+    │   ├── (site)/                  # Route group: application after login
     │   │   ├── dashboard/           # /dashboard
     │   │   ├── drivers/             # /drivers
-    │   │   ├── groups/              # /groups (+ pod-routy grup)
+    │   │   ├── groups/              # /groups (+ group sub-routes)
     │   │   ├── list-lecturers/      # /list-lecturers
     │   │   ├── logs/                # /logs
     │   │   ├── layout.js            # Sidebar + Navbar + RolesProvider + ToastContainer
-    │   │   ├── loading.js           # loading UI dla (site)
+    │   │   ├── loading.js           # loading UI for (site)
     │   │   └── not-found.js
     │   ├── globals.css
     │   ├── layout.js                # Root layout + ReactQueryProvider + window.ENV
     │   ├── not-found.js
     │   └── page.js
-    ├── components/                  # Komponenty UI
+    ├── components/                  # UI components
     │   ├── main/                    # Navbar/Sidebar
-    │   ├── table/                   # Wspólna tabela
-    │   ├── utils/                   # Wspólne kontrolki (Tabs, Toast, TeacherSearchInput, ...)
-    │   ├── group/                   # Modale/akcje dla grup
-    │   ├── drivers/                 # Modale/akcje dla kierowców
-    │   ├── lecturer/                # Modale/akcje dla prowadzących
-    │   ├── resources/               # Modale/akcje dla usług/zasobów
-    │   ├── students/                # Modale/akcje dla studentów
-    │   ├── login/                   # Formularze logowania
-    │   └── dahsboard/               # Komponenty dashboardu (uwaga: nazwa katalogu w repo)
-    ├── contexts/                    # React Context (RolesContext)
-    ├── hooks/                       # Hooki współdzielone (np. usePermissions)
-    ├── providers/                   # Providerzy globalni (np. ReactQueryProvider)
-    ├── store/                       # Pozostałości po Redux (slice/config) – do ewentualnego cleanup
+    │   ├── table/                   # Shared table
+    │   ├── utils/                   # Shared controls (Tabs, Toast, TeacherSearchInput, ...)
+    │   ├── group/                   # Group modals/actions
+    │   ├── drivers/                 # Driver modals/actions
+    │   ├── lecturer/                # Lecturer modals/actions
+    │   ├── resources/               # Resource/service modals/actions
+    │   ├── students/                # Student modals/actions
+    │   ├── login/                   # Login forms
+    │   └── dahsboard/               # Dashboard components (note: folder name as in repo)
+    ├── contexts/                    # React Contexts (RolesContext)
+    ├── hooks/                       # Shared hooks (e.g. usePermissions)
+    ├── providers/                   # Global providers (e.g. ReactQueryProvider)
+    ├── store/                       # Leftovers after Redux removal (slice/config) — optional cleanup
     └── lib/
-        ├── api/                     # Moduły wywołań endpointów (groupsApi, logsApi, ...)
-        ├── utils/                   # Utility (apiClient, baseUrl, permissions, formatDate, ...)
-        └── views/                   # Logika widoków (columns/hooks/schemas/tabs) pogrupowana per obszar
+        ├── api/                     # Endpoint modules (groupsApi, logsApi, ...)
+        ├── utils/                   # Utilities (apiClient, baseUrl, permissions, formatDate, ...)
+        └── views/                   # View logic (columns/hooks/schemas/tabs) grouped by area
             ├── auth/
             ├── dashboard/
             ├── drivers/
@@ -126,29 +126,29 @@ uc-frontend/
             └── shared/
 ```
 
-## Uruchomienie
+## Running the project
 
-### Wymagania
+### Requirements
 
-- Node.js **20.x** (projekt ma Dockerfile na `node:20-alpine`)
+- Node.js **20.x** (the project ships a Dockerfile based on `node:20-alpine`)
 - npm
 - Git
 
-### Sklonuj repozytorium
+### Clone the repository
 
 ```bash
 git clone https://github.com/Project-UniCloud/uc-frontend.git
 cd uc-frontend
 ```
 
-### Dev (lokalnie)
+### Dev (local)
 
 ```bash
 npm install
 npm run dev
 ```
 
-Aplikacja: http://localhost:3000
+App: http://localhost:3000
 
 ### Build + start (prod)
 
@@ -157,20 +157,32 @@ npm run build
 npm start
 ```
 
-### Testy
+### Tests
 
 ```bash
 npm test
 ```
 
-Tryb watch:
+Watch mode:
 
 ```bash
 npm run test:watch
 ```
 
-Po uruchomieniu testów generowany jest raport HTML: `test-report.html`.
+After running tests, an HTML report is generated: `test-report.html`.
 
-### Konfiguracja URL backendu, z którym komunikuje się frontend
+### Backend URL configuration
 
-Funkcja `getBaseApiUrl()` znajduje się w `src/lib/utils/baseUrl.js`. Bierzę ona zmienną środowiskową `BACKEND_API_URL` z dockera. Aby zmienić używany port zmień powyższą zmienną lub wykorzystaj fallback.
+The function `getBaseApiUrl()` is located in `src/lib/utils/baseUrl.js`.
+
+Current behavior:
+
+- by default it returns a hardcoded URL: `http://localhost:8100/api`
+- there is an optional (currently commented out) client-side read of `window.ENV.BACKEND_API_URL`
+
+Also note that `src/app/layout.js` injects `window.ENV.BACKEND_API_URL` from `process.env.BACKEND_API_URL` (fallback: `http://localhost:8080/api`).
+
+If you want the app to use `BACKEND_API_URL` at runtime:
+
+- either update `src/lib/utils/baseUrl.js` (recommended: enable reading `window.ENV.BACKEND_API_URL`), or
+- change the hardcoded fallback URL directly in `src/lib/utils/baseUrl.js`.
