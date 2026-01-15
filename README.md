@@ -82,22 +82,22 @@ uc-frontend/
    ├── middleware.js                # Auth/roles + route protection + header injection
    ├── app/                         # Next.js App Router
    │   ├── (auth)/                  # Route group: authentication
-    │   │   ├── login/               # /login
-    │   │   │   └── page.js
-    │   │   └── layout.js
+   │   │   ├── login/               # /login
+   │   │   │   └── page.js
+   │   │   └── layout.js
    │   ├── (site)/                  # Route group: app after login
-    │   │   ├── dashboard/           # /dashboard
-    │   │   ├── drivers/             # /drivers
+   │   │   ├── dashboard/           # /dashboard
+   │   │   ├── drivers/             # /drivers
    │   │   ├── groups/              # /groups (+ group sub-routes)
-    │   │   ├── list-lecturers/      # /list-lecturers
-    │   │   ├── logs/                # /logs
+   │   │   ├── list-lecturers/      # /list-lecturers
+   │   │   ├── logs/                # /logs
    │   │   ├── layout.js            # Sidebar + Navbar + RolesProvider + ToastContainer
    │   │   ├── loading.js           # loading UI for (site)
-    │   │   └── not-found.js
-    │   ├── globals.css
+   │   │   └── not-found.js
+   │   ├── globals.css
    │   ├── layout.js                # Root layout + ReactQueryProvider + window.ENV
-    │   ├── not-found.js
-    │   └── page.js
+   │   ├── not-found.js
+   │   └── page.js
    ├── components/                  # UI components
    │   ├── main/                    # Navbar/Sidebar
    │   ├── table/                   # Shared table

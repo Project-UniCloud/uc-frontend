@@ -49,13 +49,25 @@ export default function Sidebar({ userRole }) {
           <p className="text-xs uppercase mb-4 tracking-wider">Menu główne</p>
 
           <nav className="flex flex-col gap-4 text-sm">
-            <SidebarItem
-              icon={<FiGrid />}
-              label="Przegląd"
-              itemPath="/dashboard"
-            />
-            <SidebarItem icon={<FiUsers />} label="Grupy" itemPath="/groups" />
-            <SidebarItem icon={<FiBell />} label="Logi" itemPath="/logs" />
+            {isMounted && checkAccess(PERMISSIONS.DASHBOARD) && (
+              <SidebarItem
+                icon={<FiGrid />}
+                label="Przegląd"
+                itemPath="/dashboard"
+              />
+            )}
+
+            {isMounted && checkAccess(PERMISSIONS.GROUPS) && (
+              <SidebarItem
+                icon={<FiUsers />}
+                label="Grupy"
+                itemPath="/groups"
+              />
+            )}
+            {isMounted && checkAccess(PERMISSIONS.NOTIFICATIONS) && (
+              <SidebarItem icon={<FiBell />} label="Logi" itemPath="/logs" />
+            )}
+
             {isMounted && checkAccess(PERMISSIONS.LECTURERS) && (
               <SidebarItem
                 icon={<PiChalkboardTeacherLight />}
